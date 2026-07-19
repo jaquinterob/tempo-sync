@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070b14" />
+    <title>Pantalla · Temporizador remoto</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="display-page">
+    <main class="display-shell">
+      <section id="join-panel" class="card join-card display-join">
+        <div>
+          <p class="eyebrow">Pantalla del temporizador</p>
+          <h1>Conectar a una sala</h1>
+          <p>Escribe el PIN que aparece en el panel de control.</p>
+        </div>
+        <form id="join-form" class="join-form">
+          <label for="pin">PIN de sala</label>
+          <div class="inline-fields">
+            <input
+              id="pin"
+              name="pin"
+              type="text"
+              minlength="3"
+              maxlength="12"
+              pattern="[A-Za-z0-9]+"
+              autocomplete="off"
+              placeholder="EJ. 1234"
+              required
+            />
+            <button type="submit" class="button button-primary">Mostrar</button>
+          </div>
+          <p id="join-error" class="form-error" role="alert"></p>
+        </form>
+      </section>
+
+      <section id="display-panel" class="display-timer is-hidden">
+        <div class="display-topbar">
+          <span>Sala <strong id="room-pin">—</strong></span>
+          <span id="connection-status" class="status-pill status-offline">Desconectado</span>
+        </div>
+        <div class="display-content">
+          <p id="timer" class="timer timer-giant" aria-live="polite">05:00</p>
+          <p id="timer-label" class="timer-label display-label">Listo para iniciar</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/shared.js"></script>
+    <script src="/js/display.js"></script>
+  </body>
+</html>
