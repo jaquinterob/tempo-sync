@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" fill="none" aria-hidden="true">
+  <path
+    d="M32 6 L35.5 15 H41 L36.5 20.5 L38.2 29.5 L32 24.2 L25.8 29.5 L27.5 20.5 L23 15 H28.5 Z"
+    fill="currentColor"
+  />
+  <path
+    d="M21 31 H43 V37 H47 V70 H17 V37 H21 Z"
+    fill="currentColor"
+  />
+  <rect x="29" y="46" width="6" height="14" fill="#f7f4ef"/>
+  <rect x="23" y="49" width="5" height="7" fill="#f7f4ef"/>
+  <rect x="36" y="49" width="5" height="7" fill="#f7f4ef"/>
+</svg>

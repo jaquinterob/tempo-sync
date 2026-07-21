@@ -3,27 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#111827" />
+    <meta name="theme-color" content="#f7f4ef" />
     <title>Control · Temporizador remoto</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="control-page">
     <main class="app-shell">
-      <header class="page-header">
-        <div>
-          <p class="eyebrow">Temporizador remoto</p>
-          <h1>Panel de control</h1>
+      <header class="page-header brand-header">
+        <div class="brand-lockup">
+          <img
+            class="brand-mark brand-mark-church"
+            src="/assets/brand/church-logo.png"
+            alt="La Iglesia de Jesucristo de los Santos de los Últimos Días"
+            width="40"
+            height="72"
+          />
+          <div>
+            <h1 id="control-ward-title">Barrio Sabaneta</h1>
+            <p class="brand-sub">&gt; PANEL_CONTROL.exe // reunión sacramental</p>
+          </div>
         </div>
-        <span id="connection-status" class="status-pill status-offline">Desconectado</span>
+        <span id="connection-status" class="status-pill status-offline">OFFLINE</span>
       </header>
 
       <section id="join-panel" class="card join-card">
         <div>
-          <h2>Entrar a una sala</h2>
-          <p>Usa el mismo PIN en el control y en la pantalla.</p>
+          <h2>SESSION / JOIN</h2>
+          <p>root@timer:~$ usa el mismo PIN en control y pantalla</p>
         </div>
         <form id="join-form" class="join-form">
-          <label for="pin">PIN de sala</label>
+          <label for="pin">PIN_SALA</label>
           <div class="inline-fields">
             <input
               id="pin"
@@ -36,49 +51,137 @@
               placeholder="EJ. 1234"
               required
             />
-            <button type="submit" class="button button-primary">Conectar</button>
+            <button type="submit" class="button button-primary">[ CONECTAR ]</button>
           </div>
           <p id="join-error" class="form-error" role="alert"></p>
         </form>
       </section>
 
-      <section id="timer-panel" class="timer-layout is-hidden">
-        <article class="card timer-card">
-          <div class="room-line">
-            <span>Sala</span>
+      <section id="timer-panel" class="matrix-layout is-hidden">
+        <article class="card matrix-status-bar">
+          <button id="change-room-button" type="button" class="matrix-status-cell matrix-room-button">
+            <span class="matrix-kicker">ROOM</span>
             <strong id="room-pin">—</strong>
+            <span class="matrix-room-hint">cambiar</span>
+          </button>
+          <div class="matrix-status-timer">
+            <p id="timer" class="timer timer-compact" aria-live="polite">05:00</p>
+            <p id="timer-label" class="timer-label">STATUS: READY</p>
           </div>
-          <p id="timer" class="timer" aria-live="polite">05:00</p>
-          <p id="timer-label" class="timer-label">Listo para iniciar</p>
+          <div class="matrix-status-cell matrix-status-right">
+            <span class="matrix-kicker">LINK</span>
+            <strong id="connection-status-inline" class="status-inline status-offline">OFFLINE</strong>
+          </div>
+          <div class="time-meter time-meter-control" aria-hidden="true" title="Tiempo restante">
+            <div id="time-meter-fill" class="time-meter-fill"></div>
+          </div>
         </article>
 
-        <article class="card controls-card">
-          <h2>Configurar tiempo</h2>
-          <form id="time-form">
-            <div class="time-inputs">
+        <article class="card matrix-board">
+          <div class="matrix-grid">
+            <button
+              type="button"
+              class="preset-button"
+              data-duration-ms="420000"
+            >
+              <strong>DISCURSOS</strong>
+              <span>7 MIN</span>
+            </button>
+            <button
+              type="button"
+              class="preset-button"
+              data-duration-ms="180000"
+            >
+              <strong>TESTIMONIO</strong>
+              <span>3 MIN</span>
+            </button>
+            <button id="start-button" type="button" class="button button-start matrix-tall">
+              [ INICIAR ]
+            </button>
+            <button id="blank-screen-button" type="button" class="button blank-screen-button matrix-tall">
+              [ VACIA ]
+            </button>
+            <button id="pause-button" type="button" class="button button-secondary">PAUSAR</button>
+            <button id="reset-button" type="button" class="button button-danger">REINICIAR</button>
+
+            <form id="time-form" class="matrix-time-form">
               <label>
-                <span>Minutos</span>
+                <span class="visually-hidden">MIN</span>
                 <input id="minutes" type="number" min="0" max="1440" value="5" inputmode="numeric" />
               </label>
               <span class="time-separator">:</span>
               <label>
-                <span>Segundos</span>
+                <span class="visually-hidden">SEC</span>
                 <input id="seconds" type="number" min="0" max="59" value="0" inputmode="numeric" />
               </label>
-            </div>
-            <button type="submit" class="button button-secondary button-full">Aplicar tiempo</button>
-            <p id="time-error" class="form-error" role="alert"></p>
-          </form>
+              <button type="submit" class="button button-secondary">[ APLICAR ]</button>
+              <p id="time-error" class="form-error" role="alert"></p>
+            </form>
 
-          <div class="action-grid">
-            <button id="start-button" type="button" class="button button-start">Iniciar</button>
-            <button id="pause-button" type="button" class="button button-secondary">Pausar</button>
-            <button id="reset-button" type="button" class="button button-danger">Reiniciar</button>
+            <form id="message-form" class="matrix-message-form">
+              <label class="visually-hidden" for="screen-message">MSG_SCROLL</label>
+              <input
+                id="screen-message"
+                type="text"
+                maxlength="180"
+                autocomplete="off"
+                placeholder="Por favor, concluya su discurso_"
+              />
+              <button type="submit" class="button button-primary">[ MOSTRAR ]</button>
+              <button id="clear-message-button" type="button" class="button button-secondary">
+                QUITAR
+              </button>
+            </form>
           </div>
 
           <a id="display-link" class="display-link" href="/display.html" target="_blank" rel="noreferrer">
-            Abrir pantalla del temporizador
+            &gt; abrir display.html
           </a>
+        </article>
+
+        <article class="card brand-config-card">
+          <div class="brand-config-head">
+            <h2>CFG / IDENTIDAD</h2>
+            <div class="brand-config-actions">
+              <button
+                id="theme-toggle"
+                type="button"
+                class="button button-secondary theme-toggle"
+                aria-pressed="false"
+                title="Cambiar tema del display"
+              >
+                TEMA: CLARO
+              </button>
+              <p id="branding-status" class="branding-status" aria-live="polite"></p>
+            </div>
+          </div>
+          <form id="branding-form" class="branding-form">
+            <label class="brand-field">
+              <span>BARRIO</span>
+              <input id="ward-name" type="text" maxlength="60" value="Barrio Sabaneta" required />
+            </label>
+            <label class="brand-field">
+              <span>MSG_1</span>
+              <input
+                id="finish-thanks"
+                type="text"
+                maxlength="80"
+                value="Agradecemos su discurso."
+                required
+              />
+            </label>
+            <label class="brand-field">
+              <span>MSG_2</span>
+              <input
+                id="finish-done"
+                type="text"
+                maxlength="80"
+                value="Su tiempo ha terminado."
+                required
+              />
+            </label>
+            <button type="submit" class="button button-primary brand-save">[ GUARDAR ]</button>
+          </form>
         </article>
       </section>
     </main>

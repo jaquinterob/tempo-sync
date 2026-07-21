@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Temas terminal · Panel de control</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700&family=VT323&family=Share+Tech+Mono&family=Courier+Prime:wght@400;700&family=Space+Mono:wght@400;700&family=Press+Start+2P&family=Fira+Code:wght@400;600&family=Anonymous+Pro:wght@400;700&display=swap");
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: #0a0a0a;
+        color: #e5e5e5;
+        font-family: "IBM Plex Mono", monospace;
+      }
+
+      .gallery {
+        width: min(1280px, calc(100% - 28px));
+        margin: 0 auto;
+        padding: 36px 0 80px;
+      }
+
+      .gallery-header h1 {
+        margin: 0 0 8px;
+        font-size: clamp(1.6rem, 4vw, 2.4rem);
+      }
+
+      .gallery-header p {
+        margin: 0 0 28px;
+        color: #9ca3af;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        gap: 22px;
+      }
+
+      .theme {
+        border: 1px solid #333;
+        overflow: hidden;
+      }
+
+      .theme-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 10px 14px;
+        background: #141414;
+        border-bottom: 1px solid #2a2a2a;
+        font-size: 0.82rem;
+      }
+
+      .theme-meta strong {
+        color: #fff;
+      }
+
+      .theme-meta span {
+        color: #9ca3af;
+      }
+
+      .mock {
+        min-height: 420px;
+        padding: 18px;
+      }
+
+      .mock-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+        gap: 10px;
+      }
+
+      .mock-title {
+        margin: 0;
+        font-size: 1.15rem;
+      }
+
+      .mock-status {
+        font-size: 0.75rem;
+        white-space: nowrap;
+      }
+
+      .mock-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 12px;
+      }
+
+      .panel {
+        border: 1px solid currentColor;
+        padding: 12px;
+      }
+
+      .clock {
+        display: grid;
+        min-height: 180px;
+        place-items: center;
+        font-size: clamp(2.8rem, 8vw, 4.5rem);
+        letter-spacing: 0.04em;
+      }
+
+      .label {
+        margin: 8px 0 0;
+        text-align: center;
+        font-size: 0.8rem;
+        opacity: 0.75;
+      }
+
+      .section-title {
+        margin: 0 0 10px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .btn {
+        border: 1px solid currentColor;
+        background: transparent;
+        color: inherit;
+        padding: 10px 8px;
+        font: inherit;
+        cursor: default;
+        text-align: left;
+      }
+
+      .btn strong,
+      .btn span {
+        display: block;
+      }
+
+      .btn span {
+        opacity: 0.7;
+        font-size: 0.72rem;
+        margin-top: 2px;
+      }
+
+      .btn.primary {
+        text-align: center;
+        font-weight: 700;
+      }
+
+      .btn.danger {
+        text-align: center;
+      }
+
+      .field {
+        width: 100%;
+        border: 1px solid currentColor;
+        background: transparent;
+        color: inherit;
+        padding: 8px;
+        font: inherit;
+        margin-bottom: 8px;
+      }
+
+      .prompt {
+        margin: 0 0 10px;
+        font-size: 0.78rem;
+        opacity: 0.8;
+      }
+
+      /* 1. Phosphor Green */
+      .t1 {
+        background: #020803;
+        color: #33ff66;
+        font-family: "VT323", monospace;
+        font-size: 1.15rem;
+        text-shadow: 0 0 6px rgba(51, 255, 102, 0.45);
+      }
+      .t1 .panel {
+        background: rgba(0, 40, 0, 0.35);
+        box-shadow: inset 0 0 30px rgba(0, 255, 80, 0.08);
+      }
+      .t1 .btn.primary {
+        background: #0a3d18;
+      }
+
+      /* 2. Amber CRT */
+      .t2 {
+        background: #120900;
+        color: #ffb000;
+        font-family: "Share Tech Mono", monospace;
+        text-shadow: 0 0 5px rgba(255, 176, 0, 0.35);
+      }
+      .t2 .panel {
+        background: rgba(50, 24, 0, 0.4);
+      }
+      .t2 .btn.primary {
+        background: #5a3200;
+      }
+
+      /* 3. Blue IBM */
+      .t3 {
+        background: #000814;
+        color: #7ec8ff;
+        font-family: "IBM Plex Mono", monospace;
+      }
+      .t3 .panel {
+        border-style: double;
+        border-width: 3px;
+        background: #001029;
+      }
+      .t3 .btn.primary {
+        background: #0a2f55;
+      }
+
+      /* 4. DOS White on Black */
+      .t4 {
+        background: #000;
+        color: #c0c0c0;
+        font-family: "Courier Prime", Courier, monospace;
+      }
+      .t4 .panel {
+        border-color: #808080;
+        background: #000;
+      }
+      .t4 .btn {
+        border-color: #fff;
+        background: #000;
+        color: #fff;
+      }
+      .t4 .btn.primary {
+        background: #fff;
+        color: #000;
+      }
+      .t4 .btn.danger {
+        background: #000;
+        color: #fff;
+        border-style: dashed;
+      }
+
+      /* 5. Hot Pink Cyber */
+      .t5 {
+        background: #0d0014;
+        color: #ff4fd8;
+        font-family: "Space Mono", monospace;
+        text-shadow: 0 0 8px rgba(255, 79, 216, 0.35);
+      }
+      .t5 .panel {
+        border-color: #ff4fd8;
+        background: rgba(40, 0, 50, 0.5);
+        box-shadow: 0 0 0 1px #5cffef, inset 0 0 20px rgba(255, 79, 216, 0.12);
+      }
+      .t5 .btn.primary {
+        background: #3a0048;
+        color: #5cffef;
+        border-color: #5cffef;
+      }
+
+      /* 6. Paper Teletype */
+      .t6 {
+        background: #ece4d4;
+        color: #1a1a1a;
+        font-family: "Courier Prime", Courier, monospace;
+      }
+      .t6 .panel {
+        border-color: #1a1a1a;
+        background: #f4efe4;
+      }
+      .t6 .btn.primary {
+        background: #1a1a1a;
+        color: #f4efe4;
+      }
+      .t6 .btn.danger {
+        border-style: double;
+        border-width: 3px;
+      }
+
+      /* 7. Matrix Rain Dark */
+      .t7 {
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.72)),
+          repeating-linear-gradient(
+            90deg,
+            transparent 0,
+            transparent 11px,
+            rgba(0, 255, 65, 0.05) 11px,
+            rgba(0, 255, 65, 0.05) 12px
+          ),
+          #000;
+        color: #00ff41;
+        font-family: "Fira Code", monospace;
+      }
+      .t7 .panel {
+        border-style: dashed;
+        background: rgba(0, 0, 0, 0.75);
+      }
+      .t7 .btn.primary {
+        background: #003b12;
+      }
+
+      /* 8. Pixel Arcade */
+      .t8 {
+        background: #111;
+        color: #f8f8f8;
+        font-family: "Press Start 2P", monospace;
+        font-size: 0.58rem;
+        line-height: 1.5;
+      }
+      .t8 .mock-title {
+        font-size: 0.7rem;
+      }
+      .t8 .clock {
+        font-size: clamp(1.3rem, 4vw, 2rem);
+      }
+      .t8 .panel {
+        border-width: 3px;
+        border-color: #fff;
+        background: #000;
+        box-shadow: 4px 4px 0 #666;
+      }
+      .t8 .btn {
+        border-width: 3px;
+        box-shadow: 2px 2px 0 #666;
+      }
+      .t8 .btn.primary {
+        background: #fff;
+        color: #000;
+      }
+      .t8 .btn.danger {
+        background: #000;
+        color: #fff;
+      }
+
+      /* 9. Teal Unix */
+      .t9 {
+        background: #071416;
+        color: #7dfff0;
+        font-family: "Anonymous Pro", monospace;
+      }
+      .t9 .panel {
+        border-radius: 0;
+        background: #0b1d20;
+        border-color: #3aa89c;
+      }
+      .t9 .btn.primary {
+        background: #104740;
+      }
+      .t9 .mock-status {
+        color: #9dff7a;
+      }
+
+      /* 10. Red Alert Console */
+      .t10 {
+        background: #140404;
+        color: #ff6b6b;
+        font-family: "Share Tech Mono", monospace;
+        text-shadow: 0 0 4px rgba(255, 80, 80, 0.25);
+      }
+      .t10 .panel {
+        border-color: #ff6b6b;
+        background: rgba(40, 0, 0, 0.45);
+      }
+      .t10 .btn.primary {
+        background: #4a1010;
+        color: #ffd0d0;
+      }
+      .t10 .btn.danger {
+        background: #ff6b6b;
+        color: #140404;
+        border-color: #ff6b6b;
+      }
+
+      @media (max-width: 800px) {
+        .mock-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="gallery">
+      <header class="gallery-header">
+        <h1>10 UIs terminal para el panel de control</h1>
+        <p>
+          Elige un número. Todos son estilos retro de terminal; la lógica del temporizador
+          se mantiene igual. Dime cuál aplicamos.
+        </p>
+      </header>
+
+      <div class="grid">
+        <!-- 1 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>1. Phosphor Green</strong>
+            <span>VT323 · CRT verde clásico</span>
+          </div>
+          <div class="mock t1">
+            <div class="mock-header">
+              <h2 class="mock-title">> PANEL_CONTROL.exe</h2>
+              <span class="mock-status">[OK] LINKED</span>
+            </div>
+            <p class="prompt">root@timer:~$ session --pin DEMO</p>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">STATUS: READY</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Presets</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>7 MIN</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>3 MIN</span></button>
+                </div>
+                <button class="btn primary">[ INICIAR ]</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">PAUSAR</button>
+                  <button class="btn danger">REINICIAR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 2 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>2. Amber CRT</strong>
+            <span>Share Tech Mono · ámbar cálido</span>
+          </div>
+          <div class="mock t2">
+            <div class="mock-header">
+              <h2 class="mock-title">TEMPORIZADOR :: CONSOLA</h2>
+              <span class="mock-status">CONN: ONLINE</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">LISTO PARA INICIAR</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Comandos</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>7:00</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>3:00</span></button>
+                </div>
+                <input class="field" value="MENSAJE_" readonly />
+                <button class="btn primary">EJECUTAR INICIO</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">PAUSA</button>
+                  <button class="btn danger">RESET</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 3 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>3. Blue IBM</strong>
+            <span>IBM Plex Mono · consola azul</span>
+          </div>
+          <div class="mock t3">
+            <div class="mock-header">
+              <h2 class="mock-title">SYS/TIMER CONTROL</h2>
+              <span class="mock-status">STATE=READY</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">ROOM: DEMO</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Operaciones</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>420s</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>180s</span></button>
+                </div>
+                <button class="btn primary">START TIMER</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">PAUSE</button>
+                  <button class="btn danger">CLEAR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 4 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>4. Classic DOS</strong>
+            <span>Courier · blanco/negro MS-DOS</span>
+          </div>
+          <div class="mock t4">
+            <div class="mock-header">
+              <h2 class="mock-title">C:\TIMER\CONTROL.BAT</h2>
+              <span class="mock-status">ONLINE</span>
+            </div>
+            <p class="prompt">A:\> run control --room DEMO</p>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">READY</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Menu</p>
+                <div class="row">
+                  <button class="btn"><strong>1 DISCURSOS</strong><span>7 min</span></button>
+                  <button class="btn"><strong>2 TESTIMONIO</strong><span>3 min</span></button>
+                </div>
+                <button class="btn primary">3 INICIAR</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">4 PAUSAR</button>
+                  <button class="btn danger">5 REINICIAR</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 5 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>5. Cyber Pink</strong>
+            <span>Space Mono · rosa / cian</span>
+          </div>
+          <div class="mock t5">
+            <div class="mock-header">
+              <h2 class="mock-title">// CONTROL_NODE</h2>
+              <span class="mock-status">SYNC:TRUE</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">WAITING INPUT</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Quick load</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>7m</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>3m</span></button>
+                </div>
+                <button class="btn primary">LAUNCH</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">HOLD</button>
+                  <button class="btn danger">WIPE</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 6 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>6. Paper Teletype</strong>
+            <span>Courier · papel / tinta negra</span>
+          </div>
+          <div class="mock t6">
+            <div class="mock-header">
+              <h2 class="mock-title">TELETYPE CONTROL LOG</h2>
+              <span class="mock-status">LINE OPEN</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">STANDBY</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Commands</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>7 MIN</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>3 MIN</span></button>
+                </div>
+                <button class="btn primary">START</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">PAUSE</button>
+                  <button class="btn danger">RESET</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 7 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>7. Matrix Dark</strong>
+            <span>Fira Code · verde matrix</span>
+          </div>
+          <div class="mock t7">
+            <div class="mock-header">
+              <h2 class="mock-title">neo@timer:~# control</h2>
+              <span class="mock-status">alive</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">idle</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">scripts</p>
+                <div class="row">
+                  <button class="btn"><strong>discursos.sh</strong><span>7m</span></button>
+                  <button class="btn"><strong>testimonio.sh</strong><span>3m</span></button>
+                </div>
+                <button class="btn primary">./start</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">./pause</button>
+                  <button class="btn danger">./reset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 8 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>8. Pixel Arcade</strong>
+            <span>Press Start 2P · 8-bit</span>
+          </div>
+          <div class="mock t8">
+            <div class="mock-header">
+              <h2 class="mock-title">TIMER OS</h2>
+              <span class="mock-status">ONLINE</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">READY PLAYER</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">LOAD</p>
+                <div class="row">
+                  <button class="btn"><strong>DISC</strong><span>7M</span></button>
+                  <button class="btn"><strong>TEST</strong><span>3M</span></button>
+                </div>
+                <button class="btn primary">START</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">PAUSE</button>
+                  <button class="btn danger">RESET</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 9 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>9. Teal Unix</strong>
+            <span>Anonymous Pro · terminal teal</span>
+          </div>
+          <div class="mock t9">
+            <div class="mock-header">
+              <h2 class="mock-title">$ timerctl --ui</h2>
+              <span class="mock-status">connected</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">ready</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">presets</p>
+                <div class="row">
+                  <button class="btn"><strong>discursos</strong><span>7m</span></button>
+                  <button class="btn"><strong>testimonio</strong><span>3m</span></button>
+                </div>
+                <button class="btn primary">start</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">pause</button>
+                  <button class="btn danger">reset</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- 10 -->
+        <article class="theme">
+          <div class="theme-meta">
+            <strong>10. Red Alert Console</strong>
+            <span>Share Tech Mono · alerta suave</span>
+          </div>
+          <div class="mock t10">
+            <div class="mock-header">
+              <h2 class="mock-title">OPS / TIMER CONSOLE</h2>
+              <span class="mock-status">SECURE LINK</span>
+            </div>
+            <div class="mock-grid">
+              <div class="panel">
+                <div class="clock">07:00</div>
+                <p class="label">STANDBY MODE</p>
+              </div>
+              <div class="panel">
+                <p class="section-title">Quick actions</p>
+                <div class="row">
+                  <button class="btn"><strong>DISCURSOS</strong><span>7 MIN</span></button>
+                  <button class="btn"><strong>TESTIMONIO</strong><span>3 MIN</span></button>
+                </div>
+                <button class="btn primary">ENGAGE</button>
+                <div class="row" style="margin-top: 8px">
+                  <button class="btn">HOLD</button>
+                  <button class="btn danger">ABORT</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </main>
+  </body>
+</html>

@@ -71,6 +71,35 @@ test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async (
   assert.equal(controlJoin.ok, true);
   assert.equal(displayJoin.state.durationMs, 300_000);
 
+  const messageOnDisplay = nextState(
+    display,
+    (state) => state.message === "Por favor, concluya su discurso.",
+  );
+  control.emit("timer:message", "  Por favor,   concluya su discurso.  ");
+  const displayMessage = await messageOnDisplay;
+  assert.equal(displayMessage.message, "Por favor, concluya su discurso.");
+
+  const blankOnDisplay = nextState(display, (state) => state.isBlank);
+  control.emit("display:blank", true);
+  assert.equal((await blankOnDisplay).isBlank, true);
+
+  const brandingOnDisplay = nextState(
+    display,
+    (state) => state.branding?.wardName === "Barrio Sabaneta Centro",
+  );
+  control.emit("branding:update", {
+    wardName: "Barrio Sabaneta Centro",
+    finishThanks: "Agradecemos su participación.",
+    finishDone: "Su tiempo ha concluido.",
+  });
+  const branded = await brandingOnDisplay;
+  assert.equal(branded.branding.wardName, "Barrio Sabaneta Centro");
+  assert.match(branded.branding.churchName, /Santos de los Últimos Días/);
+
+  const visibleOnDisplay = nextState(display, (state) => !state.isBlank);
+  control.emit("display:blank", false);
+  await visibleOnDisplay;
+
   const configuredOnControl = nextState(control, (state) => state.durationMs === 3_000);
   const configuredOnDisplay = nextState(display, (state) => state.durationMs === 3_000);
   control.emit("timer:set", 3_000);
@@ -108,6 +137,7 @@ test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async (
   const rejoined = await joinRoom(reconnectedDisplay, "4321");
   assert.equal(rejoined.state.remainingMs, 3_000);
   assert.equal(rejoined.state.isRunning, false);
+  assert.equal(rejoined.state.message, "Por favor, concluya su discurso.");
 });
 
 test("marca el temporizador como terminado al llegar a cero", async () => {

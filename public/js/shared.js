@@ -82,13 +82,22 @@
 
         const finished = remaining <= 0;
         timerElement.classList.toggle("timer-finished", finished);
+        const terminal = document.body.classList.contains("control-page");
         labelElement.textContent = finished
-          ? "Tiempo terminado"
+          ? terminal
+            ? "STATUS: DONE"
+            : "Tiempo terminado"
           : state.isRunning
-            ? "En curso"
+            ? terminal
+              ? "STATUS: RUNNING"
+              : "En curso"
             : remaining < state.durationMs
-              ? "En pausa"
-              : "Listo para iniciar";
+              ? terminal
+                ? "STATUS: PAUSED"
+                : "En pausa"
+              : terminal
+                ? "STATUS: READY"
+                : "Listo para iniciar";
       }
 
       requestAnimationFrame(frame);
@@ -99,7 +108,14 @@
 
   function updateConnectionBadge(element, connected) {
     if (!element) return;
-    element.textContent = connected ? "Conectado" : "Desconectado";
+    const terminal = document.body.classList.contains("control-page");
+    element.textContent = connected
+      ? terminal
+        ? "ONLINE"
+        : "Conectado"
+      : terminal
+        ? "OFFLINE"
+        : "Desconectado";
     element.classList.toggle("status-online", connected);
     element.classList.toggle("status-offline", !connected);
   }

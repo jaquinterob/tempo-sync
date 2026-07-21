@@ -8,9 +8,23 @@ const DEFAULT_DURATION_MS = 5 * 60 * 1000;
 const MIN_DURATION_MS = 1_000;
 const MAX_DURATION_MS = 24 * 60 * 60 * 1000;
 
+const DEFAULT_BRANDING = {
+  churchName: "La Iglesia de Jesucristo de los Santos de los Últimos Días",
+  wardName: "Barrio Sabaneta",
+  finishThanks: "Agradecemos su discurso.",
+  finishDone: "Su tiempo ha terminado.",
+};
+
 function normalizePin(value) {
   const pin = String(value ?? "").trim().toUpperCase();
   return /^[A-Z0-9]{3,12}$/.test(pin) ? pin : null;
+}
+
+function cleanText(value, maxLength) {
+  return String(value ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
 }
 
 function createRoom() {
@@ -19,6 +33,10 @@ function createRoom() {
     remainingMs: DEFAULT_DURATION_MS,
     isRunning: false,
     endsAt: null,
+    message: "",
+    isBlank: false,
+    theme: "light",
+    branding: { ...DEFAULT_BRANDING },
     revision: 0,
   };
 }
@@ -37,6 +55,10 @@ function serializeRoom(room, now = Date.now()) {
     remainingMs: currentRemaining(room, now),
     isRunning: room.isRunning,
     endsAt: room.endsAt,
+    message: room.message,
+    isBlank: room.isBlank,
+    theme: room.theme === "dark" ? "dark" : "light",
+    branding: room.branding,
     revision: room.revision,
     serverNow: now,
   };
@@ -140,6 +162,54 @@ function createTimerServer() {
         room.endsAt = null;
       });
     });
+
+    socket.on("timer:message", (value) => {
+      const message = String(value ?? "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (message.length > 180) {
+        socket.emit("room:error", "El mensaje no puede superar 180 caracteres.");
+        return;
+      }
+
+      updateRoom(socket, (room) => {
+        room.message = message;
+      });
+    });
+
+    socket.on("display:blank", (value) => {
+      updateRoom(socket, (room) => {
+        room.isBlank = Boolean(value);
+      });
+    });
+
+    socket.on("branding:update", (payload = {}) => {
+      const wardName = cleanText(payload.wardName, 60);
+      const finishThanks = cleanText(payload.finishThanks, 80);
+      const finishDone = cleanText(payload.finishDone, 80);
+
+      if (!wardName || !finishThanks || !finishDone) {
+        socket.emit("room:error", "Completa barrio y mensajes finales.");
+        return;
+      }
+
+      updateRoom(socket, (room) => {
+        room.branding = {
+          churchName: DEFAULT_BRANDING.churchName,
+          wardName,
+          finishThanks,
+          finishDone,
+        };
+      });
+    });
+
+    socket.on("theme:update", (value) => {
+      const theme = value === "dark" ? "dark" : "light";
+      updateRoom(socket, (room) => {
+        room.theme = theme;
+      });
+    });
   });
 
   const completionInterval = setInterval(() => {
@@ -180,6 +250,8 @@ if (require.main === module) {
   httpServer.listen(port, "0.0.0.0", () => {
     console.log(`Control local: http://localhost:${port}/control.html`);
     console.log(`Pantalla local: http://localhost:${port}/display.html`);
+    console.log(`Diseños: http://localhost:${port}/designs.html`);
+    console.log(`Progreso: http://localhost:${port}/progress-ideas.html`);
     for (const address of getLocalAddresses()) {
       console.log(`Red Wi-Fi: http://${address}:${port}`);
     }

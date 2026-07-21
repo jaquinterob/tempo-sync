@@ -19,6 +19,7 @@ El servidor muestra en la terminal las direcciones disponibles. En este equipo, 
 
 - Control: `http://192.168.109.62:3000/control.html`
 - Pantalla: `http://192.168.109.62:3000/display.html`
+- Diseños: `http://192.168.109.62:3000/designs.html`
 
 La IP puede cambiar al reconectar el computador a la red. En ese caso, usa la nueva dirección `Red Wi-Fi` que imprime `npm start`.
 
@@ -47,3 +48,5 @@ Las pruebas automatizadas validan dos clientes simultáneos, configuración, ini
 - El estado vive en memoria y se pierde al reiniciar el servidor.
 - Solo funciona mientras el computador anfitrión ejecuta el servidor.
 - El firewall del sistema debe permitir conexiones entrantes para Node.js.
+- En HTTP, Safari no permite garantizar que la pantalla permanezca encendida. Desactiva temporalmente el bloqueo automático del iPhone.
+- Para ocultar las barras de Safari, usa **Compartir > Agregar a pantalla de inicio**.
