@@ -4,9 +4,9 @@ const os = require("node:os");
 const express = require("express");
 const { Server } = require("socket.io");
 
-const DEFAULT_DURATION_MS = 5 * 60 * 1000;
+const DEFAULT_DURATION_MS = 7 * 60 * 1000;
 const MIN_DURATION_MS = 1_000;
-const MAX_DURATION_MS = 24 * 60 * 60 * 1000;
+const MAX_DURATION_MS = 60 * 60 * 60 * 1000;
 
 const DEFAULT_BRANDING = {
   churchName: "La Iglesia de Jesucristo de los Santos de los Últimos Días",
@@ -250,12 +250,24 @@ if (require.main === module) {
   const { httpServer } = createTimerServer();
 
   httpServer.listen(port, "0.0.0.0", () => {
+    const addresses = getLocalAddresses();
+
     console.log(`Pulpit Timer`);
-    console.log(`Inicio: http://localhost:${port}/`);
-    console.log(`Control: http://localhost:${port}/control.html`);
-    console.log(`Pantalla: http://localhost:${port}/display.html`);
-    for (const address of getLocalAddresses()) {
-      console.log(`Red Wi-Fi: http://${address}:${port}`);
+    console.log(`Local`);
+    console.log(`  Inicio:   http://localhost:${port}/`);
+    console.log(`  Control:  http://localhost:${port}/control.html`);
+    console.log(`  Pantalla: http://localhost:${port}/display.html`);
+
+    if (addresses.length === 0) {
+      console.log(`Red Wi-Fi: (sin IP local detectada)`);
+      return;
+    }
+
+    for (const address of addresses) {
+      console.log(`Red Wi-Fi (${address})`);
+      console.log(`  Inicio:   http://${address}:${port}/`);
+      console.log(`  Control:  http://${address}:${port}/control.html`);
+      console.log(`  Pantalla: http://${address}:${port}/display.html`);
     }
   });
 }
