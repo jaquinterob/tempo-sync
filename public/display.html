@@ -8,9 +8,11 @@
     />
     <meta name="theme-color" content="#f7f4ef" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Temporizador" />
-    <title>Pantalla · Barrio Sabaneta</title>
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pulpit Timer" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Pulpit Timer · Barrio Sabaneta</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -21,30 +23,43 @@
   </head>
   <body class="display-page display-ward">
     <main class="display-shell">
-      <section id="join-panel" class="card join-card display-join">
-        <div>
-          <p class="eyebrow">Barrio Sabaneta</p>
+      <section id="join-panel" class="display-join">
+        <header class="display-join-brand">
+          <img
+            class="brand-mark brand-mark-display"
+            src="/assets/brand/church-logo.png"
+            alt=""
+            width="28"
+            height="50"
+          />
+          <div>
+            <p class="display-join-product">Pulpit Timer</p>
+            <strong class="display-join-ward">Barrio Sabaneta</strong>
+          </div>
+        </header>
+
+        <div class="display-join-body">
           <h1>Conectar a una sala</h1>
           <p>Escribe el PIN que aparece en el panel de control.</p>
+          <form id="join-form" class="join-form display-join-form">
+            <label for="pin">PIN de sala</label>
+            <div class="inline-fields">
+              <input
+                id="pin"
+                name="pin"
+                type="text"
+                minlength="3"
+                maxlength="12"
+                pattern="[A-Za-z0-9]+"
+                autocomplete="off"
+                placeholder="EJ. 1234"
+                required
+              />
+              <button type="submit" class="button button-primary">Mostrar</button>
+            </div>
+            <p id="join-error" class="form-error" role="alert"></p>
+          </form>
         </div>
-        <form id="join-form" class="join-form">
-          <label for="pin">PIN de sala</label>
-          <div class="inline-fields">
-            <input
-              id="pin"
-              name="pin"
-              type="text"
-              minlength="3"
-              maxlength="12"
-              pattern="[A-Za-z0-9]+"
-              autocomplete="off"
-              placeholder="EJ. 1234"
-              required
-            />
-            <button type="submit" class="button button-primary">Mostrar</button>
-          </div>
-          <p id="join-error" class="form-error" role="alert"></p>
-        </form>
       </section>
 
       <section id="display-panel" class="display-timer is-hidden">
@@ -118,6 +133,31 @@
         <span class="rotate-phone">↻</span>
         <strong>Gira tu celular</strong>
         <p>Esta pantalla está diseñada para usarse en horizontal.</p>
+      </aside>
+
+      <aside
+        id="ios-fullscreen-hint"
+        class="ios-fullscreen-hint is-hidden"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ios-fullscreen-title"
+        hidden
+      >
+        <div class="ios-fullscreen-card">
+          <h2 id="ios-fullscreen-title">Pantalla completa en iPhone</h2>
+          <p>
+            Safari en iPhone no permite pantalla completa desde la web. Para
+            ocultar las barras, agrega esta página a la pantalla de inicio:
+          </p>
+          <ol>
+            <li>Toca <strong>Compartir</strong> en Safari.</li>
+            <li>Elige <strong>Agregar a pantalla de inicio</strong>.</li>
+            <li>Ábrela desde el ícono nuevo (sin barras de Safari).</li>
+          </ol>
+          <button id="ios-fullscreen-dismiss" type="button" class="button-primary">
+            Entendido
+          </button>
+        </div>
       </aside>
     </main>
 

@@ -1,14 +1,14 @@
 {
-  "name": "temporizador-remoto-poc",
+  "name": "pulpit-timer",
   "version": "1.0.0",
-  "description": "PoC de un temporizador sincronizado dentro de una red local",
+  "description": "Pulpit Timer — temporizador sincronizado para reuniones sacramentales",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node --test"
   },
-  "keywords": [],
+  "keywords": ["pulpit-timer", "church", "timer"],
   "author": "",
   "license": "ISC",
   "dependencies": {

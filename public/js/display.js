@@ -21,12 +21,25 @@ const changeRoomButton = document.querySelector("#change-room-button");
 const displayRoomPin = document.querySelector("#display-room-pin");
 const displayChurchName = document.querySelector("#display-church-name");
 const displayWardName = document.querySelector("#display-ward-name");
+const displayJoinWard = document.querySelector(".display-join-ward");
 const finalThanks = document.querySelector("#final-thanks");
 const finalAlertText = document.querySelector("#final-alert-text");
-let wakeLock = null;
+const iosFullscreenHint = document.querySelector("#ios-fullscreen-hint");
+const iosFullscreenDismiss = document.querySelector("#ios-fullscreen-dismiss");
 let lastScreenMessage = "";
 let finishPhase = "idle";
 let finishTimers = [];
+
+function isStandaloneDisplay() {
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    window.navigator.standalone === true
+  );
+}
+
+function canUseNativeFullscreen() {
+  return Boolean(document.fullscreenEnabled || document.webkitFullscreenEnabled);
+}
 
 function clearFinishTimers() {
   for (const id of finishTimers) clearTimeout(id);
@@ -83,9 +96,10 @@ function applyBranding(branding) {
   if (!branding) return;
   displayChurchName.textContent = branding.churchName;
   displayWardName.textContent = branding.wardName;
+  if (displayJoinWard) displayJoinWard.textContent = branding.wardName;
   finalThanks.textContent = branding.finishThanks;
   finalAlertText.textContent = branding.finishDone;
-  document.title = `Pantalla · ${branding.wardName}`;
+  document.title = `Pulpit Timer · ${branding.wardName}`;
 }
 
 function applyTheme(theme) {
@@ -125,27 +139,32 @@ function showJoinPanel() {
   pinInput.select();
 }
 
-async function keepScreenAwake() {
-  if (!("wakeLock" in navigator) || document.visibilityState !== "visible" || wakeLock) {
-    return;
-  }
+function showIosFullscreenHint() {
+  if (!iosFullscreenHint) return;
+  iosFullscreenHint.hidden = false;
+  iosFullscreenHint.classList.remove("is-hidden");
+}
 
-  try {
-    wakeLock = await navigator.wakeLock.request("screen");
-    wakeLock.addEventListener("release", () => {
-      wakeLock = null;
-    });
-  } catch {
-    wakeLock = null;
-  }
+function hideIosFullscreenHint() {
+  if (!iosFullscreenHint) return;
+  iosFullscreenHint.hidden = true;
+  iosFullscreenHint.classList.add("is-hidden");
 }
 
 async function enterFullscreen() {
   if (document.fullscreenElement || document.webkitFullscreenElement) return;
 
+  if (!canUseNativeFullscreen()) {
+    showIosFullscreenHint();
+    return;
+  }
+
   const page = document.documentElement;
   const requestFullscreen = page.requestFullscreen || page.webkitRequestFullscreen;
-  if (!requestFullscreen) return;
+  if (!requestFullscreen) {
+    showIosFullscreenHint();
+    return;
+  }
 
   try {
     await requestFullscreen.call(page, { navigationUI: "hide" });
@@ -153,7 +172,7 @@ async function enterFullscreen() {
       await screen.orientation.lock("landscape");
     }
   } catch {
-    // Safari puede requerir abrir la página desde la pantalla de inicio.
+    showIosFullscreenHint();
   }
 }
 
@@ -174,6 +193,15 @@ async function toggleFullscreen() {
 }
 
 function updateFullscreenButton() {
+  if (isStandaloneDisplay()) {
+    fullscreenButton.classList.add("is-hidden");
+    fullscreenButton.hidden = true;
+    return;
+  }
+
+  fullscreenButton.hidden = false;
+  fullscreenButton.classList.remove("is-hidden");
+
   const isFullscreen = Boolean(
     document.fullscreenElement || document.webkitFullscreenElement,
   );
@@ -187,18 +215,17 @@ function updateFullscreenButton() {
 
 function activateDisplay() {
   void toggleFullscreen();
-  void keepScreenAwake();
 }
 
 fullscreenButton.addEventListener("click", activateDisplay);
 changeRoomButton.addEventListener("click", showJoinPanel);
+iosFullscreenDismiss?.addEventListener("click", hideIosFullscreenHint);
+iosFullscreenHint?.addEventListener("click", (event) => {
+  if (event.target === iosFullscreenHint) hideIosFullscreenHint();
+});
 document.addEventListener("fullscreenchange", updateFullscreenButton);
 document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    keepScreenAwake();
-  }
-});
+updateFullscreenButton();
 
 const client = createTimerClient({
   onState: (state) => {

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f4ef" />
+    <title>Pulpit Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+  </head>
+  <body class="entry-page">
+    <main class="entry-shell">
+      <img
+        class="entry-logo"
+        src="/assets/brand/church-logo.png"
+        alt=""
+        width="48"
+        height="86"
+      />
+      <p class="entry-product">Pulpit Timer</p>
+      <h1 class="entry-ward">Barrio Sabaneta</h1>
+      <p class="entry-lead">Crea una sala y controla el tiempo de los discursos.</p>
+
+      <button id="create-room" type="button" class="entry-button">
+        Crear sala
+      </button>
+
+      <p class="entry-hint">
+        Después copia el enlace y envíalo por WhatsApp a quien muestra la pantalla.
+      </p>
+    </main>
+
+    <script src="/js/shared.js"></script>
+    <script>
+      const { cleanPin } = window.TimerTools;
+
+      function createPin() {
+        return String(1000 + Math.floor(Math.random() * 9000));
+      }
+
+      document.querySelector("#create-room").addEventListener("click", () => {
+        const pin = cleanPin(createPin());
+        window.location.href = `/control.html?pin=${encodeURIComponent(pin)}`;
+      });
+    </script>
+  </body>
+</html>

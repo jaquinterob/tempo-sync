@@ -71,7 +71,9 @@ function createTimerServer() {
   const rooms = new Map();
 
   app.use(express.static(path.join(__dirname, "public")));
-  app.get("/", (_request, response) => response.redirect("/control.html"));
+  app.get("/", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "index.html"));
+  });
 
   function roomFor(pin) {
     if (!rooms.has(pin)) {
@@ -248,10 +250,10 @@ if (require.main === module) {
   const { httpServer } = createTimerServer();
 
   httpServer.listen(port, "0.0.0.0", () => {
-    console.log(`Control local: http://localhost:${port}/control.html`);
-    console.log(`Pantalla local: http://localhost:${port}/display.html`);
-    console.log(`Diseños: http://localhost:${port}/designs.html`);
-    console.log(`Progreso: http://localhost:${port}/progress-ideas.html`);
+    console.log(`Pulpit Timer`);
+    console.log(`Inicio: http://localhost:${port}/`);
+    console.log(`Control: http://localhost:${port}/control.html`);
+    console.log(`Pantalla: http://localhost:${port}/display.html`);
     for (const address of getLocalAddresses()) {
       console.log(`Red Wi-Fi: http://${address}:${port}`);
     }

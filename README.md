@@ -1,6 +1,6 @@
-# Temporizador remoto local
+# Pulpit Timer
 
-PoC para controlar un temporizador desde un dispositivo y mostrarlo en otro, siempre que ambos estén conectados a la misma red Wi‑Fi.
+Temporizador sincronizado para reuniones sacramentales: controla el tiempo desde un dispositivo y muéstralo en otro, en la misma red Wi‑Fi.
 
 ## Requisitos
 
@@ -15,23 +15,20 @@ npm install
 npm start
 ```
 
-El servidor muestra en la terminal las direcciones disponibles. En este equipo, al momento de la configuración, son:
+El servidor muestra en la terminal las direcciones disponibles:
 
-- Control: `http://192.168.109.62:3000/control.html`
-- Pantalla: `http://192.168.109.62:3000/display.html`
-- Diseños: `http://192.168.109.62:3000/designs.html`
+- Control: `http://localhost:3000/control.html`
+- Pantalla: `http://localhost:3000/display.html`
 
-La IP puede cambiar al reconectar el computador a la red. En ese caso, usa la nueva dirección `Red Wi-Fi` que imprime `npm start`.
+La IP de la red Wi‑Fi la imprime `npm start` (puede cambiar al reconectar).
 
 ## Uso
 
-1. Abre la URL de control en el primer dispositivo.
-2. Escribe un PIN de 3 a 12 letras o números, por ejemplo `SALA1`.
-3. Abre la URL de pantalla en el segundo dispositivo e ingresa el mismo PIN.
-4. Desde el control, configura minutos y segundos.
-5. Usa **Iniciar**, **Pausar** o **Reiniciar**. La pantalla se actualizará automáticamente.
-
-El enlace **Abrir pantalla del temporizador** añade el PIN a la URL para entrar directamente a la misma sala.
+1. Abre `http://TU-IP:3000/` en el celular del que controla.
+2. Toca **Crear sala** (entra al control con un PIN automático).
+3. Toca **Copiar enlace** (o **WhatsApp**) y envíalo a quien muestra la pantalla.
+4. Esa persona abre el enlace: entra directo a la sala, sin escribir el PIN.
+5. Desde el control: inicia, pausa o reinicia el tiempo.
 
 ## Desarrollo y pruebas
 
@@ -40,13 +37,11 @@ npm run dev
 npm test
 ```
 
-Las pruebas automatizadas validan dos clientes simultáneos, configuración, inicio, pausa, reinicio, reconexión y llegada a cero.
+## Notas
 
-## Límites de esta PoC
-
-- El PIN identifica la sala, pero no es una contraseña segura.
 - El estado vive en memoria y se pierde al reiniciar el servidor.
 - Solo funciona mientras el computador anfitrión ejecuta el servidor.
 - El firewall del sistema debe permitir conexiones entrantes para Node.js.
-- En HTTP, Safari no permite garantizar que la pantalla permanezca encendida. Desactiva temporalmente el bloqueo automático del iPhone.
-- Para ocultar las barras de Safari, usa **Compartir > Agregar a pantalla de inicio**.
+- En iPhone, Safari no puede impedir de forma fiable el bloqueo automático desde una web en la red local. Durante la reunión: **Ajustes → Pantalla y brillo → Bloqueo automático → Nunca** (y vuelve a dejarlo después).
+- En iPhone, Safari no admite pantalla completa desde la web. Usa **Compartir > Agregar a pantalla de inicio** y abre la app desde el ícono.
+- Para ocultar las barras de Safari en Android, el botón de pantalla completa suele bastar.

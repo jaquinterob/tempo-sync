@@ -124,9 +124,21 @@
     return cleanPin(new URLSearchParams(window.location.search).get("pin"));
   }
 
+  function createRoomPin() {
+    return String(1000 + Math.floor(Math.random() * 9000));
+  }
+
+  function displayShareUrl(pin) {
+    const clean = cleanPin(pin);
+    if (!clean) return "";
+    return `${window.location.origin}/display.html?pin=${encodeURIComponent(clean)}`;
+  }
+
   window.TimerTools = {
     cleanPin,
+    createRoomPin,
     createTimerClient,
+    displayShareUrl,
     formatTime,
     pinFromUrl,
     renderTimer,

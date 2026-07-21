@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f4ef" />
-    <title>Control · Temporizador remoto</title>
+    <title>Control · Pulpit Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -26,7 +26,7 @@
           />
           <div>
             <h1 id="control-ward-title">Barrio Sabaneta</h1>
-            <p class="brand-sub">&gt; PANEL_CONTROL.exe // reunión sacramental</p>
+            <p class="brand-sub">&gt; PULPIT_TIMER.exe // reunión sacramental</p>
           </div>
         </div>
         <span id="connection-status" class="status-pill status-offline">OFFLINE</span>
@@ -34,11 +34,11 @@
 
       <section id="join-panel" class="card join-card">
         <div>
-          <h2>SESSION / JOIN</h2>
-          <p>root@timer:~$ usa el mismo PIN en control y pantalla</p>
+          <h2>Entrar a una sala</h2>
+          <p>Si ya tienes un PIN, escríbelo aquí. Si no, vuelve al inicio y crea una sala.</p>
         </div>
         <form id="join-form" class="join-form">
-          <label for="pin">PIN_SALA</label>
+          <label for="pin">PIN</label>
           <div class="inline-fields">
             <input
               id="pin"
@@ -48,12 +48,15 @@
               maxlength="12"
               pattern="[A-Za-z0-9]+"
               autocomplete="off"
-              placeholder="EJ. 1234"
+              placeholder="EJ. 1505"
               required
             />
-            <button type="submit" class="button button-primary">[ CONECTAR ]</button>
+            <button type="submit" class="button button-primary">[ ENTRAR ]</button>
           </div>
           <p id="join-error" class="form-error" role="alert"></p>
+          <p class="join-home-link">
+            <a href="/">← Crear sala nueva</a>
+          </p>
         </form>
       </section>
 
@@ -134,9 +137,33 @@
             </form>
           </div>
 
-          <a id="display-link" class="display-link" href="/display.html" target="_blank" rel="noreferrer">
-            &gt; abrir display.html
-          </a>
+          <div class="share-bar">
+            <span class="share-pin-chip">PIN <strong id="share-pin">—</strong></span>
+            <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
+              Copiar
+            </button>
+            <a
+              id="whatsapp-share"
+              class="share-action"
+              href="#"
+              target="_blank"
+              rel="noreferrer"
+              title="Enviar por WhatsApp"
+            >
+              WhatsApp
+            </a>
+            <a
+              id="display-link"
+              class="share-action"
+              href="/display.html"
+              target="_blank"
+              rel="noreferrer"
+              title="Abrir pantalla"
+            >
+              Abrir
+            </a>
+            <span id="share-status" class="share-status" aria-live="polite"></span>
+          </div>
         </article>
 
         <article class="card brand-config-card">

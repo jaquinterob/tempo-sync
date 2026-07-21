@@ -1,6 +1,7 @@
 const {
   cleanPin,
   createTimerClient,
+  displayShareUrl,
   pinFromUrl,
   renderTimer,
   updateConnectionBadge,
@@ -30,6 +31,10 @@ const screenMessageInput = document.querySelector("#screen-message");
 const clearMessageButton = document.querySelector("#clear-message-button");
 const displayLink = document.querySelector("#display-link");
 const changeRoomButton = document.querySelector("#change-room-button");
+const copyDisplayLinkButton = document.querySelector("#copy-display-link");
+const whatsappShare = document.querySelector("#whatsapp-share");
+const sharePin = document.querySelector("#share-pin");
+const shareStatus = document.querySelector("#share-status");
 const brandingForm = document.querySelector("#branding-form");
 const wardNameInput = document.querySelector("#ward-name");
 const finishThanksInput = document.querySelector("#finish-thanks");
@@ -75,10 +80,32 @@ function applyBranding(branding) {
   }
 }
 
+function updateShareLinks(pin) {
+  const url = displayShareUrl(pin);
+  sharePin.textContent = pin;
+  displayLink.href = url;
+  const message = `Abre la pantalla de Pulpit Timer:\n${url}`;
+  whatsappShare.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+}
+
+async function copyDisplayLink() {
+  const pin = client.getPin();
+  const url = displayShareUrl(pin);
+  if (!url) return;
+
+  try {
+    await navigator.clipboard.writeText(url);
+    shareStatus.textContent = "Enlace copiado. Pégalo en WhatsApp o SMS.";
+  } catch {
+    shareStatus.textContent = url;
+  }
+}
+
 function showJoinPanel() {
   joinError.textContent = "";
   timerPanel.classList.add("is-hidden");
   joinPanel.classList.remove("is-hidden");
+  shareStatus.textContent = "";
   history.replaceState(null, "", window.location.pathname);
   pinInput.focus();
   pinInput.select();
@@ -159,7 +186,8 @@ async function enterRoom(rawPin) {
   roomPin.textContent = result.pin;
   joinPanel.classList.add("is-hidden");
   timerPanel.classList.remove("is-hidden");
-  displayLink.href = `/display.html?pin=${encodeURIComponent(result.pin)}`;
+  updateShareLinks(result.pin);
+  shareStatus.textContent = "";
   history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
 }
 
@@ -173,6 +201,7 @@ joinForm.addEventListener("submit", (event) => {
 });
 
 changeRoomButton.addEventListener("click", showJoinPanel);
+copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
 
 timeForm.addEventListener("submit", (event) => {
   event.preventDefault();
