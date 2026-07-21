@@ -69,7 +69,7 @@ test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async (
   const controlJoin = await joinRoom(control, "4321");
   const displayJoin = await joinRoom(display, "4321");
   assert.equal(controlJoin.ok, true);
-  assert.equal(displayJoin.state.durationMs, 300_000);
+  assert.equal(displayJoin.state.durationMs, 420_000);
 
   const messageOnDisplay = nextState(
     display,

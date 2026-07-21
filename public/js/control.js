@@ -53,12 +53,24 @@ function syncConnectionBadge(connected) {
   updateConnectionBadge(connectionStatusInline, connected);
 }
 
+const THEME_ICON_SUN =
+  '<circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />' +
+  '<path d="M12 5v1.2M12 17.8V19M5 12h1.2M17.8 12H19M7.1 7.1l.85.85M16.05 16.05l.85.85M16.9 7.1l-.85.85M7.95 16.05l-.85.85" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />';
+const THEME_ICON_MOON =
+  '<path d="M15.8 13.4A5.8 5.8 0 0 1 10.2 6.6 6.2 6.2 0 1 0 15.8 13.4z" fill="none" stroke="currentColor" stroke-width="1.6" />';
+
 function applyTheme(theme) {
   currentTheme = theme === "dark" ? "dark" : "light";
   const isDark = currentTheme === "dark";
-  themeToggle.textContent = isDark ? "TEMA: OSCURO" : "TEMA: CLARO";
+  const label = themeToggle.querySelector(".theme-toggle-label");
+  if (label) label.textContent = isDark ? "DISPLAY: Oscuro" : "DISPLAY: Claro";
+  const themeIcon = themeToggle.querySelector("#theme-icon");
+  if (themeIcon) {
+    themeIcon.innerHTML = isDark ? THEME_ICON_MOON : THEME_ICON_SUN;
+  }
   themeToggle.classList.toggle("is-active", isDark);
   themeToggle.setAttribute("aria-pressed", String(isDark));
+  themeToggle.title = isDark ? "DISPLAY: Oscuro" : "DISPLAY: Claro";
 }
 
 function applyBranding(branding) {

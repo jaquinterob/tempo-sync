@@ -15,12 +15,18 @@ npm install
 npm start
 ```
 
-El servidor muestra en la terminal las direcciones disponibles:
+El servidor muestra en la terminal las direcciones **local** y **red Wi‑Fi**:
 
-- Control: `http://localhost:3000/control.html`
-- Pantalla: `http://localhost:3000/display.html`
+- Inicio: `http://TU-IP:3000/`
+- Control: `http://TU-IP:3000/control.html`
+- Pantalla: `http://TU-IP:3000/display.html`
 
 La IP de la red Wi‑Fi la imprime `npm start` (puede cambiar al reconectar).
+
+Previews de diseño (solo locales):
+
+- Display: `http://TU-IP:3000/designs.html`
+- Temas del control: `http://TU-IP:3000/_preview-control-themes.html`
 
 ## Uso
 

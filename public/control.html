@@ -51,7 +51,7 @@
               placeholder="EJ. 1505"
               required
             />
-            <button type="submit" class="button button-primary">[ ENTRAR ]</button>
+            <button type="submit" class="button button-primary">Entrar</button>
           </div>
           <p id="join-error" class="form-error" role="alert"></p>
           <p class="join-home-link">
@@ -68,12 +68,12 @@
             <span class="matrix-room-hint">cambiar</span>
           </button>
           <div class="matrix-status-timer">
-            <p id="timer" class="timer timer-compact" aria-live="polite">05:00</p>
-            <p id="timer-label" class="timer-label">STATUS: READY</p>
+            <p id="timer" class="timer timer-compact" aria-live="polite">07:00</p>
+            <p id="timer-label" class="timer-label">Listo</p>
           </div>
           <div class="matrix-status-cell matrix-status-right">
             <span class="matrix-kicker">LINK</span>
-            <strong id="connection-status-inline" class="status-inline status-offline">OFFLINE</strong>
+            <strong id="connection-status-inline" class="status-inline status-offline">Desconectado</strong>
           </div>
           <div class="time-meter time-meter-control" aria-hidden="true" title="Tiempo restante">
             <div id="time-meter-fill" class="time-meter-fill"></div>
@@ -82,19 +82,11 @@
 
         <article class="card matrix-board">
           <div class="matrix-grid">
-            <button
-              type="button"
-              class="preset-button"
-              data-duration-ms="420000"
-            >
+            <button type="button" class="preset-button" data-duration-ms="420000">
               <strong>DISCURSOS</strong>
               <span>7 MIN</span>
             </button>
-            <button
-              type="button"
-              class="preset-button"
-              data-duration-ms="180000"
-            >
+            <button type="button" class="preset-button" data-duration-ms="180000">
               <strong>TESTIMONIO</strong>
               <span>3 MIN</span>
             </button>
@@ -110,7 +102,7 @@
             <form id="time-form" class="matrix-time-form">
               <label>
                 <span class="visually-hidden">MIN</span>
-                <input id="minutes" type="number" min="0" max="1440" value="5" inputmode="numeric" />
+                <input id="minutes" type="number" min="0" max="1440" value="7" inputmode="numeric" />
               </label>
               <span class="time-separator">:</span>
               <label>
@@ -138,31 +130,57 @@
           </div>
 
           <div class="share-bar">
-            <span class="share-pin-chip">PIN <strong id="share-pin">—</strong></span>
-            <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
-              Copiar
-            </button>
-            <a
-              id="whatsapp-share"
-              class="share-action"
-              href="#"
-              target="_blank"
-              rel="noreferrer"
-              title="Enviar por WhatsApp"
-            >
-              WhatsApp
-            </a>
-            <a
-              id="display-link"
-              class="share-action"
-              href="/display.html"
-              target="_blank"
-              rel="noreferrer"
-              title="Abrir pantalla"
-            >
-              Abrir
-            </a>
-            <span id="share-status" class="share-status" aria-live="polite"></span>
+            <div class="share-row">
+              <span class="share-pin-chip">
+                <span class="share-kicker">PIN</span>
+                <strong id="share-pin">—</strong>
+              </span>
+              <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="8" y="8" width="11" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.7" />
+                  <path d="M6 16H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" fill="none" stroke="currentColor" stroke-width="1.7" />
+                </svg>
+                <span>Copiar</span>
+              </button>
+              <a
+                id="whatsapp-share"
+                class="share-action"
+                href="#"
+                target="_blank"
+                rel="noreferrer"
+                title="Enviar por WhatsApp"
+              >
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M5 19l1.2-3.5A7.5 7.5 0 1 1 19.5 12 7.5 7.5 0 0 1 8.2 17.8L5 19z"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.7"
+                  />
+                  <path
+                    d="M9.2 10.2c.3-.5.5-.5.8-.5h.6c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .4-.1.6l-.4.5c-.1.1-.1.3 0 .4.5.8 1.3 1.5 2.1 1.9.2.1.3.1.5 0l.7-.4c.2-.1.4-.1.5.1l1.2 1.4c.2.2.1.5-.1.7-.4.3-1 .6-1.6.6-2.3 0-5.1-2.5-5.8-4.7-.2-.7-.1-1.4.2-1.9z"
+                    fill="currentColor"
+                    opacity="0.9"
+                  />
+                </svg>
+                <span>WhatsApp</span>
+              </a>
+              <a
+                id="display-link"
+                class="share-action"
+                href="/display.html"
+                target="_blank"
+                rel="noreferrer"
+                title="Abrir pantalla"
+              >
+                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
+                  <path d="M9 20h6M12 17v3" fill="none" stroke="currentColor" stroke-width="1.7" />
+                </svg>
+                <span>Abrir</span>
+              </a>
+            </div>
+            <p id="share-status" class="share-status" aria-live="polite"></p>
           </div>
         </article>
 
@@ -175,9 +193,25 @@
                 type="button"
                 class="button button-secondary theme-toggle"
                 aria-pressed="false"
-                title="Cambiar tema del display"
+                aria-label="Tema display"
+                title="Tema display"
               >
-                TEMA: CLARO
+                <span class="theme-toggle-label">DISPLAY: Claro</span>
+                <svg
+                  id="theme-icon"
+                  class="ui-icon"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />
+                  <path
+                    d="M12 5v1.2M12 17.8V19M5 12h1.2M17.8 12H19M7.1 7.1l.85.85M16.05 16.05l.85.85M16.9 7.1l-.85.85M7.95 16.05l-.85.85"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
+                </svg>
               </button>
               <p id="branding-status" class="branding-status" aria-live="polite"></p>
             </div>

@@ -1763,31 +1763,74 @@ input:focus {
 
 .control-page .brand-config-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 6px;
+  min-height: 28px;
 }
 
 .control-page .brand-config-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 4px;
+  min-width: 0;
 }
 
 .control-page .theme-toggle {
-  min-height: 32px;
-  padding: 4px 10px;
-  font-size: 0.85rem;
-  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-color: #c4c0b8;
+  background: transparent;
+  color: #57534e;
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  text-transform: none;
   white-space: nowrap;
+  box-shadow: none;
+}
+
+.control-page .theme-toggle .ui-icon {
+  width: 11px;
+  height: 11px;
+  opacity: 0.85;
+}
+
+.control-page .theme-toggle-label {
+  line-height: 1;
+}
+
+.control-page .brand-config-actions .branding-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.control-page .ui-icon {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  display: block;
+}
+
+.control-page .share-action .ui-icon {
+  width: 13px;
+  height: 13px;
 }
 
 .control-page .theme-toggle.is-active {
-  background: rgba(17, 24, 39, 0.08);
-  border-color: #57534e;
+  background: transparent;
+  border-color: #a8a29e;
+  color: #44403c;
 }
 
 .control-page .branding-form {
@@ -1919,49 +1962,65 @@ input:focus {
 .control-page .button,
 .control-page .preset-button,
 .control-page .blank-screen-button {
-  border: 1px solid #9ca3af;
+  border: 1px solid #6b7280;
   border-radius: 0;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.72);
   color: #111827;
   font-weight: 400;
   text-shadow: none;
   filter: none;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
 .control-page .button:hover,
 .control-page .preset-button:hover,
 .control-page .blank-screen-button:hover {
-  background: rgba(17, 24, 39, 0.06);
+  background: rgba(17, 24, 39, 0.1);
+  border-color: #4b5563;
   filter: none;
 }
 
 .control-page .button-primary,
 .control-page .button-start {
-  background: rgba(17, 24, 39, 0.06);
-  color: #111827;
-  border-color: #6b7280;
+  background: #57534e;
+  color: #f7f4ef;
+  border-color: #44403c;
+  box-shadow: none;
+}
+
+.control-page .button-primary:hover,
+.control-page .button-start:hover {
+  background: #44403c;
+  border-color: #292524;
 }
 
 .control-page .button-secondary,
 .control-page .blank-screen-button {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.85);
+  border-color: #78716c;
 }
 
 .control-page .button-danger {
-  background: transparent;
-  border-style: dashed;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #9a5348;
+  border-style: solid;
+  color: #9a5348;
+}
+
+.control-page .button-danger:hover {
+  background: rgba(154, 83, 72, 0.1);
 }
 
 .control-page .preset-button.is-active,
 .control-page .blank-screen-button.is-active {
-  background: rgba(17, 24, 39, 0.05);
-  border-color: #6b7280;
-  box-shadow: none;
+  background: rgba(87, 83, 78, 0.14);
+  border-color: #44403c;
+  box-shadow: inset 0 0 0 1px #44403c;
 }
 
 .control-page .preset-button strong {
   color: #111827;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 400;
 }
 
@@ -2431,55 +2490,81 @@ input:focus {
   line-height: 1.4;
 }
 
-/* Share bar in control — ultra compact */
+/* Share row — PIN + 3 botones pequeños en una línea */
 .control-page .share-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 8px;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid #d6d3d1;
+  border-top: 1px solid #9ca3af;
+}
+
+.control-page .share-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  min-height: 0;
 }
 
 .control-page .share-pin-chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 0;
   margin-right: 2px;
-  color: #78716c;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111827;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.control-page .share-kicker {
+  color: #6b7280;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
 }
 
 .control-page .share-pin-chip strong {
-  color: #44403c;
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0.04em;
 }
 
 .control-page .share-action {
-  border: 0;
-  border-bottom: 1px solid #a8a29e;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  gap: 5px;
+  min-height: 28px;
+  margin: 0;
+  border: 1px solid #6b7280;
   border-radius: 0;
-  padding: 0 0 1px;
-  background: transparent;
-  color: #57534e;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: #111827;
   font: inherit;
-  font-size: 0.82rem;
-  letter-spacing: 0.03em;
-  line-height: 1.2;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-decoration: none;
+  white-space: nowrap;
   cursor: pointer;
+  box-shadow: none;
 }
 
 .control-page .share-action:hover {
-  color: #292524;
-  border-bottom-color: #57534e;
+  background: rgba(17, 24, 39, 0.1);
+  border-color: #4b5563;
 }
 
 .control-page .share-status {
-  flex: 1 1 auto;
+  margin: 2px 0 0;
   min-height: 0;
-  margin: 0;
-  color: #a8a29e;
-  font-size: 0.72rem;
-  line-height: 1.2;
+  color: #6b7280;
+  font-size: 0.8rem;
+  line-height: 1.15;
 }
 
 .control-page .share-status:empty {
