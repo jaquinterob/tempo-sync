@@ -1893,6 +1893,21 @@ input:focus {
   display: none;
 }
 
+.control-page .control-credit {
+  margin: 10px 0 0;
+  padding: 0 2px;
+  color: #a8a29e;
+  font-family: "VT323", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  line-height: 1.3;
+}
+.control-page .control-credit strong {
+  color: #78716c;
+  font-weight: 400;
+}
+
 .control-page .eyebrow {
   color: #6b7280;
   font-size: 1rem;
