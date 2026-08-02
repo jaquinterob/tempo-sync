@@ -166,7 +166,15 @@ function createTimerServer() {
     response.redirect(301, "/display");
   });
 
-  app.use(express.static(path.join(__dirname, "public")));
+  app.use(
+    express.static(path.join(__dirname, "public"), {
+      setHeaders: (response, filePath) => {
+        if (filePath.endsWith(".css") || filePath.endsWith(".js")) {
+          response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        }
+      },
+    }),
+  );
   app.get("/", (_request, response) => {
     response.sendFile(path.join(__dirname, "public", "index.html"));
   });
