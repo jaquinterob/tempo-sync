@@ -2600,5 +2600,5 @@ input:focus {
 }
 
 .display-page.display-ward.display-dark.screen-blanked {
-  background: #171614;
+  background: #171614 !important;
 }
