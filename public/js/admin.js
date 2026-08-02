@@ -14,6 +14,7 @@
   const connectionsBody = document.querySelector("#connections-body");
   const statTotal = document.querySelector("#stat-total");
   const statRooms = document.querySelector("#stat-rooms");
+  const adminStatus = document.querySelector("#admin-status");
 
   let token = localStorage.getItem(STORAGE_KEY);
 
@@ -55,11 +56,17 @@
   function showLogin() {
     loginCard.style.display = "";
     adminPanel.classList.remove("visible");
+    adminStatus.textContent = "LOCKED";
+    adminStatus.classList.add("status-offline");
+    adminStatus.classList.remove("status-online");
   }
 
   function showPanel() {
     loginCard.style.display = "none";
     adminPanel.classList.add("visible");
+    adminStatus.textContent = "ONLINE";
+    adminStatus.classList.add("status-online");
+    adminStatus.classList.remove("status-offline");
     loadConnections();
   }
 

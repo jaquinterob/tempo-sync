@@ -1,234 +1,317 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#070b14" />
-  <title>Pulpit Timer · Admin</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <style>
-    .admin-login {
-      max-width: 380px;
-      margin: 0 auto;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f4ef" />
+    <title>Admin · Pulpit Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .admin-shell {
+        width: min(960px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 56px;
+      }
 
-    .admin-login .card-stack {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
+      .admin-panel {
+        display: none;
+      }
 
-    .admin-login label {
-      margin-top: 6px;
-      color: #94a3b8;
-      font-size: 0.82rem;
-      font-weight: 700;
-    }
+      .admin-panel.visible {
+        display: block;
+      }
 
-    .admin-panel {
-      display: none;
-    }
+      .admin-login-card {
+        max-width: 400px;
+        margin: 32px auto 0;
+        padding: 24px;
+      }
 
-    .admin-panel.visible {
-      display: block;
-    }
+      .admin-login-card h2 {
+        margin: 0 0 16px;
+      }
 
-    .admin-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
+      .admin-login-form {
+        display: grid;
+        gap: 12px;
+      }
 
-    .admin-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
+      .admin-login-form label {
+        color: #6b7280;
+        font-size: 0.8rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
 
-    .stat-card {
-      padding: 16px 20px;
-      background: rgba(15, 23, 42, 0.55);
-      border: 1px solid rgba(148, 163, 184, 0.18);
-      border-radius: 16px;
-    }
+      .admin-login-form input {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid #9ca3af;
+        border-radius: 0;
+        background: #fbfaf7;
+        color: #111827;
+        font-family: "VT323", monospace;
+        font-size: 1.1rem;
+        font-weight: 400;
+        padding: 10px 12px;
+        letter-spacing: 0.04em;
+      }
 
-    .stat-value {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
+      .admin-login-form input:focus {
+        border-color: #4b5563;
+        box-shadow: 0 0 0 1px #4b5563;
+      }
 
-    .stat-label {
-      margin-top: 4px;
-      color: #94a3b8;
-      font-size: 0.78rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
+      .admin-error {
+        min-height: 18px;
+        margin: 0;
+        color: #b91c1c;
+        font-size: 0.95rem;
+      }
 
-    .connections-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.9rem;
-    }
+      .admin-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 20px 0 16px;
+      }
 
-    .connections-table th,
-    .connections-table td {
-      padding: 10px 12px;
-      text-align: left;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
-      vertical-align: middle;
-    }
+      .admin-toolbar .eyebrow {
+        margin: 0;
+      }
 
-    .connections-table th {
-      color: #94a3b8;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      position: sticky;
-      top: 0;
-      background: #070b14;
-    }
+      .admin-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        margin-bottom: 16px;
+      }
 
-    .pin-badge {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 999px;
-      background: rgba(59, 130, 246, 0.18);
-      color: #93c5fd;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-weight: 700;
-      font-size: 0.8rem;
-    }
+      .admin-stat {
+        padding: 14px 18px;
+        border: 1px solid #9ca3af;
+        background: rgba(255, 255, 255, 0.55);
+      }
 
-    .pin-badge.none {
-      background: rgba(148, 163, 184, 0.12);
-      color: #64748b;
-    }
+      .admin-stat strong {
+        display: block;
+        color: #111827;
+        font-size: 2rem;
+        font-weight: 400;
+        line-height: 1;
+      }
 
-    .kick-button {
-      padding: 6px 14px;
-      border: 1px solid rgba(239, 68, 68, 0.5);
-      border-radius: 10px;
-      background: rgba(239, 68, 68, 0.12);
-      color: #fca5a5;
-      font-weight: 700;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
+      .admin-stat span {
+        display: block;
+        margin-top: 6px;
+        color: #6b7280;
+        font-size: 0.72rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
 
-    .kick-button:hover {
-      background: rgba(239, 68, 68, 0.25);
-    }
+      .connections-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
 
-    .kick-button:disabled {
-      opacity: 0.5;
-      cursor: default;
-    }
+      .connections-table th,
+      .connections-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid rgba(107, 114, 128, 0.35);
+        vertical-align: middle;
+      }
 
-    .empty-state {
-      padding: 32px;
-      text-align: center;
-      color: #64748b;
-    }
+      .connections-table th {
+        color: #6b7280;
+        font-size: 0.7rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-weight: 400;
+      }
 
-    .mono {
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.78rem;
-      color: #94a3b8;
-    }
+      .connections-table td {
+        color: #111827;
+      }
 
-    .error-text {
-      color: #fca5a5;
-      min-height: 20px;
-      font-size: 0.85rem;
-    }
+      .pin-badge {
+        display: inline-block;
+        padding: 1px 10px;
+        border: 1px solid #4b5563;
+        color: #111827;
+        font-family: "VT323", monospace;
+        font-size: 0.95rem;
+        letter-spacing: 0.06em;
+      }
 
-    .success-text {
-      color: #6ee7b7;
-      font-size: 0.85rem;
-    }
+      .pin-badge.none {
+        border-style: dashed;
+        color: #6b7280;
+      }
 
-    .loading-row {
-      color: #64748b;
-      font-size: 0.85rem;
-      text-align: center;
-      padding: 20px;
-    }
+      .mono {
+        font-family: "VT323", monospace;
+        font-size: 0.95rem;
+        color: #4b5563;
+      }
 
-    .connection-id {
-      max-width: 180px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  </style>
-</head>
-<body>
-  <div class="app-shell">
-    <div class="page-header">
-      <div>
-        <p class="eyebrow">Super Admin</p>
-        <h1>Panel de control</h1>
-      </div>
-    </div>
+      .connection-id {
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
 
-    <div class="admin-login card" id="login-card">
-      <h2>Iniciar sesión</h2>
-      <form id="login-form" class="card-stack">
-        <label for="admin-user">Usuario</label>
-        <input id="admin-user" type="text" autocomplete="username" placeholder="Usuario" required />
-        <label for="admin-password">Contraseña</label>
-        <input id="admin-password" type="password" autocomplete="current-password" placeholder="Contraseña" required />
-        <p class="error-text" id="login-error"></p>
-        <button class="button button-primary" type="submit">Entrar</button>
-      </form>
-    </div>
+      .kick-button {
+        padding: 4px 14px;
+        border: 1px solid #9a5348;
+        border-radius: 0;
+        background: rgba(255, 255, 255, 0.85);
+        color: #9a5348;
+        font-family: "VT323", monospace;
+        font-size: 0.95rem;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+      }
 
-    <div class="admin-panel" id="admin-panel">
-      <div class="admin-toolbar">
-        <div class="eyebrow">Conexiones del socket</div>
-        <button class="button button-secondary" id="refresh-button" type="button">Actualizar</button>
-      </div>
+      .kick-button:hover {
+        background: rgba(154, 83, 72, 0.12);
+      }
 
-      <div class="admin-stats">
-        <div class="stat-card">
-          <div class="stat-value" id="stat-total">0</div>
-          <div class="stat-label">Conexiones activas</div>
+      .kick-button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+
+      .empty-state {
+        padding: 28px;
+        text-align: center;
+        color: #6b7280;
+        font-family: "VT323", monospace;
+        font-size: 1rem;
+      }
+
+      .loading-row {
+        padding: 20px;
+        text-align: center;
+        color: #6b7280;
+        font-family: "VT323", monospace;
+        font-size: 1rem;
+      }
+
+      .admin-footer {
+        margin: 12px 0 0;
+        padding: 0 2px;
+        color: #a8a29e;
+        font-family: "VT323", monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.04em;
+        text-align: center;
+        line-height: 1.3;
+      }
+
+      .admin-footer strong {
+        color: #78716c;
+        font-weight: 400;
+      }
+    </style>
+  </head>
+  <body class="control-page">
+    <main class="admin-shell">
+      <header class="page-header brand-header">
+        <div class="brand-lockup">
+          <img
+            class="brand-mark brand-mark-church"
+            src="/assets/brand/church-logo.png"
+            alt="La Iglesia de Jesucristo de los Santos de los Últimos Días"
+            width="40"
+            height="72"
+          />
+          <div>
+            <p class="eyebrow">&gt; SUPER_ADMIN // conexiones del socket</p>
+            <h1>Panel de control</h1>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value" id="stat-rooms">0</div>
-          <div class="stat-label">Sesiones (PIN)</div>
+        <span id="admin-status" class="status-pill status-offline">LOCKED</span>
+      </header>
+
+      <section id="login-card" class="card admin-login-card">
+        <h2>ACCESO</h2>
+        <form id="login-form" class="admin-login-form">
+          <label for="admin-user">USUARIO</label>
+          <input id="admin-user" type="text" autocomplete="username" placeholder="SA" required />
+          <label for="admin-password">CONTRASEÑA</label>
+          <input
+            id="admin-password"
+            type="password"
+            autocomplete="current-password"
+            placeholder="••••••"
+            required
+          />
+          <p class="admin-error" id="login-error" role="alert"></p>
+          <button type="submit" class="button button-primary">[ INGRESAR ]</button>
+        </form>
+      </section>
+
+      <section id="admin-panel" class="admin-panel">
+        <div class="admin-toolbar">
+          <p class="eyebrow">CONEXIONES_ACTIVAS</p>
+          <button type="button" class="button button-secondary" id="refresh-button">
+            [ ACTUALIZAR ]
+          </button>
         </div>
-      </div>
 
-      <div class="card" style="overflow: auto; max-height: 60vh;">
-        <table class="connections-table">
-          <thead>
-            <tr>
-              <th>PIN</th>
-              <th>IP</th>
-              <th>Conectado hace</th>
-              <th>Socket ID</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="connections-body">
-            <tr>
-              <td colspan="5" class="loading-row">Cargando conexiones…</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <strong id="stat-total">0</strong>
+            <span>Conexiones</span>
+          </div>
+          <div class="admin-stat">
+            <strong id="stat-rooms">0</strong>
+            <span>Salas (PIN)</span>
+          </div>
+        </div>
 
-      <p class="error-text" id="panel-error"></p>
-      <button class="button button-secondary" id="logout-button" type="button" style="margin-top: 16px;">Cerrar sesión</button>
-    </div>
-  </div>
+        <div class="card" style="overflow: auto; max-height: 58vh; padding: 0;">
+          <table class="connections-table">
+            <thead>
+              <tr>
+                <th>PIN</th>
+                <th>IP</th>
+                <th>Conectado</th>
+                <th>Socket ID</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="connections-body">
+              <tr>
+                <td colspan="5" class="loading-row">…CARGANDO…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-  <script src="/js/admin.js"></script>
-</body>
+        <p class="admin-error" id="panel-error" role="alert"></p>
+
+        <div class="admin-toolbar" style="margin-top: 16px;">
+          <button type="button" class="button button-secondary" id="logout-button">
+            [ CERRAR SESIÓN ]
+          </button>
+        </div>
+      </section>
+
+      <p class="admin-footer">Developer: <strong>JohnQ</strong> · All rights reserved</p>
+    </main>
+
+    <script src="/js/admin.js"></script>
+  </body>
 </html>
