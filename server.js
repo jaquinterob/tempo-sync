@@ -1,8 +1,13 @@
 const path = require("node:path");
 const http = require("node:http");
+const crypto = require("node:crypto");
 const os = require("node:os");
 const express = require("express");
 const { Server } = require("socket.io");
+
+const ADMIN_USER = process.env.ADMIN_USER || "SA";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "qwe123";
+const ADMIN_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_DURATION_MS = 7 * 60 * 1000;
 const MIN_DURATION_MS = 1_000;
@@ -69,6 +74,89 @@ function createTimerServer() {
   const httpServer = http.createServer(app);
   const io = new Server(httpServer);
   const rooms = new Map();
+  const adminSessions = new Map();
+
+  app.use(express.json());
+
+  function requireAdmin(request, response, next) {
+    const header = request.headers.authorization || "";
+    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+    const session = token ? adminSessions.get(token) : null;
+
+    if (!session) {
+      response.status(401).json({ ok: false, error: "No autorizado." });
+      return;
+    }
+
+    if (session.expiresAt < Date.now()) {
+      adminSessions.delete(token);
+      response.status(401).json({ ok: false, error: "Sesión expirada." });
+      return;
+    }
+
+    request.adminToken = token;
+    next();
+  }
+
+  function listConnections() {
+    const connections = [];
+    const now = Date.now();
+
+    for (const socket of io.sockets.sockets.values()) {
+      connections.push({
+        id: socket.id,
+        address: socket.handshake?.address ?? null,
+        pin: socket.data.pin ?? null,
+        connectedAt: socket.data.connectedAt ?? null,
+        connectedForMs: now - (socket.data.connectedAt ?? now),
+        rooms: [...(socket.rooms ?? [])].filter((name) => name !== socket.id),
+      });
+    }
+
+    connections.sort((a, b) => (a.connectedAt ?? 0) - (b.connectedAt ?? 0));
+    return connections;
+  }
+
+  app.get("/admin", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "admin.html"));
+  });
+
+  app.post("/api/admin/login", (request, response) => {
+    const user = String(request.body?.user ?? "").trim();
+    const password = String(request.body?.password ?? "");
+
+    if (user !== ADMIN_USER || password !== ADMIN_PASSWORD) {
+      response.status(401).json({ ok: false, error: "Credenciales inválidas." });
+      return;
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    adminSessions.set(token, { user, expiresAt: Date.now() + ADMIN_SESSION_TTL_MS });
+    response.json({ ok: true, token });
+  });
+
+  app.post("/api/admin/logout", requireAdmin, (request, response) => {
+    adminSessions.delete(request.adminToken);
+    response.json({ ok: true });
+  });
+
+  app.get("/api/admin/connections", requireAdmin, (_request, response) => {
+    response.json({ ok: true, connections: listConnections() });
+  });
+
+  app.post("/api/admin/kick", requireAdmin, (request, response) => {
+    const socketId = String(request.body?.socketId ?? "");
+    const socket = io.sockets.sockets.get(socketId);
+
+    if (!socket) {
+      response.status(404).json({ ok: false, error: "Conexión no encontrada." });
+      return;
+    }
+
+    socket.emit("server:kick", { reason: "Desconectado por el administrador." });
+    socket.disconnect(true);
+    response.json({ ok: true });
+  });
 
   app.get("/control.html", (_request, response) => {
     response.redirect(301, "/control");
@@ -117,6 +205,8 @@ function createTimerServer() {
   }
 
   io.on("connection", (socket) => {
+    socket.data.connectedAt = Date.now();
+
     socket.on("room:join", (rawPin, acknowledge = () => {}) => {
       const pin = normalizePin(rawPin);
       if (!pin) {

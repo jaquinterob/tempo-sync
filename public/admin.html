@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#070b14" />
+  <title>Pulpit Timer · Admin</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    .admin-login {
+      max-width: 380px;
+      margin: 0 auto;
+    }
+
+    .admin-login .card-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .admin-login label {
+      margin-top: 6px;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .admin-panel {
+      display: none;
+    }
+
+    .admin-panel.visible {
+      display: block;
+    }
+
+    .admin-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .admin-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      padding: 16px 20px;
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 16px;
+    }
+
+    .stat-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-label {
+      margin-top: 4px;
+      color: #94a3b8;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .connections-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .connections-table th,
+    .connections-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+      vertical-align: middle;
+    }
+
+    .connections-table th {
+      color: #94a3b8;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      position: sticky;
+      top: 0;
+      background: #070b14;
+    }
+
+    .pin-badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .pin-badge.none {
+      background: rgba(148, 163, 184, 0.12);
+      color: #64748b;
+    }
+
+    .kick-button {
+      padding: 6px 14px;
+      border: 1px solid rgba(239, 68, 68, 0.5);
+      border-radius: 10px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #fca5a5;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .kick-button:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
+    .kick-button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+
+    .empty-state {
+      padding: 32px;
+      text-align: center;
+      color: #64748b;
+    }
+
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.78rem;
+      color: #94a3b8;
+    }
+
+    .error-text {
+      color: #fca5a5;
+      min-height: 20px;
+      font-size: 0.85rem;
+    }
+
+    .success-text {
+      color: #6ee7b7;
+      font-size: 0.85rem;
+    }
+
+    .loading-row {
+      color: #64748b;
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .connection-id {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="page-header">
+      <div>
+        <p class="eyebrow">Super Admin</p>
+        <h1>Panel de control</h1>
+      </div>
+    </div>
+
+    <div class="admin-login card" id="login-card">
+      <h2>Iniciar sesión</h2>
+      <form id="login-form" class="card-stack">
+        <label for="admin-user">Usuario</label>
+        <input id="admin-user" type="text" autocomplete="username" placeholder="Usuario" required />
+        <label for="admin-password">Contraseña</label>
+        <input id="admin-password" type="password" autocomplete="current-password" placeholder="Contraseña" required />
+        <p class="error-text" id="login-error"></p>
+        <button class="button button-primary" type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <div class="admin-panel" id="admin-panel">
+      <div class="admin-toolbar">
+        <div class="eyebrow">Conexiones del socket</div>
+        <button class="button button-secondary" id="refresh-button" type="button">Actualizar</button>
+      </div>
+
+      <div class="admin-stats">
+        <div class="stat-card">
+          <div class="stat-value" id="stat-total">0</div>
+          <div class="stat-label">Conexiones activas</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="stat-rooms">0</div>
+          <div class="stat-label">Sesiones (PIN)</div>
+        </div>
+      </div>
+
+      <div class="card" style="overflow: auto; max-height: 60vh;">
+        <table class="connections-table">
+          <thead>
+            <tr>
+              <th>PIN</th>
+              <th>IP</th>
+              <th>Conectado hace</th>
+              <th>Socket ID</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="connections-body">
+            <tr>
+              <td colspan="5" class="loading-row">Cargando conexiones…</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="error-text" id="panel-error"></p>
+      <button class="button button-secondary" id="logout-button" type="button" style="margin-top: 16px;">Cerrar sesión</button>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>
