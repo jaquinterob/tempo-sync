@@ -131,7 +131,7 @@
   function displayShareUrl(pin) {
     const clean = cleanPin(pin);
     if (!clean) return "";
-    return `${window.location.origin}/display.html?pin=${encodeURIComponent(clean)}`;
+    return `${window.location.origin}/display?pin=${encodeURIComponent(clean)}`;
   }
 
   window.TimerTools = {

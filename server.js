@@ -70,9 +70,25 @@ function createTimerServer() {
   const io = new Server(httpServer);
   const rooms = new Map();
 
+  app.get("/control.html", (_request, response) => {
+    response.redirect(301, "/control");
+  });
+
+  app.get("/display.html", (_request, response) => {
+    response.redirect(301, "/display");
+  });
+
   app.use(express.static(path.join(__dirname, "public")));
   app.get("/", (_request, response) => {
     response.sendFile(path.join(__dirname, "public", "index.html"));
+  });
+
+  app.get("/control", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "control.html"));
+  });
+
+  app.get("/display", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "display.html"));
   });
 
   function roomFor(pin) {
@@ -255,8 +271,8 @@ if (require.main === module) {
     console.log(`Pulpit Timer`);
     console.log(`Local`);
     console.log(`  Inicio:   http://localhost:${port}/`);
-    console.log(`  Control:  http://localhost:${port}/control.html`);
-    console.log(`  Pantalla: http://localhost:${port}/display.html`);
+    console.log(`  Control:  http://localhost:${port}/control`);
+    console.log(`  Pantalla: http://localhost:${port}/display`);
 
     if (addresses.length === 0) {
       console.log(`Red Wi-Fi: (sin IP local detectada)`);
@@ -266,8 +282,8 @@ if (require.main === module) {
     for (const address of addresses) {
       console.log(`Red Wi-Fi (${address})`);
       console.log(`  Inicio:   http://${address}:${port}/`);
-      console.log(`  Control:  http://${address}:${port}/control.html`);
-      console.log(`  Pantalla: http://${address}:${port}/display.html`);
+      console.log(`  Control:  http://${address}:${port}/control`);
+      console.log(`  Pantalla: http://${address}:${port}/display`);
     }
   });
 }

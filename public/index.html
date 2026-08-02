@@ -45,7 +45,7 @@
 
       document.querySelector("#create-room").addEventListener("click", () => {
         const pin = cleanPin(createPin());
-        window.location.href = `/control.html?pin=${encodeURIComponent(pin)}`;
+        window.location.href = `/control?pin=${encodeURIComponent(pin)}`;
       });
     </script>
   </body>
