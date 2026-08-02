@@ -2598,3 +2598,7 @@ input:focus {
 .control-page .join-home-link a:hover {
   text-decoration: underline;
 }
+
+.display-page.display-ward.display-dark.screen-blanked {
+  background: #171614;
+}
