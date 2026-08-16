@@ -1,0 +1,1713 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>10 temas con íconos · Pulpit Timer (preview)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Atkinson+Hyperlegible:wght@400;700&family=Baloo+2:wght@500;600;700&family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Rubik:wght@400;500;600&family=Source+Sans+3:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background:
+          radial-gradient(ellipse at top, #1a2332 0%, transparent 55%),
+          #0e1218;
+        color: #e8edf4;
+        font-family: "Inter", sans-serif;
+      }
+
+      .gallery {
+        width: min(1160px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 40px 0 80px;
+      }
+
+      .gallery > header h1 {
+        margin: 0 0 8px;
+        font-weight: 600;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+      }
+
+      .gallery > header p {
+        margin: 0 0 8px;
+        max-width: 60ch;
+        color: #9aa8bc;
+        line-height: 1.45;
+      }
+
+      .legend {
+        margin: 0 0 30px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #b6c2d4;
+      }
+
+      .legend span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border: 1px solid #334155;
+        background: rgba(15, 23, 42, 0.7);
+      }
+
+      .legend svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .index {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 40px;
+      }
+
+      .index a {
+        display: block;
+        padding: 12px 14px;
+        border: 1px solid #334155;
+        background: rgba(15, 23, 42, 0.7);
+        color: #e2e8f0;
+        text-decoration: none;
+      }
+
+      .index a strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 0.92rem;
+      }
+
+      .index a span {
+        color: #94a3b8;
+        font-size: 0.76rem;
+      }
+
+      .theme-block {
+        margin-bottom: 56px;
+        scroll-margin-top: 20px;
+      }
+
+      .theme-block > h2 {
+        margin: 0 0 6px;
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      .theme-block > .blurb {
+        margin: 0 0 16px;
+        color: #9aa8bc;
+        font-size: 0.92rem;
+        max-width: 56ch;
+      }
+
+      .frame {
+        width: min(440px, 100%);
+        border: 1px solid #475569;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      }
+
+      /* ————— Base del mock del control ————— */
+
+      .mock {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-height: 820px;
+        padding: 16px;
+        font-size: 0.9rem;
+        --radius: 14px;
+        --radius-btn: 12px;
+      }
+
+      .m-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .m-brand {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      .m-mark {
+        flex: 0 0 auto;
+        height: 52px;
+        width: auto;
+        object-fit: contain;
+      }
+
+      .m-ward {
+        margin: 0;
+        font-size: 1.05rem;
+        font-weight: 600;
+        line-height: 1.15;
+      }
+
+      .m-sub {
+        margin: 4px 0 0;
+        font-size: 0.72rem;
+        opacity: 0.68;
+      }
+
+      .pill {
+        flex: 0 0 auto;
+        border: 1px solid currentColor;
+        padding: 4px 9px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+      }
+
+      .m-status {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 8px;
+        align-items: center;
+        padding: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      .m-kicker {
+        display: block;
+        font-size: 0.64rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        opacity: 0.62;
+      }
+
+      .m-room {
+        display: grid;
+        justify-items: start;
+        gap: 1px;
+        border: 0;
+        padding: 0;
+        background: transparent;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        cursor: default;
+      }
+
+      .m-room strong {
+        font-size: 1.2rem;
+        letter-spacing: 0.04em;
+      }
+
+      .m-hint {
+        font-size: 0.7rem;
+        opacity: 0.6;
+      }
+
+      .m-timer {
+        text-align: center;
+      }
+
+      .m-time {
+        margin: 0;
+        font-size: 2.1rem;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+        font-weight: 600;
+      }
+
+      .m-label {
+        margin: 5px 0 0;
+        font-size: 0.72rem;
+        opacity: 0.78;
+      }
+
+      .m-right {
+        text-align: right;
+      }
+
+      .m-right strong {
+        display: block;
+        font-size: 1.05rem;
+        font-weight: 600;
+      }
+
+      .m-meter {
+        grid-column: 1 / -1;
+        height: 5px;
+        margin-top: 2px;
+        overflow: hidden;
+        background: rgba(127, 127, 127, 0.2);
+        border-radius: 99px;
+      }
+
+      .m-meter > span {
+        display: block;
+        width: 62%;
+        height: 100%;
+        margin-left: auto;
+        border-radius: 99px;
+        background: var(--start);
+      }
+
+      .m-board {
+        padding: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      .m-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .m-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        min-height: 58px;
+        border: 1px solid var(--line);
+        border-radius: var(--radius-btn);
+        padding: 10px 8px;
+        background: var(--panel);
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.92rem;
+        font-weight: 600;
+        line-height: 1.1;
+        text-align: center;
+        cursor: default;
+      }
+
+      .m-btn .ic {
+        width: 22px;
+        height: 22px;
+        flex: none;
+      }
+
+      .m-btn small,
+      .m-btn span.dur {
+        display: block;
+        margin-top: 1px;
+        font-size: 0.72rem;
+        font-weight: 500;
+        opacity: 0.75;
+      }
+
+      .m-btn.tall {
+        grid-row: span 2;
+      }
+
+      .m-btn.wide {
+        grid-column: 1 / -1;
+      }
+
+      .m-time-row {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr auto;
+        gap: 6px;
+        align-items: center;
+        grid-column: 1 / -1;
+      }
+
+      .m-time-row input {
+        width: 100%;
+        padding: 10px 6px;
+        text-align: center;
+      }
+
+      .m-time-row .sep {
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+
+      .m-msg-row {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: 6px;
+        grid-column: 1 / -1;
+      }
+
+      .m-msg-row input {
+        width: 100%;
+        padding: 10px;
+      }
+
+      input {
+        border: 1px solid var(--line);
+        border-radius: calc(var(--radius-btn) * 0.7);
+        background: var(--field-bg, #fff);
+        color: var(--ink);
+        font: inherit;
+        font-size: 0.95rem;
+      }
+
+      .m-share {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        align-items: center;
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+        font-size: 0.8rem;
+      }
+
+      .m-chip {
+        padding: 5px 10px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        background: var(--chip-bg, rgba(127, 127, 127, 0.14));
+      }
+
+      .m-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px 10px;
+        border: 1px solid var(--line);
+        border-radius: calc(var(--radius-btn) * 0.6);
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .m-action .ic {
+        width: 14px;
+        height: 14px;
+        flex: none;
+      }
+
+      .m-cfg {
+        padding: 12px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+      }
+
+      .m-cfg h3 {
+        margin: 0 0 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        opacity: 0.85;
+      }
+
+      .m-cfg label {
+        display: block;
+        margin-bottom: 8px;
+        font-size: 0.7rem;
+        opacity: 0.78;
+      }
+
+      .m-cfg input {
+        display: block;
+        width: 100%;
+        margin-top: 4px;
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+
+      /* ————— 1. Friendly Light ————— */
+      .theme-friendly-light {
+        --bg: #eef2f6;
+        --panel: #ffffff;
+        --ink: #17222e;
+        --muted: #5b6b7b;
+        --line: #dbe3ea;
+        --field-bg: #fbfcfd;
+        --chip-bg: #e9eef4;
+        --start: #1e9e6a;
+        --start-ink: #ffffff;
+        --pause: #c07f1e;
+        --pause-ink: #ffffff;
+        --danger: #d64545;
+        --danger-ink: #ffffff;
+        --primary: #3a6ff0;
+        --primary-ink: #ffffff;
+        --preset-bg: #eef4fb;
+        --preset-line: #c9d8ea;
+        --radius: 16px;
+        --radius-btn: 12px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+
+      .theme-friendly-light .m-btn {
+        background: #fff;
+      }
+
+      .theme-friendly-light .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-friendly-light .m-btn.start {
+        background: var(--start);
+        border-color: var(--start);
+        color: var(--start-ink);
+      }
+
+      .theme-friendly-light .m-btn.pause {
+        background: var(--pause);
+        border-color: var(--pause);
+        color: var(--pause-ink);
+      }
+
+      .theme-friendly-light .m-btn.danger {
+        background: #fff;
+        border-color: #e6b8b8;
+        color: var(--danger);
+      }
+
+      .theme-friendly-light .m-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-ink);
+      }
+
+      .theme-friendly-light .pill {
+        background: #e4f6ec;
+        color: #1e7e4e;
+        border-color: #bfe5d1;
+      }
+
+      /* ————— 2. Friendly Dark ————— */
+      .theme-friendly-dark {
+        --bg: #12161c;
+        --panel: #1c222b;
+        --ink: #e8edf3;
+        --muted: #8b99a8;
+        --line: #2c3540;
+        --field-bg: #12161c;
+        --chip-bg: #232c37;
+        --start: #25b57a;
+        --start-ink: #06120c;
+        --pause: #d18a24;
+        --pause-ink: #171007;
+        --danger: #e05c5c;
+        --danger-ink: #1b0505;
+        --primary: #4f7df0;
+        --primary-ink: #ffffff;
+        --preset-bg: #232c37;
+        --preset-line: #33404e;
+        --radius: 16px;
+        --radius-btn: 12px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+
+      .theme-friendly-dark .m-btn {
+        background: #222b36;
+      }
+
+      .theme-friendly-dark .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-friendly-dark .m-btn.start {
+        background: var(--start);
+        border-color: var(--start);
+        color: var(--start-ink);
+      }
+
+      .theme-friendly-dark .m-btn.pause {
+        background: var(--pause);
+        border-color: var(--pause);
+        color: var(--pause-ink);
+      }
+
+      .theme-friendly-dark .m-btn.danger {
+        background: #2a1d20;
+        border-color: #5c3238;
+        color: var(--danger);
+      }
+
+      .theme-friendly-dark .m-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-ink);
+      }
+
+      .theme-friendly-dark .pill {
+        background: #16382a;
+        color: #5fd6a0;
+        border-color: #1e5740;
+      }
+
+      .theme-friendly-dark .m-meter {
+        background: rgba(127, 127, 127, 0.18);
+      }
+
+      /* ————— 3. Pastel Chapel ————— */
+      .theme-chapel {
+        --bg: #f7f4ef;
+        --panel: #fdfbf7;
+        --ink: #3f3a34;
+        --muted: #85796c;
+        --line: #e0d9cc;
+        --field-bg: #fbf8f3;
+        --chip-bg: #efe9dd;
+        --start: #3f7d5c;
+        --start-ink: #f7f4ef;
+        --pause: #b07a2e;
+        --pause-ink: #fff7ea;
+        --danger: #a25a4e;
+        --danger-ink: #fdf3f0;
+        --primary: #57534e;
+        --primary-ink: #f7f4ef;
+        --preset-bg: #f1ebe1;
+        --preset-line: #e0d7c8;
+        --radius: 14px;
+        --radius-btn: 12px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Source Sans 3", sans-serif;
+      }
+
+      .theme-chapel .m-ward {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+
+      .theme-chapel .m-time {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 600;
+      }
+
+      .theme-chapel .m-btn {
+        background: #fff;
+      }
+
+      .theme-chapel .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-chapel .m-btn.start {
+        background: var(--start);
+        border-color: var(--start);
+        color: var(--start-ink);
+      }
+
+      .theme-chapel .m-btn.pause {
+        background: var(--pause);
+        border-color: var(--pause);
+        color: var(--pause-ink);
+      }
+
+      .theme-chapel .m-btn.danger {
+        background: #fff;
+        border-color: #e0c4bd;
+        color: var(--danger);
+      }
+
+      .theme-chapel .m-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-ink);
+      }
+
+      .theme-chapel .pill {
+        background: #e7f0ea;
+        color: #2f6b4f;
+        border-color: #bdd8c6;
+      }
+
+      /* ————— 4. Material Touch ————— */
+      .theme-material {
+        --bg: #f1f4f8;
+        --panel: #ffffff;
+        --ink: #1c2330;
+        --muted: #65727f;
+        --line: #e4e9f0;
+        --field-bg: #f6f8fb;
+        --chip-bg: #eef1f6;
+        --start: #2e7d4f;
+        --start-ink: #ffffff;
+        --pause: #c28518;
+        --pause-ink: #ffffff;
+        --danger: #c0392b;
+        --danger-ink: #ffffff;
+        --primary: #5b6bff;
+        --primary-ink: #ffffff;
+        --preset-bg: #eef3fb;
+        --preset-line: #d4dfee;
+        --radius: 20px;
+        --radius-btn: 999px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Rubik", sans-serif;
+      }
+
+      .theme-material .m-status,
+      .theme-material .m-board,
+      .theme-material .m-cfg {
+        box-shadow: 0 2px 6px rgba(30, 41, 59, 0.08), 0 10px 24px rgba(30, 41, 59, 0.06);
+      }
+
+      .theme-material .m-btn {
+        min-height: 66px;
+        background: #fff;
+        box-shadow: 0 1px 3px rgba(30, 41, 59, 0.12);
+      }
+
+      .theme-material .m-btn.tall {
+        min-height: 140px;
+      }
+
+      .theme-material .m-btn .ic {
+        width: 24px;
+        height: 24px;
+      }
+
+      .theme-material .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-material .m-btn.start {
+        background: var(--start);
+        border-color: var(--start);
+        color: var(--start-ink);
+      }
+
+      .theme-material .m-btn.pause {
+        background: var(--pause);
+        border-color: var(--pause);
+        color: var(--pause-ink);
+      }
+
+      .theme-material .m-btn.danger {
+        background: var(--danger);
+        border-color: var(--danger);
+        color: var(--danger-ink);
+      }
+
+      .theme-material .m-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-ink);
+      }
+
+      .theme-material .pill {
+        background: #e4f6ec;
+        color: #1e7e4e;
+        border-color: #bfe5d1;
+        border-radius: 99px;
+      }
+
+      .theme-material .m-chip {
+        border-radius: 99px;
+      }
+
+      .theme-material .m-action {
+        border-radius: 99px;
+        background: #fff;
+      }
+
+      /* ————— 5. Big Button Kiosk ————— */
+      .theme-kiosk {
+        --bg: #101418;
+        --panel: #171d24;
+        --ink: #f4f7fa;
+        --muted: #8b99a8;
+        --line: #2b333d;
+        --field-bg: #0c1014;
+        --chip-bg: #222a33;
+        --start: #22b573;
+        --start-ink: #06120c;
+        --pause: #ffb020;
+        --pause-ink: #241300;
+        --danger: #ff5252;
+        --danger-ink: #2b0505;
+        --primary: #ffb020;
+        --primary-ink: #241300;
+        --preset-bg: #222a33;
+        --preset-line: #39434f;
+        --radius: 18px;
+        --radius-btn: 16px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Archivo", sans-serif;
+      }
+
+      .theme-kiosk .m-header {
+        align-items: center;
+      }
+
+      .theme-kiosk .m-ward {
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+      }
+
+      .theme-kiosk .m-time {
+        font-size: 3rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .theme-kiosk .m-label {
+        font-size: 0.85rem;
+      }
+
+      .theme-kiosk .m-grid {
+        gap: 10px;
+      }
+
+      .theme-kiosk .m-btn {
+        min-height: 80px;
+        border-width: 2px;
+        font-size: 1.05rem;
+        font-weight: 700;
+      }
+
+      .theme-kiosk .m-btn .ic {
+        width: 30px;
+        height: 30px;
+      }
+
+      .theme-kiosk .m-btn small,
+      .theme-kiosk .m-btn span.dur {
+        font-size: 0.82rem;
+        opacity: 0.85;
+      }
+
+      .theme-kiosk .m-btn.tall {
+        min-height: 170px;
+      }
+
+      .theme-kiosk .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-kiosk .m-btn.start {
+        background: var(--start);
+        border-color: #2fd187;
+        color: var(--start-ink);
+      }
+
+      .theme-kiosk .m-btn.pause {
+        background: var(--pause);
+        border-color: #ffcf6d;
+        color: var(--pause-ink);
+      }
+
+      .theme-kiosk .m-btn.danger {
+        background: var(--danger);
+        border-color: #ff8a8a;
+        color: var(--danger-ink);
+      }
+
+      .theme-kiosk .m-btn.primary {
+        background: var(--primary);
+        border-color: #ffcf6d;
+        color: var(--primary-ink);
+      }
+
+      .theme-kiosk input {
+        min-height: 52px;
+        font-size: 1.1rem;
+      }
+
+      .theme-kiosk .pill {
+        background: #16382a;
+        color: #5fd6a0;
+        border-color: #1e5740;
+        font-size: 0.8rem;
+      }
+
+      /* ————— 6. Glass HUD ————— */
+      .theme-hud {
+        --bg: #0d1320;
+        --panel: rgba(255, 255, 255, 0.06);
+        --ink: #eaf2fb;
+        --muted: #93a6bd;
+        --line: rgba(148, 180, 220, 0.2);
+        --field-bg: rgba(10, 15, 25, 0.7);
+        --chip-bg: rgba(255, 255, 255, 0.08);
+        --start: #35c48a;
+        --start-ink: #062017;
+        --pause: #ffc15e;
+        --pause-ink: #2a1b05;
+        --danger: #ff7a70;
+        --danger-ink: #2b0805;
+        --primary: #4cc9f0;
+        --primary-ink: #062433;
+        --preset-bg: rgba(255, 255, 255, 0.08);
+        --preset-line: rgba(148, 180, 220, 0.22);
+        --radius: 16px;
+        --radius-btn: 12px;
+        background:
+          radial-gradient(ellipse at top right, rgba(76, 201, 240, 0.12), transparent 45%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      .theme-hud .m-status,
+      .theme-hud .m-board,
+      .theme-hud .m-cfg {
+        background: var(--panel);
+        backdrop-filter: blur(14px);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      }
+
+      .theme-hud .m-ward {
+        font-weight: 500;
+        letter-spacing: 0.04em;
+      }
+
+      .theme-hud .m-time {
+        color: var(--primary);
+      }
+
+      .theme-hud .m-btn {
+        background: rgba(255, 255, 255, 0.07);
+      }
+
+      .theme-hud .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-hud .m-btn.start {
+        background: var(--start);
+        border-color: #63dfae;
+        color: var(--start-ink);
+      }
+
+      .theme-hud .m-btn.pause {
+        background: var(--pause);
+        border-color: #ffd9a1;
+        color: var(--pause-ink);
+      }
+
+      .theme-hud .m-btn.danger {
+        background: rgba(255, 122, 112, 0.12);
+        border-color: rgba(255, 122, 112, 0.45);
+        color: var(--danger);
+      }
+
+      .theme-hud .m-btn.primary {
+        background: var(--primary);
+        border-color: #8be0fb;
+        color: var(--primary-ink);
+      }
+
+      .theme-hud .pill {
+        background: rgba(53, 196, 138, 0.14);
+        color: #6fe0b4;
+        border-color: rgba(53, 196, 138, 0.45);
+      }
+
+      .theme-hud .m-meter {
+        background: rgba(76, 201, 240, 0.14);
+      }
+
+      /* ————— 7. Print Legible ————— */
+      .theme-print {
+        --bg: #ffffff;
+        --panel: #ffffff;
+        --ink: #111111;
+        --muted: #444444;
+        --line: #bbbbbb;
+        --field-bg: #ffffff;
+        --chip-bg: #f0f0f0;
+        --start: #111111;
+        --start-ink: #ffffff;
+        --pause: #111111;
+        --pause-ink: #ffffff;
+        --danger: #a00020;
+        --danger-ink: #ffffff;
+        --primary: #111111;
+        --primary-ink: #ffffff;
+        --preset-bg: #ffffff;
+        --preset-line: #999999;
+        --radius: 4px;
+        --radius-btn: 2px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      .theme-print .m-ward {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .theme-print .m-status,
+      .theme-print .m-board,
+      .theme-print .m-cfg {
+        border-width: 1.5px;
+      }
+
+      .theme-print .m-time {
+        font-weight: 700;
+        letter-spacing: 0.01em;
+      }
+
+      .theme-print .m-btn {
+        border: 1.5px solid #222;
+        background: #fff;
+        color: #111;
+      }
+
+      .theme-print .m-btn small,
+      .theme-print .m-btn span.dur {
+        color: #333;
+        opacity: 1;
+      }
+
+      .theme-print .m-btn.start,
+      .theme-print .m-btn.pause,
+      .theme-print .m-btn.primary {
+        background: #111;
+        border-color: #111;
+        color: #fff;
+      }
+
+      .theme-print .m-btn.danger {
+        border-color: #a00020;
+        color: #a00020;
+        background: #fff;
+      }
+
+      .theme-print .m-btn.preset {
+        border-style: dashed;
+        border-color: #777;
+      }
+
+      .theme-print input {
+        border: 1.5px solid #222;
+        border-radius: 0;
+        background: #fff;
+        color: #111;
+      }
+
+      .theme-print .pill {
+        border-color: #111;
+        color: #111;
+        font-weight: 700;
+      }
+
+      .theme-print .m-chip {
+        background: #111;
+        color: #fff;
+      }
+
+      .theme-print .m-action {
+        border-color: #222;
+      }
+
+      .theme-print .m-meter {
+        background: #ddd;
+      }
+
+      .theme-print .m-meter > span {
+        background: #111;
+      }
+
+      /* ————— 8. Wood Remote ————— */
+      .theme-wood {
+        --wood-deep: #24160f;
+        --wood: #3a2418;
+        --wood-mid: #4a3123;
+        --brass: #b8924a;
+        --brass-soft: #d4b574;
+        --parchment: #efe6d6;
+        --ink: #2a1f18;
+        --bg: #24160f;
+        --panel: #f7efdf;
+        --line: #c9b793;
+        --field-bg: #fbf6ec;
+        --chip-bg: #e7dcc6;
+        --start: #3f7d5c;
+        --start-ink: #f7f4ef;
+        --pause: #b07a2e;
+        --pause-ink: #fff7ea;
+        --danger: #a25a4e;
+        --danger-ink: #fdf3f0;
+        --primary: #8a6a32;
+        --primary-ink: #f7f4ef;
+        --preset-bg: #efe6d2;
+        --preset-line: #d8c9ab;
+        --radius: 12px;
+        --radius-btn: 10px;
+        background:
+          linear-gradient(180deg, #2c1a12 0%, #24160f 40%, #150d09 100%);
+        color: var(--parchment);
+        font-family: "Source Sans 3", sans-serif;
+      }
+
+      .theme-wood .m-mark {
+        opacity: 0.9;
+      }
+
+      .theme-wood .m-ward {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 600;
+        color: var(--brass-soft);
+      }
+
+      .theme-wood .m-sub {
+        color: rgba(239, 230, 214, 0.55);
+      }
+
+      .theme-wood .m-status,
+      .theme-wood .m-board,
+      .theme-wood .m-cfg {
+        background: var(--panel);
+        border-color: var(--brass);
+        color: var(--ink);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      }
+
+      .theme-wood .m-status .m-kicker,
+      .theme-wood .m-status .m-label,
+      .theme-wood .m-cfg h3 {
+        color: #6e5a4a;
+        opacity: 1;
+      }
+
+      .theme-wood .m-time {
+        font-family: "Cormorant Garamond", serif;
+        font-weight: 600;
+        color: #3a2418;
+      }
+
+      .theme-wood .pill {
+        background: rgba(36, 22, 15, 0.6);
+        color: var(--brass-soft);
+        border-color: var(--brass);
+      }
+
+      .theme-wood .m-btn {
+        background: linear-gradient(180deg, #4a3123, #3a2418);
+        border-color: #24160f;
+        color: var(--parchment);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      }
+
+      .theme-wood .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+        color: var(--ink);
+      }
+
+      .theme-wood .m-btn.start {
+        background: linear-gradient(180deg, #d4b574, #b8924a);
+        border-color: #8a6a32;
+        color: #24160f;
+      }
+
+      .theme-wood .m-btn.pause {
+        background: linear-gradient(180deg, #c9a24f, #a97f2f);
+        border-color: #6e551f;
+        color: #24160f;
+      }
+
+      .theme-wood .m-btn.danger {
+        background: linear-gradient(180deg, #6b3a32, #4a2822);
+        border-color: #2a1512;
+        color: #f3e4dc;
+      }
+
+      .theme-wood .m-btn.primary {
+        background: linear-gradient(180deg, #d4b574, #b8924a);
+        border-color: #8a6a32;
+        color: #24160f;
+      }
+
+      .theme-wood .m-time-row,
+      .theme-wood .m-msg-row {
+        border: 1px solid var(--preset-line);
+        border-radius: 8px;
+        padding: 6px;
+        background: rgba(239, 230, 214, 0.35);
+      }
+
+      .theme-wood input {
+        background: #fbf6ec;
+        border-color: #c9b793;
+        color: var(--ink);
+      }
+
+      .theme-wood .m-share {
+        border-top-color: rgba(74, 49, 35, 0.3);
+        color: #6e5a4a;
+      }
+
+      .theme-wood .m-chip {
+        background: #3a2418;
+        color: var(--brass-soft);
+      }
+
+      .theme-wood .m-action {
+        border-color: var(--preset-line);
+        color: #4a3123;
+        background: rgba(255, 255, 255, 0.4);
+      }
+
+      /* ————— 9. Bubble Pop ————— */
+      .theme-bubble {
+        --bg: #fff3e7;
+        --panel: #ffffff;
+        --ink: #43343a;
+        --muted: #9a7f8c;
+        --line: #f2e0d2;
+        --field-bg: #fffaf4;
+        --chip-bg: #ffe9d6;
+        --start: #2fc078;
+        --start-ink: #ffffff;
+        --pause: #f5a623;
+        --pause-ink: #ffffff;
+        --danger: #ef5d60;
+        --danger-ink: #ffffff;
+        --primary: #4f9cf0;
+        --primary-ink: #ffffff;
+        --preset-bg: #f4ecfa;
+        --preset-line: #e6d6f5;
+        --radius: 22px;
+        --radius-btn: 22px;
+        background:
+          radial-gradient(circle at 12% 8%, rgba(255, 199, 90, 0.35), transparent 30%),
+          radial-gradient(circle at 90% 92%, rgba(94, 166, 255, 0.28), transparent 32%),
+          var(--bg);
+        color: var(--ink);
+        font-family: "Baloo 2", sans-serif;
+      }
+
+      .theme-bubble .m-ward {
+        font-weight: 700;
+      }
+
+      .theme-bubble .m-time {
+        color: #b85b8f;
+      }
+
+      .theme-bubble .m-status,
+      .theme-bubble .m-board,
+      .theme-bubble .m-cfg {
+        box-shadow: 0 4px 0 rgba(214, 178, 148, 0.55), 0 10px 24px rgba(120, 80, 60, 0.1);
+      }
+
+      .theme-bubble .m-btn {
+        background: #fff;
+        box-shadow: 0 3px 0 rgba(214, 178, 148, 0.6);
+      }
+
+      .theme-bubble .m-btn .ic {
+        width: 24px;
+        height: 24px;
+      }
+
+      .theme-bubble .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--preset-line);
+      }
+
+      .theme-bubble .m-btn.start {
+        background: var(--start);
+        border-color: #17a15e;
+        color: var(--start-ink);
+        box-shadow: 0 3px 0 #12884f;
+      }
+
+      .theme-bubble .m-btn.pause {
+        background: var(--pause);
+        border-color: #d98b0e;
+        color: var(--pause-ink);
+        box-shadow: 0 3px 0 #c07a09;
+      }
+
+      .theme-bubble .m-btn.danger {
+        background: var(--danger);
+        border-color: #d93f43;
+        color: var(--danger-ink);
+        box-shadow: 0 3px 0 #c0373b;
+      }
+
+      .theme-bubble .m-btn.primary {
+        background: var(--primary);
+        border-color: #2f7ed6;
+        color: var(--primary-ink);
+        box-shadow: 0 3px 0 #2a6fbd;
+      }
+
+      .theme-bubble .pill {
+        background: #fdeccd;
+        color: #b06a10;
+        border-color: #f2cf8d;
+        border-radius: 99px;
+      }
+
+      .theme-bubble .m-chip {
+        background: #ffe0be;
+        border-radius: 99px;
+      }
+
+      .theme-bubble .m-action {
+        background: #fff;
+        border-radius: 99px;
+      }
+
+      .theme-bubble input {
+        border-radius: 14px;
+      }
+
+      /* ————— 10. Accessible ————— */
+      .theme-accessible {
+        --bg: #ffffff;
+        --panel: #ffffff;
+        --ink: #0b0d0e;
+        --muted: #3c4448;
+        --line: #6b747a;
+        --field-bg: #ffffff;
+        --chip-bg: #eef1f2;
+        --start: #007a33;
+        --start-ink: #ffffff;
+        --pause: #8a5a00;
+        --pause-ink: #ffffff;
+        --danger: #b00020;
+        --danger-ink: #ffffff;
+        --primary: #0f5ea8;
+        --primary-ink: #ffffff;
+        --preset-bg: #f2f5f6;
+        --preset-line: #aab4bb;
+        --radius: 8px;
+        --radius-btn: 8px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: "Atkinson Hyperlegible", sans-serif;
+      }
+
+      .theme-accessible .m-header {
+        align-items: center;
+      }
+
+      .theme-accessible .m-ward {
+        font-size: 1.15rem;
+      }
+
+      .theme-accessible .m-time {
+        font-weight: 700;
+        letter-spacing: 0.02em;
+      }
+
+      .theme-accessible .m-status,
+      .theme-accessible .m-board,
+      .theme-accessible .m-cfg {
+        border-width: 2px;
+        border-color: var(--line);
+      }
+
+      .theme-accessible .m-kicker {
+        opacity: 1;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      .theme-accessible .m-label {
+        opacity: 1;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .theme-accessible .m-grid {
+        gap: 12px;
+      }
+
+      .theme-accessible .m-btn {
+        min-height: 72px;
+        border: 2px solid var(--ink);
+        border-radius: 8px;
+        padding: 14px 10px;
+        font-size: 1.02rem;
+        font-weight: 700;
+        background: #fff;
+        color: var(--ink);
+        box-shadow: 3px 3px 0 rgba(11, 13, 14, 0.25);
+      }
+
+      .theme-accessible .m-btn .ic {
+        width: 26px;
+        height: 26px;
+      }
+
+      .theme-accessible .m-btn small,
+      .theme-accessible .m-btn span.dur {
+        font-size: 0.86rem;
+        color: var(--ink);
+        opacity: 1;
+      }
+
+      .theme-accessible .m-btn.preset {
+        background: var(--preset-bg);
+        border-color: var(--ink);
+      }
+
+      .theme-accessible .m-btn.start {
+        background: var(--start);
+        border-color: #004d1f;
+        color: var(--start-ink);
+      }
+
+      .theme-accessible .m-btn.pause {
+        background: var(--pause);
+        border-color: #5c3c00;
+        color: var(--pause-ink);
+      }
+
+      .theme-accessible .m-btn.danger {
+        background: var(--danger);
+        border-color: #7c0016;
+        color: var(--danger-ink);
+      }
+
+      .theme-accessible .m-btn.primary {
+        background: var(--primary);
+        border-color: #0a3f72;
+        color: var(--primary-ink);
+      }
+
+      .theme-accessible input {
+        border: 2px solid var(--ink);
+        border-radius: 6px;
+        min-height: 46px;
+        font-size: 1rem;
+      }
+
+      .theme-accessible .pill {
+        background: #e5f3ea;
+        color: #005a26;
+        border-color: #005a26;
+        font-weight: 700;
+      }
+
+      .theme-accessible .m-chip {
+        background: var(--ink);
+        color: #fff;
+        font-weight: 700;
+      }
+
+      .theme-accessible .m-action {
+        border: 2px solid var(--ink);
+        background: #fff;
+        font-weight: 700;
+        border-radius: 6px;
+        box-shadow: 2px 2px 0 rgba(11, 13, 14, 0.25);
+      }
+
+      .theme-accessible .m-meter {
+        height: 8px;
+        background: #d5dade;
+        border: 1px solid #6b747a;
+      }
+
+      .theme-accessible .m-meter > span {
+        background: #007a33;
+      }
+
+      @media (max-width: 960px) {
+        .index {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+      }
+
+      @media (max-width: 860px) {
+        .index {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      @media (max-width: 520px) {
+        .index {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="gallery">
+      <header>
+        <h1>10 temas amigables para el control</h1>
+        <p>
+          Cada mockup muestra el panel de control con <strong>íconos + etiqueta en
+          español claro</strong>, sin estética terminal. Elige uno y lo implementamos
+          en el control real. El display de la capilla no cambia.
+        </p>
+        <p class="legend">
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none" /></svg>
+            Iniciar
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M8 5v14M16 5v14" stroke-width="2.4" /></svg>
+            Pausar
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v4h-4" /></svg>
+            Reiniciar
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="13" rx="1.5" /><path d="M9 20.5h6M12 17.5v3M7 9.5l5 4M17 9.5l-5 4" /></svg>
+            Ocultar pantalla
+          </span>
+          <span>
+            <svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" /><circle cx="12" cy="12" r="3" /></svg>
+            Mostrar mensaje
+          </span>
+        </p>
+      </header>
+
+      <nav class="index" aria-label="Temas">
+        <a href="#theme-friendly-light"><strong>1. Friendly Light</strong><span>Claro, moderno y semántico</span></a>
+        <a href="#theme-friendly-dark"><strong>2. Friendly Dark</strong><span>El mismo sistema en oscuro</span></a>
+        <a href="#theme-chapel"><strong>3. Pastel Chapel</strong><span>Crema alineado al display</span></a>
+        <a href="#theme-material"><strong>4. Material Touch</strong><span>Pills grandes para el pulgar</span></a>
+        <a href="#theme-kiosk"><strong>5. Big Button Kiosk</strong><span>Botones enormes, alto contraste</span></a>
+        <a href="#theme-hud"><strong>6. Glass HUD</strong><span>Vidrio oscuro con acento cian</span></a>
+        <a href="#theme-print"><strong>7. Print Legible</strong><span>Blanco y negro, tipo imprenta</span></a>
+        <a href="#theme-wood"><strong>8. Wood Remote</strong><span>Púlpito de madera, friendly</span></a>
+        <a href="#theme-bubble"><strong>9. Bubble Pop</strong><span>Colorido y juguetón</span></a>
+        <a href="#theme-accessible"><strong>10. Accessible</strong><span>Máximo contraste (WCAG)</span></a>
+      </nav>
+
+      <template id="control-mock">
+        <div class="mock">
+          <header class="m-header">
+            <div class="m-brand">
+              <img class="m-mark" src="/assets/brand/church-logo.png" alt="" />
+              <div>
+                <p class="m-ward">Barrio Sabaneta</p>
+                <p class="m-sub">Pulpit Timer · reunión sacramental</p>
+              </div>
+            </div>
+            <span class="pill">En línea</span>
+          </header>
+
+          <section class="m-status">
+            <div class="m-room">
+              <span class="m-kicker">Sala</span>
+              <strong>1505</strong>
+              <span class="m-hint">cambiar sala</span>
+            </div>
+            <div class="m-timer">
+              <p class="m-time">08:00</p>
+              <p class="m-label">Listo para iniciar</p>
+            </div>
+            <div class="m-right">
+              <span class="m-kicker">Conexión</span>
+              <strong>En línea</strong>
+            </div>
+            <div class="m-meter" aria-hidden="true"><span></span></div>
+          </section>
+
+          <section class="m-board">
+            <div class="m-grid">
+              <button class="m-btn preset wide" type="button">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Discursos
+                <small>8 min</small>
+              </button>
+              <button class="m-btn start tall" type="button">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+                </svg>
+                Iniciar
+              </button>
+              <button class="m-btn tall" type="button">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="4.5" width="18" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M9 20.5h6M12 17.5v3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  <path d="M7 9.5l5 4M17 9.5l-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+                Ocultar
+                <small>pantalla</small>
+              </button>
+              <button class="m-btn pause" type="button">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+                </svg>
+                Pausar
+              </button>
+              <button class="m-btn danger" type="button">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                  <path d="M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Reiniciar
+              </button>
+
+              <div class="m-time-row">
+                <input value="8" aria-label="Minutos" readonly />
+                <span class="sep">:</span>
+                <input value="00" aria-label="Segundos" readonly />
+                <button class="m-btn primary" type="button">
+                  <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  Aplicar
+                </button>
+              </div>
+
+              <div class="m-msg-row">
+                <input value="Por favor, concluya su discurso" readonly />
+                <button class="m-btn primary" type="button">
+                  <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                    <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                  </svg>
+                  Mostrar
+                </button>
+                <button class="m-btn" type="button">
+                  <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                  </svg>
+                  Quitar
+                </button>
+              </div>
+            </div>
+
+            <div class="m-share">
+              <span class="m-chip">PIN 1505</span>
+              <span class="m-action">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="8.5" y="8.5" width="11" height="12" rx="1" fill="none" stroke="currentColor" stroke-width="1.6" />
+                  <path d="M5.5 15.5h-1a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" fill="none" stroke="currentColor" stroke-width="1.6" />
+                </svg>
+                Copiar
+              </span>
+              <span class="m-action">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 19l1.2-3.5A7.5 7.5 0 1 1 19.5 12 7.5 7.5 0 0 1 8.2 17.8L5 19z" fill="none" stroke="currentColor" stroke-width="1.6" />
+                  <path d="M9.2 10.2c.3-.5.5-.5.8-.5h.6c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .4-.1.6l-.4.5c-.1.1-.1.3 0 .4.5.8 1.3 1.5 2.1 1.9.2.1.3.1.5 0l.7-.4c.2-.1.4-.1.5.1l1.2 1.4c.2.2.1.5-.1.7-.4.3-1 .6-1.6.6-2.3 0-5.1-2.5-5.8-4.7-.2-.7-.1-1.4.2-1.9z" fill="currentColor" opacity="0.9" />
+                </svg>
+                WhatsApp
+              </span>
+              <span class="m-action">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.6" />
+                  <path d="M9 20.5h6M12 17.5v3" fill="none" stroke="currentColor" stroke-width="1.6" />
+                </svg>
+                Abrir pantalla
+              </span>
+            </div>
+          </section>
+
+          <section class="m-cfg">
+            <h3>Identidad</h3>
+            <label>Barrio <input value="Barrio Sabaneta" readonly /></label>
+            <label>Mensaje al terminar <input value="Agradecemos su discurso." readonly /></label>
+            <label>Alerta final <input value="Su tiempo ha terminado." readonly /></label>
+          </section>
+        </div>
+      </template>
+
+      <section class="theme-block" id="theme-friendly-light">
+        <h2>1. Friendly Light</h2>
+        <p class="blurb">Claro y moderno. Cada acción tiene su color: verde para iniciar, ámbar para pausar, rojo para reiniciar. Ícono + etiqueta en todo.</p>
+        <div class="frame" data-theme="friendly-light"></div>
+      </section>
+
+      <section class="theme-block" id="theme-friendly-dark">
+        <h2>2. Friendly Dark</h2>
+        <p class="blurb">El mismo sistema de íconos y colores semánticos, pero en un oscuro suave para ambientes con poca luz.</p>
+        <div class="frame" data-theme="friendly-dark"></div>
+      </section>
+
+      <section class="theme-block" id="theme-chapel">
+        <h2>3. Pastel Chapel</h2>
+        <p class="blurb">Misma familia visual del display (crema/piedra) con serif Cormorant. Tranquilo y en sintonía con la capilla.</p>
+        <div class="frame" data-theme="chapel"></div>
+      </section>
+
+      <section class="theme-block" id="theme-material">
+        <h2>4. Material Touch</h2>
+        <p class="blurb">Botones tipo pill y targets grandes para el pulgar. Tarjetas elevadas, estilo Material You.</p>
+        <div class="frame" data-theme="material"></div>
+      </section>
+
+      <section class="theme-block" id="theme-kiosk">
+        <h2>5. Big Button Kiosk</h2>
+        <p class="blurb">Botones enormes de alto contraste, como un mando físico dedicado. Ideal si se opera con prisa o en penumbra.</p>
+        <div class="frame" data-theme="kiosk"></div>
+      </section>
+
+      <section class="theme-block" id="theme-hud">
+        <h2>6. Glass HUD</h2>
+        <p class="blurb">Vidrio oscuro con acento cian. Mantiene el aire futurista pero con etiquetas claras y legibles.</p>
+        <div class="frame" data-theme="hud"></div>
+      </section>
+
+      <section class="theme-block" id="theme-print">
+        <h2>7. Print Legible</h2>
+        <p class="blurb">Blanco y negro tipo imprenta. Máxima legibilidad sin distracciones, perfecto para usuarios poco técnicos.</p>
+        <div class="frame" data-theme="print"></div>
+      </section>
+
+      <section class="theme-block" id="theme-wood">
+        <h2>8. Wood Remote</h2>
+        <p class="blurb">La madera y el latón del púlpito, rediseñados de forma amigable con íconos grandes y esquinas suaves.</p>
+        <div class="frame" data-theme="wood"></div>
+      </section>
+
+      <section class="theme-block" id="theme-bubble">
+        <h2>9. Bubble Pop</h2>
+        <p class="blurb">Colorido y juguetón, con botones tipo sticker. Invita a tocar y deja claro qué hace cada cosa.</p>
+        <div class="frame" data-theme="bubble"></div>
+      </section>
+
+      <section class="theme-block" id="theme-accessible">
+        <h2>10. Accessible</h2>
+        <p class="blurb">Contraste máximo (WCAG), tipografía para baja visión, botones grandes y etiquetas en negrita. Ícono + texto siempre.</p>
+        <div class="frame" data-theme="accessible"></div>
+      </section>
+    </main>
+
+    <script>
+      const template = document.getElementById("control-mock");
+      document.querySelectorAll(".frame[data-theme]").forEach((frame) => {
+        const clone = template.content.cloneNode(true);
+        clone.querySelector(".mock").classList.add("theme-" + frame.dataset.theme);
+        frame.appendChild(clone);
+      });
+    </script>
+  </body>
+</html>

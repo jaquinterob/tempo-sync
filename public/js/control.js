@@ -26,6 +26,7 @@ const startButton = document.querySelector("#start-button");
 const pauseButton = document.querySelector("#pause-button");
 const resetButton = document.querySelector("#reset-button");
 const blankScreenButton = document.querySelector("#blank-screen-button");
+const blankScreenLabel = document.querySelector("#blank-screen-label");
 const messageForm = document.querySelector("#message-form");
 const screenMessageInput = document.querySelector("#screen-message");
 const clearMessageButton = document.querySelector("#clear-message-button");
@@ -132,7 +133,7 @@ const client = createTimerClient({
     startButton.disabled = state.isRunning;
     pauseButton.disabled = !state.isRunning;
     isScreenBlank = state.isBlank;
-    blankScreenButton.textContent = isScreenBlank ? "[ MOSTRAR ]" : "[ VACIA ]";
+    blankScreenLabel.textContent = isScreenBlank ? "Mostrar" : "Ocultar pantalla";
     blankScreenButton.classList.toggle("is-active", isScreenBlank);
     blankScreenButton.setAttribute("aria-pressed", String(isScreenBlank));
     applyBranding(state.branding);
@@ -278,6 +279,70 @@ themeToggle.addEventListener("click", () => {
   const nextTheme = currentTheme === "dark" ? "light" : "dark";
   client.socket.emit("theme:update", nextTheme);
 });
+
+const panelThemeButton = document.querySelector("#panel-theme-button");
+const panelThemeLabel = document.querySelector("#panel-theme-label");
+const panelThemeOptions = document.querySelector("#panel-theme-options");
+const panelThemeOptionButtons = document.querySelectorAll(".panel-theme-option");
+
+const CONTROL_THEME_LABELS = {
+  classic: "PANEL: Clásico",
+  kiosk: "PANEL: Kiosk",
+  print: "PANEL: Print",
+  accessible: "PANEL: Accesible",
+};
+
+function setControlTheme(theme) {
+  const valid = CONTROL_THEME_LABELS[theme] ? theme : "classic";
+  document.body.classList.remove(
+    "control-theme-classic",
+    "control-theme-kiosk",
+    "control-theme-print",
+    "control-theme-accessible",
+  );
+  if (valid !== "classic") document.body.classList.add(`control-theme-${valid}`);
+  panelThemeLabel.textContent = CONTROL_THEME_LABELS[valid];
+  for (const option of panelThemeOptionButtons) {
+    const selected = option.dataset.controlTheme === valid;
+    option.setAttribute("aria-selected", String(selected));
+  }
+  try {
+    localStorage.setItem("pulpit-panel-theme", valid);
+  } catch {
+    // localStorage no disponible: el tema aplica solo en esta sesión.
+  }
+}
+
+function setPanelThemeMenuOpen(open) {
+  panelThemeOptions.classList.toggle("is-hidden", !open);
+  panelThemeButton.setAttribute("aria-expanded", String(open));
+}
+
+panelThemeButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  setPanelThemeMenuOpen(panelThemeOptions.classList.contains("is-hidden"));
+});
+
+for (const option of panelThemeOptionButtons) {
+  option.addEventListener("click", () => {
+    setControlTheme(option.dataset.controlTheme);
+    setPanelThemeMenuOpen(false);
+  });
+}
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".panel-theme-menu")) {
+    setPanelThemeMenuOpen(false);
+  }
+});
+
+let storedControlTheme = "classic";
+try {
+  storedControlTheme = localStorage.getItem("pulpit-panel-theme") || "classic";
+} catch {
+  // sin localStorage
+}
+setControlTheme(storedControlTheme);
 
 client.socket.on("room:error", (message) => {
   timeError.textContent = message;

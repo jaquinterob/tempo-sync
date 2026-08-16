@@ -82,22 +82,13 @@
 
         const finished = remaining <= 0;
         timerElement.classList.toggle("timer-finished", finished);
-        const terminal = document.body.classList.contains("control-page");
         labelElement.textContent = finished
-          ? terminal
-            ? "STATUS: DONE"
-            : "Tiempo terminado"
+          ? "Tiempo terminado"
           : state.isRunning
-            ? terminal
-              ? "STATUS: RUNNING"
-              : "En curso"
+            ? "En curso"
             : remaining < state.durationMs
-              ? terminal
-                ? "STATUS: PAUSED"
-                : "En pausa"
-              : terminal
-                ? "STATUS: READY"
-                : "Listo para iniciar";
+              ? "En pausa"
+              : "Listo para iniciar";
       }
 
       requestAnimationFrame(frame);
@@ -111,11 +102,9 @@
     const terminal = document.body.classList.contains("control-page");
     element.textContent = connected
       ? terminal
-        ? "ONLINE"
+        ? "En línea"
         : "Conectado"
-      : terminal
-        ? "OFFLINE"
-        : "Desconectado";
+      : "Desconectado";
     element.classList.toggle("status-online", connected);
     element.classList.toggle("status-offline", !connected);
   }

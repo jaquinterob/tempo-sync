@@ -8,12 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/css/styles.css" />
   </head>
   <body class="control-page">
+    <script>
+      try {
+        var t = localStorage.getItem("pulpit-panel-theme");
+        if (["kiosk", "print", "accessible"].indexOf(t) !== -1) {
+          document.body.classList.add("control-theme-" + t);
+        }
+      } catch (e) {}
+    </script>
     <main class="app-shell">
       <header class="page-header brand-header">
         <div class="brand-lockup">
@@ -26,7 +34,7 @@
           />
           <div>
             <h1 id="control-ward-title">Barrio Sabaneta</h1>
-            <p class="brand-sub">&gt; PULPIT_TIMER.exe // reunión sacramental</p>
+            <p class="brand-sub">Pulpit Timer · reunión sacramental</p>
           </div>
         </div>
         <span id="connection-status" class="status-pill status-offline">OFFLINE</span>
@@ -63,16 +71,16 @@
       <section id="timer-panel" class="matrix-layout is-hidden">
         <article class="card matrix-status-bar">
           <button id="change-room-button" type="button" class="matrix-status-cell matrix-room-button">
-            <span class="matrix-kicker">ROOM</span>
+            <span class="matrix-kicker">Sala</span>
             <strong id="room-pin">—</strong>
-            <span class="matrix-room-hint">cambiar</span>
+            <span class="matrix-room-hint">cambiar sala</span>
           </button>
           <div class="matrix-status-timer">
-            <p id="timer" class="timer timer-compact" aria-live="polite">07:00</p>
+            <p id="timer" class="timer timer-compact" aria-live="polite">08:00</p>
             <p id="timer-label" class="timer-label">Listo</p>
           </div>
           <div class="matrix-status-cell matrix-status-right">
-            <span class="matrix-kicker">LINK</span>
+            <span class="matrix-kicker">Conexión</span>
             <strong id="connection-status-inline" class="status-inline status-offline">Desconectado</strong>
           </div>
           <div class="time-meter time-meter-control" aria-hidden="true" title="Tiempo restante">
@@ -82,34 +90,60 @@
 
         <article class="card matrix-board">
           <div class="matrix-grid">
-            <button type="button" class="preset-button" data-duration-ms="420000">
-              <strong>DISCURSOS</strong>
-              <span>7 MIN</span>
-            </button>
-            <button type="button" class="preset-button" data-duration-ms="180000">
-              <strong>TESTIMONIO</strong>
-              <span>3 MIN</span>
+            <button type="button" class="preset-button preset-wide" data-duration-ms="480000">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+              <span class="preset-label">
+                <strong>Discursos</strong>
+                <span>8 min</span>
+              </span>
             </button>
             <button id="start-button" type="button" class="button button-start matrix-tall">
-              [ INICIAR ]
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
+              </svg>
+              <span class="btn-label">Iniciar</span>
             </button>
             <button id="blank-screen-button" type="button" class="button blank-screen-button matrix-tall">
-              [ VACIA ]
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <rect x="3" y="4.5" width="18" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M9 20.5h6M12 17.5v3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                <path d="M7 9.5l5 4M17 9.5l-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+              </svg>
+              <span id="blank-screen-label" class="btn-label">Ocultar pantalla</span>
             </button>
-            <button id="pause-button" type="button" class="button button-secondary">PAUSAR</button>
-            <button id="reset-button" type="button" class="button button-danger">REINICIAR</button>
+            <button id="pause-button" type="button" class="button button-secondary button-pause">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
+              </svg>
+              <span class="btn-label">Pausar</span>
+            </button>
+            <button id="reset-button" type="button" class="button button-danger">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+                <path d="M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="btn-label">Reiniciar</span>
+            </button>
 
             <form id="time-form" class="matrix-time-form">
               <label>
                 <span class="visually-hidden">MIN</span>
-                <input id="minutes" type="number" min="0" max="1440" value="7" inputmode="numeric" />
+                <input id="minutes" type="number" min="0" max="1440" value="8" inputmode="numeric" />
               </label>
               <span class="time-separator">:</span>
               <label>
                 <span class="visually-hidden">SEC</span>
                 <input id="seconds" type="number" min="0" max="59" value="0" inputmode="numeric" />
               </label>
-              <button type="submit" class="button button-secondary">[ APLICAR ]</button>
+              <button type="submit" class="button button-secondary btn-inline">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <span class="btn-label">Aplicar</span>
+              </button>
               <p id="time-error" class="form-error" role="alert"></p>
             </form>
 
@@ -120,11 +154,20 @@
                 type="text"
                 maxlength="180"
                 autocomplete="off"
-                placeholder="Por favor, concluya su discurso_"
+                placeholder="Por favor, concluya su discurso"
               />
-              <button type="submit" class="button button-primary">[ MOSTRAR ]</button>
-              <button id="clear-message-button" type="button" class="button button-secondary">
-                QUITAR
+              <button type="submit" class="button button-primary btn-inline">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                <span class="btn-label">Mostrar</span>
+              </button>
+              <button id="clear-message-button" type="button" class="button button-secondary btn-inline">
+                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                </svg>
+                <span class="btn-label">Quitar</span>
               </button>
             </form>
           </div>
@@ -186,8 +229,41 @@
 
         <article class="card brand-config-card">
           <div class="brand-config-head">
-            <h2>CFG / IDENTIDAD</h2>
+            <h2>Identidad</h2>
             <div class="brand-config-actions">
+              <div class="panel-theme-menu">
+                <button
+                  id="panel-theme-button"
+                  type="button"
+                  class="button button-secondary theme-toggle"
+                  aria-haspopup="listbox"
+                  aria-expanded="false"
+                >
+                  <span id="panel-theme-label" class="theme-toggle-label">PANEL: Clásico</span>
+                  <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <div
+                  id="panel-theme-options"
+                  class="panel-theme-options is-hidden"
+                  role="listbox"
+                  aria-label="Tema del panel"
+                >
+                  <button type="button" role="option" data-control-theme="classic" aria-selected="true" class="panel-theme-option">
+                    Clásico <span class="option-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" role="option" data-control-theme="kiosk" class="panel-theme-option">
+                    Kiosk <span class="option-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" role="option" data-control-theme="print" class="panel-theme-option">
+                    Print <span class="option-check" aria-hidden="true">✓</span>
+                  </button>
+                  <button type="button" role="option" data-control-theme="accessible" class="panel-theme-option">
+                    Accesible <span class="option-check" aria-hidden="true">✓</span>
+                  </button>
+                </div>
+              </div>
               <button
                 id="theme-toggle"
                 type="button"
@@ -218,11 +294,11 @@
           </div>
           <form id="branding-form" class="branding-form">
             <label class="brand-field">
-              <span>BARRIO</span>
+              <span>Barrio</span>
               <input id="ward-name" type="text" maxlength="60" value="Barrio Sabaneta" required />
             </label>
             <label class="brand-field">
-              <span>MSG_1</span>
+              <span>Mensaje al terminar</span>
               <input
                 id="finish-thanks"
                 type="text"
@@ -232,7 +308,7 @@
               />
             </label>
             <label class="brand-field">
-              <span>MSG_2</span>
+              <span>Alerta final</span>
               <input
                 id="finish-done"
                 type="text"
@@ -241,7 +317,12 @@
                 required
               />
             </label>
-            <button type="submit" class="button button-primary brand-save">[ GUARDAR ]</button>
+            <button type="submit" class="button button-primary brand-save btn-inline">
+              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+              <span class="btn-label">Guardar</span>
+            </button>
           </form>
         </article>
       </section>

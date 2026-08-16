@@ -4,7 +4,7 @@ const os = require("node:os");
 const express = require("express");
 const { Server } = require("socket.io");
 
-const DEFAULT_DURATION_MS = 7 * 60 * 1000;
+const DEFAULT_DURATION_MS = 8 * 60 * 1000;
 const MIN_DURATION_MS = 1_000;
 const MAX_DURATION_MS = 60 * 60 * 60 * 1000;
 
@@ -71,6 +71,40 @@ function createTimerServer() {
   const rooms = new Map();
 
   app.use(express.static(path.join(__dirname, "public")));
+
+  // Pretty request logs (terminal).
+  const logHttpRequest = (req, res, next) => {
+    const start = Date.now();
+    const pathName = String(req.path || "");
+
+    // Evita ruido de assets/handshakes frecuentes.
+    const isNoisy =
+      pathName.startsWith("/css/") ||
+      pathName.startsWith("/js/") ||
+      pathName.startsWith("/assets/") ||
+      pathName === "/socket.io/" ||
+      pathName.startsWith("/socket.io/");
+
+    if (isNoisy) return next();
+
+    res.on("finish", () => {
+      const ms = Date.now() - start;
+      const method = req.method;
+      const status = res.statusCode;
+      const statusColor = status >= 500 ? "\x1b[31m" : status >= 400 ? "\x1b[33m" : "\x1b[32m";
+      const reset = "\x1b[0m";
+      const dim = "\x1b[2m";
+      const bold = "\x1b[1m";
+      console.log(
+        `${dim}${bold}${method}${reset} ${req.originalUrl} ${statusColor}${status}${reset} ${dim}${ms}ms${reset}`
+      );
+    });
+
+    next();
+  };
+
+  app.use(logHttpRequest);
+
   app.get("/", (_request, response) => {
     response.sendFile(path.join(__dirname, "public", "index.html"));
   });
@@ -101,6 +135,18 @@ function createTimerServer() {
   }
 
   io.on("connection", (socket) => {
+    const reset = "\x1b[0m";
+    const dim = "\x1b[2m";
+    const bold = "\x1b[1m";
+    const cyan = "\x1b[36m";
+    const green = "\x1b[32m";
+    const yellow = "\x1b[33m";
+    const red = "\x1b[31m";
+
+    console.log(
+      `${dim}${bold}WS${reset} ${cyan}${socket.id}${reset} ${dim}from ${socket.handshake.address}${reset}`
+    );
+
     socket.on("room:join", (rawPin, acknowledge = () => {}) => {
       const pin = normalizePin(rawPin);
       if (!pin) {
@@ -114,6 +160,14 @@ function createTimerServer() {
 
       socket.data.pin = pin;
       socket.join(pin);
+      const stateForLog = serializeRoom(roomFor(pin));
+      // Para evitar ruido: no hace falta loguear el `serverNow` dinámico.
+      delete stateForLog.serverNow;
+      console.log(
+        `${green}${bold}JOIN${reset} room=${yellow}${pin}${reset} socket=${cyan}${socket.id}${reset} state=${JSON.stringify(
+          stateForLog
+        )}`
+      );
       acknowledge({ ok: true, pin, state: serializeRoom(roomFor(pin)) });
     });
 
@@ -134,11 +188,16 @@ function createTimerServer() {
         room.isRunning = false;
         room.endsAt = null;
       });
+      console.log(
+        `${bold}SET${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} durationMs=${parsedDuration}`
+      );
     });
 
     socket.on("timer:start", () => {
+      let remainingBeforeStart = 0;
       updateRoom(socket, (room) => {
         const remaining = currentRemaining(room);
+        remainingBeforeStart = remaining;
         if (remaining <= 0) {
           room.remainingMs = room.durationMs;
         } else {
@@ -147,14 +206,22 @@ function createTimerServer() {
         room.endsAt = Date.now() + room.remainingMs;
         room.isRunning = true;
       });
+      console.log(
+        `${bold}START${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} remainingBeforeStartMs=${remainingBeforeStart}`
+      );
     });
 
     socket.on("timer:pause", () => {
+      let remainingBeforePause = 0;
       updateRoom(socket, (room) => {
-        room.remainingMs = currentRemaining(room);
+        remainingBeforePause = currentRemaining(room);
+        room.remainingMs = remainingBeforePause;
         room.isRunning = false;
         room.endsAt = null;
       });
+      console.log(
+        `${bold}PAUSE${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} remainingBeforePauseMs=${remainingBeforePause}`
+      );
     });
 
     socket.on("timer:reset", () => {
@@ -163,6 +230,7 @@ function createTimerServer() {
         room.isRunning = false;
         room.endsAt = null;
       });
+      console.log(`${bold}RESET${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"}`);
     });
 
     socket.on("timer:message", (value) => {
@@ -178,12 +246,19 @@ function createTimerServer() {
       updateRoom(socket, (room) => {
         room.message = message;
       });
+      // JSON.stringify mantiene el contenido completo y escapa comillas.
+      console.log(
+        `${bold}MSG${reset} pin=${
+          socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"
+        } message=${JSON.stringify(message)}`
+      );
     });
 
     socket.on("display:blank", (value) => {
       updateRoom(socket, (room) => {
         room.isBlank = Boolean(value);
       });
+      console.log(`${bold}BLANK${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} -> ${Boolean(value)}`);
     });
 
     socket.on("branding:update", (payload = {}) => {
@@ -204,6 +279,13 @@ function createTimerServer() {
           finishDone,
         };
       });
+      console.log(
+        `${bold}BRAND${reset} pin=${
+          socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"
+        } wardName=${JSON.stringify(wardName)} finishThanks=${JSON.stringify(
+          finishThanks
+        )} finishDone=${JSON.stringify(finishDone)}`
+      );
     });
 
     socket.on("theme:update", (value) => {
@@ -211,6 +293,13 @@ function createTimerServer() {
       updateRoom(socket, (room) => {
         room.theme = theme;
       });
+      console.log(`${bold}THEME${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} -> ${theme}`);
+    });
+
+    socket.on("disconnect", (reason) => {
+      console.log(
+        `${red}${bold}DISC${reset} socket=${cyan}${socket.id}${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} reason=${reason}`
+      );
     });
   });
 
@@ -245,30 +334,64 @@ function getLocalAddresses() {
   return addresses;
 }
 
+function printStartupBanner(port, addresses) {
+  const cyan = "\x1b[36m";
+  const dim = "\x1b[2m";
+  const bold = "\x1b[1m";
+  const green = "\x1b[32m";
+  const yellow = "\x1b[33m";
+  const red = "\x1b[31m";
+  const reset = "\x1b[0m";
+
+  console.log("");
+  console.log(
+    `${cyan}${bold}` +
+      [
+        "     ██╗ ██████╗ ██╗  ██╗███╗   ██╗ ██████╗",
+        "     ██║██╔═══██╗██║  ██║████╗  ██║██╔═══██╗",
+        "     ██║██║   ██║███████║██╔██╗ ██║██║   ██║",
+        "██   ██║██║▄▄ ██║██╔══██║██║╚██╗██║██║▄▄ ██║",
+        "╚█████╔╝╚██████╔╝██║  ██║██║ ╚████║╚██████╔╝",
+        " ╚════╝  ╚══▀▀═╝ ╚═╝  ╚═╝╚═╝  ╚═══╝ ╚══▀▀═╝",
+      ].join("\n") +
+      reset
+  );
+  console.log(`${bold}  PULPIT TIMER${reset}${dim}  ·  Developer: JohnQ${reset}`);
+  console.log(`${dim}  ────────────────────────────────────────${reset}`);
+  console.log("");
+
+  console.log(`${green}${bold}Local${reset}`);
+  console.log(`${dim}  Inicio:${reset}  http://localhost:${port}/`);
+  console.log(`${dim}  Control:${reset} http://localhost:${port}/control.html`);
+  console.log(`${dim}  Pantalla:${reset} http://localhost:${port}/display.html`);
+
+  if (addresses.length === 0) {
+    console.log(`${dim}${red}Red Wi-Fi: (sin IP local detectada)${reset}`);
+    console.log("");
+    return;
+  }
+
+  for (const address of addresses) {
+    console.log("");
+    console.log(`${cyan}${bold}Red Wi-Fi${reset} ${dim}(${address})${reset}`);
+    console.log(`${dim}  Inicio:${reset}  http://${address}:${port}/`);
+    console.log(
+      `${dim}  Control:${reset} http://${address}:${port}/control.html`
+    );
+    console.log(
+      `${dim}  Pantalla:${reset} http://${address}:${port}/display.html`
+    );
+  }
+
+  console.log("");
+}
+
 if (require.main === module) {
   const port = Number(process.env.PORT) || 3000;
   const { httpServer } = createTimerServer();
 
   httpServer.listen(port, "0.0.0.0", () => {
-    const addresses = getLocalAddresses();
-
-    console.log(`Pulpit Timer`);
-    console.log(`Local`);
-    console.log(`  Inicio:   http://localhost:${port}/`);
-    console.log(`  Control:  http://localhost:${port}/control.html`);
-    console.log(`  Pantalla: http://localhost:${port}/display.html`);
-
-    if (addresses.length === 0) {
-      console.log(`Red Wi-Fi: (sin IP local detectada)`);
-      return;
-    }
-
-    for (const address of addresses) {
-      console.log(`Red Wi-Fi (${address})`);
-      console.log(`  Inicio:   http://${address}:${port}/`);
-      console.log(`  Control:  http://${address}:${port}/control.html`);
-      console.log(`  Pantalla: http://${address}:${port}/display.html`);
-    }
+    printStartupBanner(port, getLocalAddresses());
   });
 }
 
