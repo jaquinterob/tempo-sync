@@ -1,8 +1,13 @@
 const path = require("node:path");
 const http = require("node:http");
+const crypto = require("node:crypto");
 const os = require("node:os");
 const express = require("express");
 const { Server } = require("socket.io");
+
+const ADMIN_USER = process.env.ADMIN_USER || "SA";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "qwe123";
+const ADMIN_SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
 const DEFAULT_DURATION_MS = 8 * 60 * 1000;
 const MIN_DURATION_MS = 1_000;
@@ -69,44 +74,117 @@ function createTimerServer() {
   const httpServer = http.createServer(app);
   const io = new Server(httpServer);
   const rooms = new Map();
+  const adminSessions = new Map();
 
-  app.use(express.static(path.join(__dirname, "public")));
+  app.use(express.json());
 
-  // Pretty request logs (terminal).
-  const logHttpRequest = (req, res, next) => {
-    const start = Date.now();
-    const pathName = String(req.path || "");
+  function requireAdmin(request, response, next) {
+    const header = request.headers.authorization || "";
+    const token = header.startsWith("Bearer ") ? header.slice(7) : null;
+    const session = token ? adminSessions.get(token) : null;
 
-    // Evita ruido de assets/handshakes frecuentes.
-    const isNoisy =
-      pathName.startsWith("/css/") ||
-      pathName.startsWith("/js/") ||
-      pathName.startsWith("/assets/") ||
-      pathName === "/socket.io/" ||
-      pathName.startsWith("/socket.io/");
+    if (!session) {
+      response.status(401).json({ ok: false, error: "No autorizado." });
+      return;
+    }
 
-    if (isNoisy) return next();
+    if (session.expiresAt < Date.now()) {
+      adminSessions.delete(token);
+      response.status(401).json({ ok: false, error: "Sesión expirada." });
+      return;
+    }
 
-    res.on("finish", () => {
-      const ms = Date.now() - start;
-      const method = req.method;
-      const status = res.statusCode;
-      const statusColor = status >= 500 ? "\x1b[31m" : status >= 400 ? "\x1b[33m" : "\x1b[32m";
-      const reset = "\x1b[0m";
-      const dim = "\x1b[2m";
-      const bold = "\x1b[1m";
-      console.log(
-        `${dim}${bold}${method}${reset} ${req.originalUrl} ${statusColor}${status}${reset} ${dim}${ms}ms${reset}`
-      );
-    });
-
+    request.adminToken = token;
     next();
-  };
+  }
 
-  app.use(logHttpRequest);
+  function listConnections() {
+    const connections = [];
+    const now = Date.now();
 
+    for (const socket of io.sockets.sockets.values()) {
+      connections.push({
+        id: socket.id,
+        address: socket.handshake?.address ?? null,
+        pin: socket.data.pin ?? null,
+        connectedAt: socket.data.connectedAt ?? null,
+        connectedForMs: now - (socket.data.connectedAt ?? now),
+        rooms: [...(socket.rooms ?? [])].filter((name) => name !== socket.id),
+      });
+    }
+
+    connections.sort((a, b) => (a.connectedAt ?? 0) - (b.connectedAt ?? 0));
+    return connections;
+  }
+
+  app.get("/admin", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "admin.html"));
+  });
+
+  app.post("/api/admin/login", (request, response) => {
+    const user = String(request.body?.user ?? "").trim();
+    const password = String(request.body?.password ?? "");
+
+    if (user !== ADMIN_USER || password !== ADMIN_PASSWORD) {
+      response.status(401).json({ ok: false, error: "Credenciales inválidas." });
+      return;
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+    adminSessions.set(token, { user, expiresAt: Date.now() + ADMIN_SESSION_TTL_MS });
+    response.json({ ok: true, token });
+  });
+
+  app.post("/api/admin/logout", requireAdmin, (request, response) => {
+    adminSessions.delete(request.adminToken);
+    response.json({ ok: true });
+  });
+
+  app.get("/api/admin/connections", requireAdmin, (_request, response) => {
+    response.json({ ok: true, connections: listConnections() });
+  });
+
+  app.post("/api/admin/kick", requireAdmin, (request, response) => {
+    const socketId = String(request.body?.socketId ?? "");
+    const socket = io.sockets.sockets.get(socketId);
+
+    if (!socket) {
+      response.status(404).json({ ok: false, error: "Conexión no encontrada." });
+      return;
+    }
+
+    socket.emit("server:kick", { reason: "Desconectado por el administrador." });
+    socket.disconnect(true);
+    response.json({ ok: true });
+  });
+
+  app.get("/control.html", (_request, response) => {
+    response.redirect(301, "/control");
+  });
+
+  app.get("/display.html", (_request, response) => {
+    response.redirect(301, "/display");
+  });
+
+  app.use(
+    express.static(path.join(__dirname, "public"), {
+      setHeaders: (response, filePath) => {
+        if (filePath.endsWith(".css") || filePath.endsWith(".js")) {
+          response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        }
+      },
+    }),
+  );
   app.get("/", (_request, response) => {
     response.sendFile(path.join(__dirname, "public", "index.html"));
+  });
+
+  app.get("/control", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "control.html"));
+  });
+
+  app.get("/display", (_request, response) => {
+    response.sendFile(path.join(__dirname, "public", "display.html"));
   });
 
   function roomFor(pin) {
@@ -135,17 +213,7 @@ function createTimerServer() {
   }
 
   io.on("connection", (socket) => {
-    const reset = "\x1b[0m";
-    const dim = "\x1b[2m";
-    const bold = "\x1b[1m";
-    const cyan = "\x1b[36m";
-    const green = "\x1b[32m";
-    const yellow = "\x1b[33m";
-    const red = "\x1b[31m";
-
-    console.log(
-      `${dim}${bold}WS${reset} ${cyan}${socket.id}${reset} ${dim}from ${socket.handshake.address}${reset}`
-    );
+    socket.data.connectedAt = Date.now();
 
     socket.on("room:join", (rawPin, acknowledge = () => {}) => {
       const pin = normalizePin(rawPin);
@@ -160,14 +228,6 @@ function createTimerServer() {
 
       socket.data.pin = pin;
       socket.join(pin);
-      const stateForLog = serializeRoom(roomFor(pin));
-      // Para evitar ruido: no hace falta loguear el `serverNow` dinámico.
-      delete stateForLog.serverNow;
-      console.log(
-        `${green}${bold}JOIN${reset} room=${yellow}${pin}${reset} socket=${cyan}${socket.id}${reset} state=${JSON.stringify(
-          stateForLog
-        )}`
-      );
       acknowledge({ ok: true, pin, state: serializeRoom(roomFor(pin)) });
     });
 
@@ -188,16 +248,11 @@ function createTimerServer() {
         room.isRunning = false;
         room.endsAt = null;
       });
-      console.log(
-        `${bold}SET${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} durationMs=${parsedDuration}`
-      );
     });
 
     socket.on("timer:start", () => {
-      let remainingBeforeStart = 0;
       updateRoom(socket, (room) => {
         const remaining = currentRemaining(room);
-        remainingBeforeStart = remaining;
         if (remaining <= 0) {
           room.remainingMs = room.durationMs;
         } else {
@@ -206,22 +261,14 @@ function createTimerServer() {
         room.endsAt = Date.now() + room.remainingMs;
         room.isRunning = true;
       });
-      console.log(
-        `${bold}START${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} remainingBeforeStartMs=${remainingBeforeStart}`
-      );
     });
 
     socket.on("timer:pause", () => {
-      let remainingBeforePause = 0;
       updateRoom(socket, (room) => {
-        remainingBeforePause = currentRemaining(room);
-        room.remainingMs = remainingBeforePause;
+        room.remainingMs = currentRemaining(room);
         room.isRunning = false;
         room.endsAt = null;
       });
-      console.log(
-        `${bold}PAUSE${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} remainingBeforePauseMs=${remainingBeforePause}`
-      );
     });
 
     socket.on("timer:reset", () => {
@@ -230,7 +277,6 @@ function createTimerServer() {
         room.isRunning = false;
         room.endsAt = null;
       });
-      console.log(`${bold}RESET${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"}`);
     });
 
     socket.on("timer:message", (value) => {
@@ -246,19 +292,12 @@ function createTimerServer() {
       updateRoom(socket, (room) => {
         room.message = message;
       });
-      // JSON.stringify mantiene el contenido completo y escapa comillas.
-      console.log(
-        `${bold}MSG${reset} pin=${
-          socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"
-        } message=${JSON.stringify(message)}`
-      );
     });
 
     socket.on("display:blank", (value) => {
       updateRoom(socket, (room) => {
         room.isBlank = Boolean(value);
       });
-      console.log(`${bold}BLANK${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} -> ${Boolean(value)}`);
     });
 
     socket.on("branding:update", (payload = {}) => {
@@ -279,13 +318,6 @@ function createTimerServer() {
           finishDone,
         };
       });
-      console.log(
-        `${bold}BRAND${reset} pin=${
-          socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"
-        } wardName=${JSON.stringify(wardName)} finishThanks=${JSON.stringify(
-          finishThanks
-        )} finishDone=${JSON.stringify(finishDone)}`
-      );
     });
 
     socket.on("theme:update", (value) => {
@@ -293,13 +325,6 @@ function createTimerServer() {
       updateRoom(socket, (room) => {
         room.theme = theme;
       });
-      console.log(`${bold}THEME${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} -> ${theme}`);
-    });
-
-    socket.on("disconnect", (reason) => {
-      console.log(
-        `${red}${bold}DISC${reset} socket=${cyan}${socket.id}${reset} pin=${socket.data.pin ? `${yellow}${socket.data.pin}${reset}` : "?"} reason=${reason}`
-      );
     });
   });
 
@@ -362,8 +387,8 @@ function printStartupBanner(port, addresses) {
 
   console.log(`${green}${bold}Local${reset}`);
   console.log(`${dim}  Inicio:${reset}  http://localhost:${port}/`);
-  console.log(`${dim}  Control:${reset} http://localhost:${port}/control.html`);
-  console.log(`${dim}  Pantalla:${reset} http://localhost:${port}/display.html`);
+  console.log(`${dim}  Control:${reset} http://localhost:${port}/control`);
+  console.log(`${dim}  Pantalla:${reset} http://localhost:${port}/display`);
 
   if (addresses.length === 0) {
     console.log(`${dim}${red}Red Wi-Fi: (sin IP local detectada)${reset}`);
@@ -375,12 +400,8 @@ function printStartupBanner(port, addresses) {
     console.log("");
     console.log(`${cyan}${bold}Red Wi-Fi${reset} ${dim}(${address})${reset}`);
     console.log(`${dim}  Inicio:${reset}  http://${address}:${port}/`);
-    console.log(
-      `${dim}  Control:${reset} http://${address}:${port}/control.html`
-    );
-    console.log(
-      `${dim}  Pantalla:${reset} http://${address}:${port}/display.html`
-    );
+    console.log(`${dim}  Control:${reset} http://${address}:${port}/control`);
+    console.log(`${dim}  Pantalla:${reset} http://${address}:${port}/display`);
   }
 
   console.log("");

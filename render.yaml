@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pulpit-timer
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production

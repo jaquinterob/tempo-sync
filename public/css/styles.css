@@ -3484,3 +3484,7 @@ input:focus {
   color: #b00020;
   animation: none;
 }
+
+.display-page.display-ward.display-dark.screen-blanked {
+  background: #171614 !important;
+}
