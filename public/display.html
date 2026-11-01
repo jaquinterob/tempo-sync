@@ -22,7 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=5" />
+    <link rel="stylesheet" href="/css/styles.css?v=6" />
   </head>
   <body class="display-page display-ward">
     <main class="display-shell">
@@ -42,10 +42,13 @@
         </header>
 
         <div class="display-join-body">
-          <h1>Conectar a una sala</h1>
-          <p>Escribe el PIN que aparece en el panel de control.</p>
+          <h1>Abrir la pantalla del reloj</h1>
+          <p>
+            Escribe el código de 4 números que te enviaron por WhatsApp
+            (o el que aparece en el otro celular, en el panel de control).
+          </p>
           <form id="join-form" class="join-form display-join-form">
-            <label for="pin">PIN de sala</label>
+            <label for="pin">Código que te enviaron</label>
             <div class="inline-fields">
               <input
                 id="pin"
@@ -165,7 +168,7 @@
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/shared.js?v=5"></script>
-    <script src="/js/display.js?v=5"></script>
+    <script src="/js/shared.js?v=6"></script>
+    <script src="/js/display.js?v=6"></script>
   </body>
 </html>

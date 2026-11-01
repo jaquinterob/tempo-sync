@@ -127,7 +127,12 @@ function updateShareLinks(pin) {
   const url = displayShareUrl(pin);
   sharePin.textContent = pin;
   displayLink.href = url;
-  const message = `Abre la pantalla de Pulpit Timer:\n${url}`;
+  const message =
+    `Hola. Ábrelo en el celular que va a mostrar el reloj grande ` +
+    `(ponlo en horizontal).\n\n` +
+    `Código de la sala: ${pin}\n` +
+    `Enlace: ${url}\n\n` +
+    `Solo toca el enlace. El otro celular controla el tiempo.`;
   whatsappShare.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
 
@@ -137,8 +142,11 @@ async function copyDisplayLink() {
   if (!url) return;
 
   try {
-    await navigator.clipboard.writeText(url);
-    shareStatus.textContent = "Enlace copiado. Pégalo en WhatsApp o SMS.";
+    await navigator.clipboard.writeText(
+      `Código ${pin} — abre este enlace en el celular de la pantalla: ${url}`,
+    );
+    shareStatus.textContent =
+      "Copiado. Pégalo en WhatsApp o SMS y envíalo al otro celular.";
   } catch {
     shareStatus.textContent = url;
   }

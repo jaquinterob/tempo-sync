@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=5" />
+    <link rel="stylesheet" href="/css/styles.css?v=6" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
@@ -28,10 +28,68 @@
       />
       <p class="entry-product">Pulpit Timer</p>
       <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
-      <p class="entry-lead">Temporizador sincronizado para la reunión sacramental.</p>
+      <p class="entry-lead">
+        Reloj para la reunión sacramental. Usa <strong>2 celulares</strong>: uno controla el tiempo y el otro lo muestra grande.
+      </p>
+
+      <section class="entry-guide" aria-labelledby="entry-guide-title">
+        <h2 id="entry-guide-title" class="entry-guide-title">Sigue estos 4 pasos (no te saltes ninguno)</h2>
+
+        <ol class="entry-pipeline">
+          <li class="entry-pipe-step">
+            <span class="entry-pipe-num" aria-hidden="true">1</span>
+            <div>
+              <strong>Este celular = control</strong>
+              <p>
+                Es el teléfono de quien maneja el tiempo (obispo, consejero o cronometrista).
+                Aquí abajo elige <strong>Barrio</strong> o <strong>Estaca</strong>, escribe el nombre
+                (ejemplo: Sabaneta) y toca el botón grande <strong>Crear sala</strong>.
+              </p>
+            </div>
+          </li>
+          <li class="entry-pipe-step">
+            <span class="entry-pipe-num" aria-hidden="true">2</span>
+            <div>
+              <strong>Te va a salir un código</strong>
+              <p>
+                En la siguiente pantalla verás un código de 4 números (ejemplo: <strong>4821</strong>)
+                y un botón <strong>WhatsApp</strong>. Ese código es la “llave” para conectar el otro celular.
+              </p>
+            </div>
+          </li>
+          <li class="entry-pipe-step">
+            <span class="entry-pipe-num" aria-hidden="true">3</span>
+            <div>
+              <strong>Envía el código al otro celular</strong>
+              <p>
+                Toca <strong>WhatsApp</strong> y mándalo a la persona del segundo teléfono
+                (el que va a mostrar el reloj a la congregación, o el que se conecta al televisor).
+                Si prefieres, toca <strong>Copiar</strong> y pega el enlace en cualquier mensaje.
+              </p>
+            </div>
+          </li>
+          <li class="entry-pipe-step">
+            <span class="entry-pipe-num" aria-hidden="true">4</span>
+            <div>
+              <strong>El otro celular abre el enlace</strong>
+              <p>
+                En el segundo teléfono abren el mensaje, tocan el enlace y ponen el celular
+                en horizontal. Verán el reloj grande. Desde <strong>este</strong> teléfono
+                tocas <strong>Iniciar</strong>, <strong>Pausar</strong> o <strong>Reiniciar</strong>
+                y el otro se actualiza solo.
+              </p>
+            </div>
+          </li>
+        </ol>
+
+        <p class="entry-guide-note">
+          Tip: no cierres esta pestaña del control mientras dure la reunión. El otro celular solo muestra; el control es este.
+        </p>
+      </section>
 
       <form id="create-room-form" class="entry-form">
-        <span class="entry-label" id="unit-type-label">Tipo de unidad</span>
+        <p class="entry-form-intro">Empieza aquí (paso 1)</p>
+        <span class="entry-label" id="unit-type-label">¿Es barrio o estaca?</span>
         <div
           class="entry-unit-type"
           role="radiogroup"
@@ -47,7 +105,7 @@
           </label>
         </div>
 
-        <label class="entry-label" for="unit-name">Nombre</label>
+        <label class="entry-label" for="unit-name">Nombre de la unidad</label>
         <input
           id="unit-name"
           class="entry-input"
@@ -58,22 +116,13 @@
           autocomplete="organization"
           placeholder="Ej. Sabaneta"
         />
-        <button id="create-room" type="submit" class="entry-button">Crear sala</button>
+        <button id="create-room" type="submit" class="entry-button">
+          Crear sala y obtener el código
+        </button>
       </form>
-
-      <ol class="entry-steps" aria-label="Cómo usarlo">
-        <li>Elige <strong>Barrio</strong> o <strong>Estaca</strong>, escribe el nombre y toca <strong>Crear sala</strong>.</li>
-        <li>En el control, toca <strong>Copiar</strong> o <strong>WhatsApp</strong> y envía el enlace a la persona de la pantalla.</li>
-        <li>Esa persona abre el enlace en el televisor o celular en horizontal.</li>
-        <li>Desde el control inicia, pausa o reinicia el tiempo de cada discurso.</li>
-      </ol>
-
-      <p class="entry-hint">
-        Ambos dispositivos deben estar en la misma red o usar la URL pública del servidor.
-      </p>
     </main>
 
-    <script src="/js/shared.js?v=5"></script>
+    <script src="/js/shared.js?v=6"></script>
     <script>
       const {
         UNIT_PLACEHOLDER,
