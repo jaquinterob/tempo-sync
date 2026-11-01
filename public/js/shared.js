@@ -145,6 +145,53 @@
       .slice(0, 60);
   }
 
+  const UNIT_TYPES = ["Barrio", "Estaca"];
+  const UNIT_PLACEHOLDER = "Tu unidad";
+
+  function normalizeUnitText(value, maxLength = 60) {
+    return String(value ?? "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, maxLength);
+  }
+
+  function normalizeUnitType(value) {
+    const text = normalizeUnitText(value, 20);
+    if (/^estaca$/i.test(text)) return "Estaca";
+    return "Barrio";
+  }
+
+  function composeUnitLabel(type, name) {
+    const unitType = normalizeUnitType(type);
+    const unitName = normalizeUnitText(name, 50);
+    if (!unitName) return "";
+    return normalizeUnitText(`${unitType} ${unitName}`, 60);
+  }
+
+  function parseUnitLabel(value) {
+    const full = normalizeUnitText(value, 60);
+    if (!full) {
+      return { type: "Barrio", name: "" };
+    }
+    if (/^estaca\b/i.test(full)) {
+      return {
+        type: "Estaca",
+        name: normalizeUnitText(full.replace(/^estaca\s+/i, ""), 50),
+      };
+    }
+    if (/^barrio\b/i.test(full)) {
+      return {
+        type: "Barrio",
+        name: normalizeUnitText(full.replace(/^barrio\s+/i, ""), 50),
+      };
+    }
+    return { type: "Barrio", name: full };
+  }
+
+  function displayUnitLabel(value) {
+    return normalizeUnitText(value, 60) || UNIT_PLACEHOLDER;
+  }
+
   function createRoomPin() {
     return String(1000 + Math.floor(Math.random() * 9000));
   }
@@ -156,12 +203,19 @@
   }
 
   window.TimerTools = {
+    UNIT_PLACEHOLDER,
+    UNIT_TYPES,
     cleanPin,
     clearWarmupKeepAlive,
+    composeUnitLabel,
     createRoomPin,
     createTimerClient,
     displayShareUrl,
+    displayUnitLabel,
     formatTime,
+    normalizeUnitText,
+    normalizeUnitType,
+    parseUnitLabel,
     pinFromUrl,
     startWarmupKeepAlive,
     wardFromUrl,

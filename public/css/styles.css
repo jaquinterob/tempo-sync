@@ -1861,6 +1861,69 @@ input:focus {
   white-space: nowrap;
 }
 
+.control-page .brand-unit-field {
+  border: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+.control-page .brand-unit-controls {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+.control-page .brand-unit-type {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 4px;
+}
+
+.control-page .brand-unit-option {
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.control-page .brand-unit-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.control-page .brand-unit-option span {
+  display: grid;
+  place-items: center;
+  min-height: 32px;
+  padding: 0 8px;
+  border: 1px solid #9ca3af;
+  background: #fff;
+  color: #4b5563;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.control-page .brand-unit-option input:checked + span {
+  border-color: #374151;
+  background: #374151;
+  color: #f9fafb;
+}
+
+.control-page .brand-unit-option input:focus-visible + span {
+  outline: 2px solid #6b7280;
+  outline-offset: 1px;
+}
+
+.control-page #control-ward-title.is-placeholder,
+.display-page .display-ward-name.is-placeholder,
+.display-page .display-join-ward.is-placeholder {
+  opacity: 0.55;
+}
+
 .control-page .brand-field:nth-child(1) {
   grid-column: 1 / -1;
 }
@@ -2522,6 +2585,52 @@ input:focus {
   font-weight: 400;
   letter-spacing: 0.14em;
   text-transform: uppercase;
+}
+
+.entry-ward.is-placeholder {
+  color: #a8a29e;
+}
+
+.entry-unit-type {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.entry-unit-option {
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.entry-unit-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.entry-unit-option span {
+  display: grid;
+  place-items: center;
+  min-height: 44px;
+  border: 1px solid #a8a29e;
+  background: rgba(255, 255, 255, 0.72);
+  color: #57534e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.entry-unit-option input:focus-visible + span {
+  outline: 2px solid #78716c;
+  outline-offset: 1px;
+}
+
+.entry-unit-option input:checked + span {
+  border-color: #57534e;
+  background: #57534e;
+  color: #f7f4ef;
 }
 
 .entry-lead {

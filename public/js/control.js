@@ -1,7 +1,12 @@
 const {
   cleanPin,
+  composeUnitLabel,
   createTimerClient,
   displayShareUrl,
+  displayUnitLabel,
+  normalizeUnitText,
+  normalizeUnitType,
+  parseUnitLabel,
   pinFromUrl,
   wardFromUrl,
   renderTimer,
@@ -38,7 +43,8 @@ const whatsappShare = document.querySelector("#whatsapp-share");
 const sharePin = document.querySelector("#share-pin");
 const shareStatus = document.querySelector("#share-status");
 const brandingForm = document.querySelector("#branding-form");
-const wardNameInput = document.querySelector("#ward-name");
+const unitNameInput = document.querySelector("#unit-name");
+const unitTypeInputs = [...document.querySelectorAll('input[name="unit-type"]')];
 const finishThanksInput = document.querySelector("#finish-thanks");
 const finishDoneInput = document.querySelector("#finish-done");
 const brandingStatus = document.querySelector("#branding-status");
@@ -49,6 +55,30 @@ let lastScreenMessage = "";
 let isScreenBlank = false;
 let lastBrandingKey = "";
 let currentTheme = "light";
+
+function selectedUnitType() {
+  const checked = unitTypeInputs.find((input) => input.checked);
+  return normalizeUnitType(checked?.value);
+}
+
+function setSelectedUnitType(type) {
+  const next = normalizeUnitType(type);
+  for (const input of unitTypeInputs) {
+    input.checked = input.value === next;
+  }
+}
+
+function currentUnitLabel() {
+  return composeUnitLabel(selectedUnitType(), unitNameInput.value);
+}
+
+function fillUnitFields(wardName) {
+  const parsed = parseUnitLabel(wardName);
+  setSelectedUnitType(parsed.type);
+  if (document.activeElement !== unitNameInput) {
+    unitNameInput.value = parsed.name;
+  }
+}
 
 function syncConnectionBadge(connected) {
   updateConnectionBadge(connectionStatus, connected);
@@ -78,14 +108,13 @@ function applyTheme(theme) {
 function applyBranding(branding) {
   if (!branding) return;
   const key = `${branding.wardName}|${branding.finishThanks}|${branding.finishDone}`;
-  controlWardTitle.textContent = branding.wardName;
+  controlWardTitle.textContent = displayUnitLabel(branding.wardName);
+  controlWardTitle.classList.toggle("is-placeholder", !normalizeUnitText(branding.wardName));
 
   if (key === lastBrandingKey) return;
   lastBrandingKey = key;
 
-  if (document.activeElement !== wardNameInput) {
-    wardNameInput.value = branding.wardName;
-  }
+  fillUnitFields(branding.wardName);
   if (document.activeElement !== finishThanksInput) {
     finishThanksInput.value = branding.finishThanks;
   }
@@ -205,11 +234,9 @@ async function enterRoom(rawPin, options = {}) {
   shareStatus.textContent = "";
   history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
 
-  const wardName = String(options.wardName ?? "")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 60);
+  const wardName = normalizeUnitText(options.wardName, 60);
   if (wardName) {
+    fillUnitFields(wardName);
     const finishThanks =
       finishThanksInput.value.trim() || "Agradecemos su discurso.";
     const finishDone = finishDoneInput.value.trim() || "Su tiempo ha terminado.";
@@ -289,11 +316,22 @@ clearMessageButton.addEventListener("click", () => {
 brandingForm.addEventListener("submit", (event) => {
   event.preventDefault();
   brandingStatus.textContent = "";
+  const wardName = currentUnitLabel();
+  if (!wardName) {
+    brandingStatus.textContent = "Escribe el nombre de la unidad.";
+    unitNameInput.focus();
+    return;
+  }
   client.socket.emit("branding:update", {
-    wardName: wardNameInput.value,
+    wardName,
     finishThanks: finishThanksInput.value,
     finishDone: finishDoneInput.value,
   });
+  try {
+    localStorage.setItem("pulpit-ward-name", wardName);
+  } catch {
+    // sin localStorage
+  }
   brandingStatus.textContent = "CFG guardada.";
 });
 

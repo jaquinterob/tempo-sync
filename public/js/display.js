@@ -1,6 +1,8 @@
 const {
   cleanPin,
   createTimerClient,
+  displayUnitLabel,
+  normalizeUnitText,
   pinFromUrl,
   renderTimer,
 } = window.TimerTools;
@@ -94,12 +96,18 @@ function beginFinishSequence(accentColor) {
 
 function applyBranding(branding) {
   if (!branding) return;
+  const wardLabel = displayUnitLabel(branding.wardName);
+  const hasWard = Boolean(normalizeUnitText(branding.wardName));
   displayChurchName.textContent = branding.churchName;
-  displayWardName.textContent = branding.wardName;
-  if (displayJoinWard) displayJoinWard.textContent = branding.wardName;
+  displayWardName.textContent = wardLabel;
+  displayWardName.classList.toggle("is-placeholder", !hasWard);
+  if (displayJoinWard) {
+    displayJoinWard.textContent = wardLabel;
+    displayJoinWard.classList.toggle("is-placeholder", !hasWard);
+  }
   finalThanks.textContent = branding.finishThanks;
   finalAlertText.textContent = branding.finishDone;
-  document.title = `Pulpit Timer · ${branding.wardName}`;
+  document.title = hasWard ? `Pulpit Timer · ${wardLabel}` : "Pulpit Timer";
 }
 
 function applyTheme(theme) {

@@ -37,7 +37,7 @@
             height="72"
           />
           <div>
-            <h1 id="control-ward-title">Barrio Sabaneta</h1>
+            <h1 id="control-ward-title" class="is-placeholder">Tu unidad</h1>
             <p class="brand-sub">Pulpit Timer · reunión sacramental</p>
           </div>
         </div>
@@ -297,10 +297,29 @@
             </div>
           </div>
           <form id="branding-form" class="branding-form">
-            <label class="brand-field">
-              <span>Barrio</span>
-              <input id="ward-name" type="text" maxlength="60" value="Barrio Sabaneta" required />
-            </label>
+            <fieldset class="brand-field brand-unit-field">
+              <legend class="visually-hidden">Unidad</legend>
+              <span>Unidad</span>
+              <div class="brand-unit-controls">
+                <div class="brand-unit-type" role="radiogroup" aria-label="Tipo de unidad">
+                  <label class="brand-unit-option">
+                    <input type="radio" name="unit-type" value="Barrio" checked />
+                    <span>Barrio</span>
+                  </label>
+                  <label class="brand-unit-option">
+                    <input type="radio" name="unit-type" value="Estaca" />
+                    <span>Estaca</span>
+                  </label>
+                </div>
+                <input
+                  id="unit-name"
+                  type="text"
+                  maxlength="50"
+                  placeholder="Ej. Sabaneta"
+                  required
+                />
+              </div>
+            </fieldset>
             <label class="brand-field">
               <span>Mensaje al terminar</span>
               <input

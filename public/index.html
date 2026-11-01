@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=4" />
+    <link rel="stylesheet" href="/css/styles.css?v=5" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
@@ -27,26 +27,42 @@
         height="86"
       />
       <p class="entry-product">Pulpit Timer</p>
-      <h1 id="entry-ward-title" class="entry-ward">Barrio Sabaneta</h1>
+      <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
       <p class="entry-lead">Temporizador sincronizado para la reunión sacramental.</p>
 
       <form id="create-room-form" class="entry-form">
-        <label class="entry-label" for="ward-name">Nombre del barrio</label>
+        <span class="entry-label" id="unit-type-label">Tipo de unidad</span>
+        <div
+          class="entry-unit-type"
+          role="radiogroup"
+          aria-labelledby="unit-type-label"
+        >
+          <label class="entry-unit-option">
+            <input type="radio" name="unit-type" value="Barrio" checked />
+            <span>Barrio</span>
+          </label>
+          <label class="entry-unit-option">
+            <input type="radio" name="unit-type" value="Estaca" />
+            <span>Estaca</span>
+          </label>
+        </div>
+
+        <label class="entry-label" for="unit-name">Nombre</label>
         <input
-          id="ward-name"
+          id="unit-name"
           class="entry-input"
           type="text"
-          name="ward"
-          maxlength="60"
+          name="unit"
+          maxlength="50"
           required
           autocomplete="organization"
-          placeholder="Ej. Barrio Sabaneta"
+          placeholder="Ej. Sabaneta"
         />
         <button id="create-room" type="submit" class="entry-button">Crear sala</button>
       </form>
 
       <ol class="entry-steps" aria-label="Cómo usarlo">
-        <li>Escribe el nombre de tu barrio y toca <strong>Crear sala</strong>.</li>
+        <li>Elige <strong>Barrio</strong> o <strong>Estaca</strong>, escribe el nombre y toca <strong>Crear sala</strong>.</li>
         <li>En el control, toca <strong>Copiar</strong> o <strong>WhatsApp</strong> y envía el enlace a la persona de la pantalla.</li>
         <li>Esa persona abre el enlace en el televisor o celular en horizontal.</li>
         <li>Desde el control inicia, pausa o reinicia el tiempo de cada discurso.</li>
@@ -57,19 +73,32 @@
       </p>
     </main>
 
-    <script src="/js/shared.js?v=4"></script>
+    <script src="/js/shared.js?v=5"></script>
     <script>
-      const { cleanPin } = window.TimerTools;
-      const DEFAULT_WARD = "Barrio Sabaneta";
-      const wardInput = document.querySelector("#ward-name");
+      const {
+        UNIT_PLACEHOLDER,
+        composeUnitLabel,
+        cleanPin,
+        normalizeUnitText,
+        normalizeUnitType,
+        parseUnitLabel,
+      } = window.TimerTools;
+
+      const unitNameInput = document.querySelector("#unit-name");
       const wardTitle = document.querySelector("#entry-ward-title");
       const form = document.querySelector("#create-room-form");
+      const typeInputs = [...document.querySelectorAll('input[name="unit-type"]')];
 
-      function normalizeWard(value) {
-        return String(value ?? "")
-          .replace(/\s+/g, " ")
-          .trim()
-          .slice(0, 60);
+      function selectedType() {
+        const checked = typeInputs.find((input) => input.checked);
+        return normalizeUnitType(checked?.value);
+      }
+
+      function setSelectedType(type) {
+        const next = normalizeUnitType(type);
+        for (const input of typeInputs) {
+          input.checked = input.value === next;
+        }
       }
 
       function createPin() {
@@ -77,28 +106,36 @@
       }
 
       function syncTitle() {
-        const ward = normalizeWard(wardInput.value) || DEFAULT_WARD;
-        wardTitle.textContent = ward;
+        const label = composeUnitLabel(selectedType(), unitNameInput.value);
+        wardTitle.textContent = label || UNIT_PLACEHOLDER;
+        wardTitle.classList.toggle("is-placeholder", !label);
       }
 
       try {
         const saved = localStorage.getItem("pulpit-ward-name");
-        wardInput.value = normalizeWard(saved) || DEFAULT_WARD;
+        const parsed = parseUnitLabel(saved);
+        setSelectedType(parsed.type);
+        unitNameInput.value = parsed.name;
       } catch {
-        wardInput.value = DEFAULT_WARD;
+        setSelectedType("Barrio");
+        unitNameInput.value = "";
       }
       syncTitle();
 
-      wardInput.addEventListener("input", syncTitle);
+      for (const input of typeInputs) {
+        input.addEventListener("change", syncTitle);
+      }
+      unitNameInput.addEventListener("input", syncTitle);
 
       form.addEventListener("submit", (event) => {
         event.preventDefault();
-        const ward = normalizeWard(wardInput.value);
-        if (!ward) {
-          wardInput.focus();
+        const unitName = normalizeUnitText(unitNameInput.value, 50);
+        if (!unitName) {
+          unitNameInput.focus();
           return;
         }
 
+        const ward = composeUnitLabel(selectedType(), unitName);
         try {
           localStorage.setItem("pulpit-ward-name", ward);
         } catch {

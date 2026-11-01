@@ -15,7 +15,7 @@ const MAX_DURATION_MS = 60 * 60 * 60 * 1000;
 
 const DEFAULT_BRANDING = {
   churchName: "La Iglesia de Jesucristo de los Santos de los Últimos Días",
-  wardName: "Barrio Sabaneta",
+  wardName: "",
   finishThanks: "Agradecemos su discurso.",
   finishDone: "Su tiempo ha terminado.",
 };
@@ -315,7 +315,7 @@ function createTimerServer() {
       const finishDone = cleanText(payload.finishDone, 80);
 
       if (!wardName || !finishThanks || !finishDone) {
-        socket.emit("room:error", "Completa barrio y mensajes finales.");
+        socket.emit("room:error", "Completa el nombre de la unidad y los mensajes finales.");
         return;
       }
 
