@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=6" />
+    <link rel="stylesheet" href="/css/styles.css?v=7" />
   </head>
   <body class="control-page">
     <script>
@@ -180,20 +180,12 @@
           </div>
 
           <div class="share-bar">
-            <div class="share-guide">
-              <p class="share-guide-title">Paso importante: conecta el otro celular</p>
-              <p class="share-guide-text">
-                Este teléfono es el <strong>control</strong>. El código de abajo hay que
-                <strong>enviarlo al segundo celular</strong> (el que mostrará el reloj grande).
-                Lo más fácil: toca <strong>WhatsApp</strong> y mándalo ahora.
-              </p>
-            </div>
             <div class="share-row">
               <span class="share-pin-chip">
                 <span class="share-kicker">Código</span>
                 <strong id="share-pin">—</strong>
               </span>
-              <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace para el otro celular">
+              <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
                 <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                   <rect x="8" y="8" width="11" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.7" />
                   <path d="M6 16H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" fill="none" stroke="currentColor" stroke-width="1.7" />
@@ -206,7 +198,7 @@
                 href="#"
                 target="_blank"
                 rel="noreferrer"
-                title="Enviar el código al otro celular por WhatsApp"
+                title="Enviar por WhatsApp"
               >
                 <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                   <path
@@ -229,7 +221,7 @@
                 href="/display"
                 target="_blank"
                 rel="noreferrer"
-                title="Abrir la pantalla en este mismo celular"
+                title="Abrir pantalla"
               >
                 <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
                   <rect x="3" y="5" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
@@ -238,10 +230,6 @@
                 <span>Abrir</span>
               </a>
             </div>
-            <p class="share-guide-help">
-              En el otro celular: abren el enlace del mensaje, ponen el teléfono en horizontal y listo.
-              Aquí tocas Iniciar / Pausar / Reiniciar.
-            </p>
             <p id="share-status" class="share-status" aria-live="polite"></p>
           </div>
         </article>
@@ -369,7 +357,7 @@
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/shared.js?v=6"></script>
-    <script src="/js/control.js?v=6"></script>
+    <script src="/js/shared.js?v=7"></script>
+    <script src="/js/control.js?v=7"></script>
   </body>
 </html>

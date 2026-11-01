@@ -2633,107 +2633,109 @@ input:focus {
   color: #f7f4ef;
 }
 
-.entry-lead {
-  margin: 8px 0 18px;
-  max-width: 40ch;
-  color: #78716c;
-  font-size: 1.05rem;
-  line-height: 1.45;
-}
-
-.entry-lead strong {
-  color: #57534e;
-}
-
-.entry-guide {
+.entry-stepper {
   width: 100%;
-  margin: 0 0 18px;
-  padding: 16px 14px;
-  border: 1px solid #d6d3d1;
-  background: rgba(255, 255, 255, 0.55);
+  margin-top: 8px;
   text-align: left;
 }
 
-.entry-guide-title {
-  margin: 0 0 12px;
-  color: #44403c;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1.02rem;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.entry-pipeline {
+.entry-stepper-dots {
   display: grid;
-  gap: 12px;
-  margin: 0;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 0 0 16px;
   padding: 0;
   list-style: none;
 }
 
-.entry-pipe-step {
-  display: grid;
-  grid-template-columns: 2rem 1fr;
-  gap: 10px;
-  align-items: start;
-}
-
-.entry-pipe-num {
+.entry-stepper-dots li {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid #57534e;
+  min-height: 36px;
+  border: 1px solid #d6d3d1;
+  background: rgba(255, 255, 255, 0.55);
+  color: #a8a29e;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.92rem;
+}
+
+.entry-stepper-dots li.is-done {
+  border-color: #a8a29e;
+  color: #57534e;
+}
+
+.entry-stepper-dots li.is-active {
+  border-color: #57534e;
   background: #57534e;
   color: #f7f4ef;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1;
 }
 
-.entry-pipe-step strong {
-  display: block;
-  margin: 0 0 4px;
+.entry-step {
+  display: none;
+  gap: 10px;
+}
+
+.entry-step.is-active {
+  display: grid;
+}
+
+.entry-step-kicker {
+  margin: 0;
+  color: #a8a29e;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.entry-step h2 {
+  margin: 0;
   color: #44403c;
-  font-size: 0.98rem;
-  line-height: 1.3;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  line-height: 1.25;
 }
 
-.entry-pipe-step p {
+.entry-step p {
   margin: 0;
   color: #78716c;
-  font-size: 0.92rem;
+  font-size: 1rem;
   line-height: 1.45;
 }
 
-.entry-pipe-step p strong {
-  display: inline;
-  font-size: inherit;
+.entry-step p strong {
+  color: #57534e;
 }
 
-.entry-guide-note {
-  margin: 14px 0 0;
-  padding-top: 12px;
+.entry-step-note {
+  padding-top: 4px;
   border-top: 1px solid #e7e5e4;
-  color: #78716c;
-  font-size: 0.88rem;
-  line-height: 1.4;
+  font-size: 0.92rem !important;
+}
+
+.entry-step-error {
+  margin: 0;
+  color: #9f1239;
+  font-size: 0.9rem;
+}
+
+.entry-step-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.entry-step-actions:has(.entry-button-ghost) {
+  grid-template-columns: 0.7fr 1.3fr;
 }
 
 .entry-form {
   display: grid;
   width: 100%;
   gap: 8px;
-  margin: 0 0 8px;
+  margin: 4px 0 0;
   text-align: left;
-}
-
-.entry-form-intro {
-  margin: 0 0 2px;
-  color: #44403c;
-  font-size: 0.95rem;
-  font-weight: 600;
 }
 
 .entry-label {
@@ -2779,38 +2781,20 @@ input:focus {
   background: #44403c;
 }
 
+.entry-button-ghost {
+  background: transparent;
+  color: #57534e;
+}
+
+.entry-button-ghost:hover {
+  background: rgba(87, 83, 78, 0.08);
+}
+
 /* Share row — código + envío al otro celular */
 .control-page .share-bar {
   margin-top: 4px;
-  padding-top: 8px;
+  padding-top: 4px;
   border-top: 1px solid #9ca3af;
-}
-
-.control-page .share-guide {
-  margin: 0 0 8px;
-}
-
-.control-page .share-guide-title {
-  margin: 0 0 4px;
-  color: #111827;
-  font-size: 0.86rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.3;
-}
-
-.control-page .share-guide-text {
-  margin: 0;
-  color: #4b5563;
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-
-.control-page .share-guide-help {
-  margin: 8px 0 0;
-  color: #6b7280;
-  font-size: 0.78rem;
-  line-height: 1.4;
 }
 
 .control-page .share-action-primary {

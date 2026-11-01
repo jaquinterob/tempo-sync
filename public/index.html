@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=6" />
+    <link rel="stylesheet" href="/css/styles.css?v=7" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
@@ -28,101 +28,121 @@
       />
       <p class="entry-product">Pulpit Timer</p>
       <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
-      <p class="entry-lead">
-        Reloj para la reunión sacramental. Usa <strong>2 celulares</strong>: uno controla el tiempo y el otro lo muestra grande.
-      </p>
 
-      <section class="entry-guide" aria-labelledby="entry-guide-title">
-        <h2 id="entry-guide-title" class="entry-guide-title">Sigue estos 4 pasos (no te saltes ninguno)</h2>
-
-        <ol class="entry-pipeline">
-          <li class="entry-pipe-step">
-            <span class="entry-pipe-num" aria-hidden="true">1</span>
-            <div>
-              <strong>Este celular = control</strong>
-              <p>
-                Es el teléfono de quien maneja el tiempo (obispo, consejero o cronometrista).
-                Aquí abajo elige <strong>Barrio</strong> o <strong>Estaca</strong>, escribe el nombre
-                (ejemplo: Sabaneta) y toca el botón grande <strong>Crear sala</strong>.
-              </p>
-            </div>
-          </li>
-          <li class="entry-pipe-step">
-            <span class="entry-pipe-num" aria-hidden="true">2</span>
-            <div>
-              <strong>Te va a salir un código</strong>
-              <p>
-                En la siguiente pantalla verás un código de 4 números (ejemplo: <strong>4821</strong>)
-                y un botón <strong>WhatsApp</strong>. Ese código es la “llave” para conectar el otro celular.
-              </p>
-            </div>
-          </li>
-          <li class="entry-pipe-step">
-            <span class="entry-pipe-num" aria-hidden="true">3</span>
-            <div>
-              <strong>Envía el código al otro celular</strong>
-              <p>
-                Toca <strong>WhatsApp</strong> y mándalo a la persona del segundo teléfono
-                (el que va a mostrar el reloj a la congregación, o el que se conecta al televisor).
-                Si prefieres, toca <strong>Copiar</strong> y pega el enlace en cualquier mensaje.
-              </p>
-            </div>
-          </li>
-          <li class="entry-pipe-step">
-            <span class="entry-pipe-num" aria-hidden="true">4</span>
-            <div>
-              <strong>El otro celular abre el enlace</strong>
-              <p>
-                En el segundo teléfono abren el mensaje, tocan el enlace y ponen el celular
-                en horizontal. Verán el reloj grande. Desde <strong>este</strong> teléfono
-                tocas <strong>Iniciar</strong>, <strong>Pausar</strong> o <strong>Reiniciar</strong>
-                y el otro se actualiza solo.
-              </p>
-            </div>
-          </li>
+      <div class="entry-stepper" data-step="0">
+        <ol class="entry-stepper-dots" aria-label="Progreso">
+          <li class="is-active" aria-current="step"><span>1</span></li>
+          <li><span>2</span></li>
+          <li><span>3</span></li>
+          <li><span>4</span></li>
         </ol>
 
-        <p class="entry-guide-note">
-          Tip: no cierres esta pestaña del control mientras dure la reunión. El otro celular solo muestra; el control es este.
-        </p>
-      </section>
+        <section class="entry-step is-active" data-step-panel="0" aria-labelledby="step-1-title">
+          <p class="entry-step-kicker">Paso 1 de 4</p>
+          <h2 id="step-1-title">Necesitas 2 celulares</h2>
+          <p>
+            <strong>Celular 1 (este):</strong> controla el tiempo — Iniciar, Pausar, Reiniciar.
+          </p>
+          <p>
+            <strong>Celular 2 (el otro):</strong> muestra el reloj grande frente a la congregación
+            o conectado al televisor.
+          </p>
+          <p class="entry-step-note">
+            No uses un solo teléfono para las dos cosas. El control se queda aquí.
+          </p>
+          <div class="entry-step-actions">
+            <button type="button" class="entry-button" data-next>Entendido, siguiente</button>
+          </div>
+        </section>
 
-      <form id="create-room-form" class="entry-form">
-        <p class="entry-form-intro">Empieza aquí (paso 1)</p>
-        <span class="entry-label" id="unit-type-label">¿Es barrio o estaca?</span>
-        <div
-          class="entry-unit-type"
-          role="radiogroup"
-          aria-labelledby="unit-type-label"
-        >
-          <label class="entry-unit-option">
-            <input type="radio" name="unit-type" value="Barrio" checked />
-            <span>Barrio</span>
-          </label>
-          <label class="entry-unit-option">
-            <input type="radio" name="unit-type" value="Estaca" />
-            <span>Estaca</span>
-          </label>
-        </div>
+        <section class="entry-step" data-step-panel="1" hidden aria-labelledby="step-2-title">
+          <p class="entry-step-kicker">Paso 2 de 4</p>
+          <h2 id="step-2-title">¿Barrio o Estaca?</h2>
+          <p>Elige el tipo y escribe el nombre. Ejemplo: Sabaneta.</p>
 
-        <label class="entry-label" for="unit-name">Nombre de la unidad</label>
-        <input
-          id="unit-name"
-          class="entry-input"
-          type="text"
-          name="unit"
-          maxlength="50"
-          required
-          autocomplete="organization"
-          placeholder="Ej. Sabaneta"
-        />
-        <button id="create-room" type="submit" class="entry-button">
-          Crear sala y obtener el código
-        </button>
-      </form>
+          <form id="unit-form" class="entry-form" novalidate>
+            <span class="entry-label" id="unit-type-label">Tipo</span>
+            <div
+              class="entry-unit-type"
+              role="radiogroup"
+              aria-labelledby="unit-type-label"
+            >
+              <label class="entry-unit-option">
+                <input type="radio" name="unit-type" value="Barrio" checked />
+                <span>Barrio</span>
+              </label>
+              <label class="entry-unit-option">
+                <input type="radio" name="unit-type" value="Estaca" />
+                <span>Estaca</span>
+              </label>
+            </div>
+
+            <label class="entry-label" for="unit-name">Nombre</label>
+            <input
+              id="unit-name"
+              class="entry-input"
+              type="text"
+              name="unit"
+              maxlength="50"
+              required
+              autocomplete="organization"
+              placeholder="Ej. Sabaneta"
+            />
+            <p id="unit-error" class="entry-step-error" role="alert" hidden>
+              Escribe el nombre para continuar.
+            </p>
+          </form>
+
+          <div class="entry-step-actions">
+            <button type="button" class="entry-button entry-button-ghost" data-back>Atrás</button>
+            <button type="button" class="entry-button" data-next>Siguiente</button>
+          </div>
+        </section>
+
+        <section class="entry-step" data-step-panel="2" hidden aria-labelledby="step-3-title">
+          <p class="entry-step-kicker">Paso 3 de 4</p>
+          <h2 id="step-3-title">Vas a enviar un código al otro celular</h2>
+          <p>
+            Al crear la sala te saldrá un <strong>código de 4 números</strong>
+            (ejemplo: 4821) y un botón verde de <strong>WhatsApp</strong>.
+          </p>
+          <p>
+            Toca <strong>WhatsApp</strong> y mándalo a la persona del segundo celular.
+            Ellos abren el enlace del mensaje, ponen el teléfono en
+            <strong>horizontal</strong> y verán el reloj.
+          </p>
+          <p class="entry-step-note">
+            Si no usan WhatsApp, toca <strong>Copiar</strong> y pega el enlace en cualquier mensaje.
+          </p>
+          <div class="entry-step-actions">
+            <button type="button" class="entry-button entry-button-ghost" data-back>Atrás</button>
+            <button type="button" class="entry-button" data-next>Siguiente</button>
+          </div>
+        </section>
+
+        <section class="entry-step" data-step-panel="3" hidden aria-labelledby="step-4-title">
+          <p class="entry-step-kicker">Paso 4 de 4</p>
+          <h2 id="step-4-title">Crear la sala</h2>
+          <p>
+            Al tocar el botón pasarás al panel de control de
+            <strong id="step-unit-preview">tu unidad</strong>.
+          </p>
+          <p>
+            Ahí envías el código por WhatsApp al otro celular. Luego, desde
+            <strong>este</strong> teléfono tocas Iniciar / Pausar / Reiniciar.
+            No cierres esta pestaña durante la reunión.
+          </p>
+          <div class="entry-step-actions">
+            <button type="button" class="entry-button entry-button-ghost" data-back>Atrás</button>
+            <button id="create-room" type="button" class="entry-button">
+              Crear sala y obtener el código
+            </button>
+          </div>
+        </section>
+      </div>
     </main>
 
-    <script src="/js/shared.js?v=6"></script>
+    <script src="/js/shared.js?v=7"></script>
     <script>
       const {
         UNIT_PLACEHOLDER,
@@ -133,10 +153,16 @@
         parseUnitLabel,
       } = window.TimerTools;
 
+      const stepper = document.querySelector(".entry-stepper");
+      const panels = [...document.querySelectorAll("[data-step-panel]")];
+      const dots = [...document.querySelectorAll(".entry-stepper-dots li")];
       const unitNameInput = document.querySelector("#unit-name");
+      const unitError = document.querySelector("#unit-error");
       const wardTitle = document.querySelector("#entry-ward-title");
-      const form = document.querySelector("#create-room-form");
+      const unitPreview = document.querySelector("#step-unit-preview");
       const typeInputs = [...document.querySelectorAll('input[name="unit-type"]')];
+      const TOTAL_STEPS = panels.length;
+      let currentStep = 0;
 
       function selectedType() {
         const checked = typeInputs.find((input) => input.checked);
@@ -150,14 +176,72 @@
         }
       }
 
+      function currentLabel() {
+        return composeUnitLabel(selectedType(), unitNameInput.value);
+      }
+
+      function syncTitle() {
+        const label = currentLabel();
+        wardTitle.textContent = label || UNIT_PLACEHOLDER;
+        wardTitle.classList.toggle("is-placeholder", !label);
+        unitPreview.textContent = label || "tu unidad";
+      }
+
+      function setStep(nextStep) {
+        currentStep = Math.max(0, Math.min(TOTAL_STEPS - 1, nextStep));
+        stepper.dataset.step = String(currentStep);
+
+        for (const [index, panel] of panels.entries()) {
+          const active = index === currentStep;
+          panel.classList.toggle("is-active", active);
+          panel.hidden = !active;
+        }
+
+        for (const [index, dot] of dots.entries()) {
+          const active = index === currentStep;
+          const done = index < currentStep;
+          dot.classList.toggle("is-active", active);
+          dot.classList.toggle("is-done", done);
+          if (active) {
+            dot.setAttribute("aria-current", "step");
+          } else {
+            dot.removeAttribute("aria-current");
+          }
+        }
+
+        if (currentStep === 1) {
+          unitNameInput.focus();
+        }
+      }
+
+      function unitIsValid() {
+        const unitName = normalizeUnitText(unitNameInput.value, 50);
+        const ok = Boolean(unitName);
+        unitError.hidden = ok;
+        return ok;
+      }
+
       function createPin() {
         return String(1000 + Math.floor(Math.random() * 9000));
       }
 
-      function syncTitle() {
-        const label = composeUnitLabel(selectedType(), unitNameInput.value);
-        wardTitle.textContent = label || UNIT_PLACEHOLDER;
-        wardTitle.classList.toggle("is-placeholder", !label);
+      function goCreateRoom() {
+        if (!unitIsValid()) {
+          setStep(1);
+          unitNameInput.focus();
+          return;
+        }
+
+        const ward = currentLabel();
+        try {
+          localStorage.setItem("pulpit-ward-name", ward);
+        } catch {
+          // sin localStorage
+        }
+
+        const pin = cleanPin(createPin());
+        const params = new URLSearchParams({ pin, ward });
+        window.location.href = `/control?${params.toString()}`;
       }
 
       try {
@@ -170,33 +254,40 @@
         unitNameInput.value = "";
       }
       syncTitle();
+      setStep(0);
 
       for (const input of typeInputs) {
         input.addEventListener("change", syncTitle);
       }
-      unitNameInput.addEventListener("input", syncTitle);
+      unitNameInput.addEventListener("input", () => {
+        unitError.hidden = true;
+        syncTitle();
+      });
 
-      form.addEventListener("submit", (event) => {
+      stepper.addEventListener("click", (event) => {
+        const next = event.target.closest("[data-next]");
+        const back = event.target.closest("[data-back]");
+        if (next) {
+          if (currentStep === 1 && !unitIsValid()) {
+            unitNameInput.focus();
+            return;
+          }
+          setStep(currentStep + 1);
+          return;
+        }
+        if (back) {
+          setStep(currentStep - 1);
+        }
+      });
+
+      document.querySelector("#create-room").addEventListener("click", goCreateRoom);
+      document.querySelector("#unit-form").addEventListener("submit", (event) => {
         event.preventDefault();
-        const unitName = normalizeUnitText(unitNameInput.value, 50);
-        if (!unitName) {
+        if (!unitIsValid()) {
           unitNameInput.focus();
           return;
         }
-
-        const ward = composeUnitLabel(selectedType(), unitName);
-        try {
-          localStorage.setItem("pulpit-ward-name", ward);
-        } catch {
-          // sin localStorage
-        }
-
-        const pin = cleanPin(createPin());
-        const params = new URLSearchParams({
-          pin,
-          ward,
-        });
-        window.location.href = `/control?${params.toString()}`;
+        setStep(currentStep + 1);
       });
     </script>
   </body>
