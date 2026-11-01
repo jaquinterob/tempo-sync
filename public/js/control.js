@@ -134,9 +134,10 @@ const client = createTimerClient({
     startButton.disabled = state.isRunning;
     pauseButton.disabled = !state.isRunning;
     isScreenBlank = state.isBlank;
-    blankScreenLabel.textContent = isScreenBlank ? "Mostrar" : "Ocultar pantalla";
+    blankScreenLabel.textContent = isScreenBlank ? "Mostrar pantalla" : "Ocultar pantalla";
     blankScreenButton.classList.toggle("is-active", isScreenBlank);
     blankScreenButton.setAttribute("aria-pressed", String(isScreenBlank));
+    document.body.classList.toggle("control-blanked", isScreenBlank);
     applyBranding(state.branding);
     applyTheme(state.theme);
     for (const button of presetButtons) {

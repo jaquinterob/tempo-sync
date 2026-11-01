@@ -2039,6 +2039,49 @@ input:focus {
   box-shadow: inset 0 0 0 1px #44403c;
 }
 
+/* Panel atenuado mientras la pantalla remota está oculta */
+.control-page.control-blanked {
+  background: #171614;
+  color: #a8a29e;
+}
+
+.control-page.control-blanked .card {
+  background: rgba(28, 26, 24, 0.92);
+  border-color: #3f3a36;
+  box-shadow: none;
+}
+
+.control-page.control-blanked .app-shell > *:not(#timer-panel),
+.control-page.control-blanked #timer-panel > *:not(.matrix-board),
+.control-page.control-blanked .matrix-board > *:not(.matrix-grid),
+.control-page.control-blanked .matrix-grid > *:not(#blank-screen-button) {
+  opacity: 0.28;
+  filter: grayscale(0.4) brightness(0.5);
+  pointer-events: none;
+  user-select: none;
+}
+
+.control-page.control-blanked #blank-screen-button {
+  position: relative;
+  z-index: 5;
+  opacity: 1;
+  filter: none;
+  pointer-events: auto;
+  min-height: 72px;
+  background: #f7f4ef;
+  border-color: #f7f4ef;
+  color: #171614;
+  box-shadow: 0 0 0 2px rgba(247, 244, 239, 0.35);
+}
+
+.control-page.control-blanked #blank-screen-button:hover,
+.control-page.control-blanked #blank-screen-button.is-active {
+  background: #fff;
+  border-color: #fff;
+  color: #111;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.45);
+}
+
 .control-page .preset-button strong {
   color: #111827;
   font-size: 1.2rem;
