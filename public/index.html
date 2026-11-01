@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=2" />
+    <link rel="stylesheet" href="/css/styles.css?v=3" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
@@ -23,29 +23,90 @@
         height="86"
       />
       <p class="entry-product">Pulpit Timer</p>
-      <h1 class="entry-ward">Barrio Sabaneta</h1>
-      <p class="entry-lead">Crea una sala y controla el tiempo de los discursos.</p>
+      <h1 id="entry-ward-title" class="entry-ward">Barrio Sabaneta</h1>
+      <p class="entry-lead">Temporizador sincronizado para la reunión sacramental.</p>
 
-      <button id="create-room" type="button" class="entry-button">
-        Crear sala
-      </button>
+      <form id="create-room-form" class="entry-form">
+        <label class="entry-label" for="ward-name">Nombre del barrio</label>
+        <input
+          id="ward-name"
+          class="entry-input"
+          type="text"
+          name="ward"
+          maxlength="60"
+          required
+          autocomplete="organization"
+          placeholder="Ej. Barrio Sabaneta"
+        />
+        <button id="create-room" type="submit" class="entry-button">Crear sala</button>
+      </form>
+
+      <ol class="entry-steps" aria-label="Cómo usarlo">
+        <li>Escribe el nombre de tu barrio y toca <strong>Crear sala</strong>.</li>
+        <li>En el control, toca <strong>Copiar</strong> o <strong>WhatsApp</strong> y envía el enlace a la persona de la pantalla.</li>
+        <li>Esa persona abre el enlace en el televisor o celular en horizontal.</li>
+        <li>Desde el control inicia, pausa o reinicia el tiempo de cada discurso.</li>
+      </ol>
 
       <p class="entry-hint">
-        Después copia el enlace y envíalo por WhatsApp a quien muestra la pantalla.
+        Ambos dispositivos deben estar en la misma red o usar la URL pública del servidor.
       </p>
     </main>
 
-    <script src="/js/shared.js?v=2"></script>
+    <script src="/js/shared.js?v=3"></script>
     <script>
       const { cleanPin } = window.TimerTools;
+      const DEFAULT_WARD = "Barrio Sabaneta";
+      const wardInput = document.querySelector("#ward-name");
+      const wardTitle = document.querySelector("#entry-ward-title");
+      const form = document.querySelector("#create-room-form");
+
+      function normalizeWard(value) {
+        return String(value ?? "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 60);
+      }
 
       function createPin() {
         return String(1000 + Math.floor(Math.random() * 9000));
       }
 
-      document.querySelector("#create-room").addEventListener("click", () => {
+      function syncTitle() {
+        const ward = normalizeWard(wardInput.value) || DEFAULT_WARD;
+        wardTitle.textContent = ward;
+      }
+
+      try {
+        const saved = localStorage.getItem("pulpit-ward-name");
+        wardInput.value = normalizeWard(saved) || DEFAULT_WARD;
+      } catch {
+        wardInput.value = DEFAULT_WARD;
+      }
+      syncTitle();
+
+      wardInput.addEventListener("input", syncTitle);
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const ward = normalizeWard(wardInput.value);
+        if (!ward) {
+          wardInput.focus();
+          return;
+        }
+
+        try {
+          localStorage.setItem("pulpit-ward-name", ward);
+        } catch {
+          // sin localStorage
+        }
+
         const pin = cleanPin(createPin());
-        window.location.href = `/control?pin=${encodeURIComponent(pin)}`;
+        const params = new URLSearchParams({
+          pin,
+          ward,
+        });
+        window.location.href = `/control?${params.toString()}`;
       });
     </script>
   </body>

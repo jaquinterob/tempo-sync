@@ -3,6 +3,7 @@ const {
   createTimerClient,
   displayShareUrl,
   pinFromUrl,
+  wardFromUrl,
   renderTimer,
   updateConnectionBadge,
 } = window.TimerTools;
@@ -185,7 +186,7 @@ function updateControlMeter() {
 
 requestAnimationFrame(updateControlMeter);
 
-async function enterRoom(rawPin) {
+async function enterRoom(rawPin, options = {}) {
   const pin = cleanPin(rawPin);
   joinError.textContent = "";
 
@@ -202,6 +203,26 @@ async function enterRoom(rawPin) {
   updateShareLinks(result.pin);
   shareStatus.textContent = "";
   history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
+
+  const wardName = String(options.wardName ?? "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 60);
+  if (wardName) {
+    const finishThanks =
+      finishThanksInput.value.trim() || "Agradecemos su discurso.";
+    const finishDone = finishDoneInput.value.trim() || "Su tiempo ha terminado.";
+    client.socket.emit("branding:update", {
+      wardName,
+      finishThanks,
+      finishDone,
+    });
+    try {
+      localStorage.setItem("pulpit-ward-name", wardName);
+    } catch {
+      // sin localStorage
+    }
+  }
 }
 
 pinInput.addEventListener("input", () => {
@@ -350,7 +371,8 @@ client.socket.on("room:error", (message) => {
 });
 
 const initialPin = pinFromUrl();
+const initialWard = wardFromUrl();
 if (initialPin) {
   pinInput.value = initialPin;
-  enterRoom(initialPin);
+  enterRoom(initialPin, { wardName: initialWard });
 }

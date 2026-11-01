@@ -113,6 +113,13 @@
     return cleanPin(new URLSearchParams(window.location.search).get("pin"));
   }
 
+  function wardFromUrl() {
+    return String(new URLSearchParams(window.location.search).get("ward") ?? "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 60);
+  }
+
   function createRoomPin() {
     return String(1000 + Math.floor(Math.random() * 9000));
   }
@@ -130,6 +137,7 @@
     displayShareUrl,
     formatTime,
     pinFromUrl,
+    wardFromUrl,
     renderTimer,
     updateConnectionBadge,
   };
