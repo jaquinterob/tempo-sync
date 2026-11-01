@@ -2641,7 +2641,7 @@ input:focus {
 
 .entry-stepper-dots {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   margin: 0 0 16px;
   padding: 0;
@@ -2726,8 +2726,23 @@ input:focus {
   margin-top: 8px;
 }
 
-.entry-step-actions:has(.entry-button-ghost) {
-  grid-template-columns: 0.7fr 1.3fr;
+.entry-simple-cards {
+  display: grid;
+  gap: 8px;
+}
+
+.entry-simple-cards p {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid #d6d3d1;
+  background: rgba(255, 255, 255, 0.55);
+  color: #78716c;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.entry-simple-cards strong {
+  color: #44403c;
 }
 
 .entry-form {
@@ -2806,6 +2821,68 @@ input:focus {
 .control-page .share-action-primary:hover {
   background: #14532d;
   color: #f0fdf4;
+}
+
+.share-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(41, 37, 36, 0.72);
+}
+
+.share-gate.is-hidden {
+  display: none;
+}
+
+.share-gate-card {
+  display: grid;
+  gap: 12px;
+  width: min(360px, 100%);
+  padding: 22px 18px;
+  background: #f7f4ef;
+  color: #57534e;
+  text-align: center;
+}
+
+.share-gate-kicker {
+  margin: 0;
+  color: #a8a29e;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.share-gate-card h2 {
+  margin: 0;
+  color: #44403c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.35rem;
+  line-height: 1.25;
+}
+
+.share-gate-code {
+  margin: 4px 0;
+  color: #1c1917;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.share-gate-whatsapp {
+  border-color: #166534;
+  background: #166534;
+}
+
+.share-gate-whatsapp:hover {
+  background: #14532d;
+}
+
+body.share-gate-open {
+  overflow: hidden;
 }
 
 .control-page .share-row {

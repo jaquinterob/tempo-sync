@@ -51,6 +51,10 @@ const brandingStatus = document.querySelector("#branding-status");
 const controlWardTitle = document.querySelector("#control-ward-title");
 const themeToggle = document.querySelector("#theme-toggle");
 const timeMeterFill = document.querySelector("#time-meter-fill");
+const shareGate = document.querySelector("#share-gate");
+const shareGatePin = document.querySelector("#share-gate-pin");
+const shareGateWhatsapp = document.querySelector("#share-gate-whatsapp");
+const shareGateDone = document.querySelector("#share-gate-done");
 let lastScreenMessage = "";
 let isScreenBlank = false;
 let lastBrandingKey = "";
@@ -123,17 +127,51 @@ function applyBranding(branding) {
   }
 }
 
+function buildShareMessage(pin, url) {
+  return (
+    `Abre este enlace en el celular del reloj (horizontal):\n${url}\n\n` +
+    `Código: ${pin}`
+  );
+}
+
 function updateShareLinks(pin) {
   const url = displayShareUrl(pin);
   sharePin.textContent = pin;
   displayLink.href = url;
-  const message =
-    `Hola. Ábrelo en el celular que va a mostrar el reloj grande ` +
-    `(ponlo en horizontal).\n\n` +
-    `Código de la sala: ${pin}\n` +
-    `Enlace: ${url}\n\n` +
-    `Solo toca el enlace. El otro celular controla el tiempo.`;
-  whatsappShare.href = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  const href = `https://wa.me/?text=${encodeURIComponent(buildShareMessage(pin, url))}`;
+  whatsappShare.href = href;
+  if (shareGateWhatsapp) shareGateWhatsapp.href = href;
+  if (shareGatePin) shareGatePin.textContent = pin;
+}
+
+function shouldShowShareGate(pin) {
+  try {
+    return sessionStorage.getItem("pulpit-need-share") === pin;
+  } catch {
+    return false;
+  }
+}
+
+function clearShareGateFlag() {
+  try {
+    sessionStorage.removeItem("pulpit-need-share");
+  } catch {
+    // sin sessionStorage
+  }
+}
+
+function showShareGate(pin) {
+  if (!shareGate || !shouldShowShareGate(pin)) return;
+  updateShareLinks(pin);
+  shareGate.classList.remove("is-hidden");
+  document.body.classList.add("share-gate-open");
+}
+
+function hideShareGate() {
+  if (!shareGate) return;
+  clearShareGateFlag();
+  shareGate.classList.add("is-hidden");
+  document.body.classList.remove("share-gate-open");
 }
 
 async function copyDisplayLink() {
@@ -142,11 +180,8 @@ async function copyDisplayLink() {
   if (!url) return;
 
   try {
-    await navigator.clipboard.writeText(
-      `Código ${pin} — abre este enlace en el celular de la pantalla: ${url}`,
-    );
-    shareStatus.textContent =
-      "Copiado. Pégalo en WhatsApp o SMS y envíalo al otro celular.";
+    await navigator.clipboard.writeText(buildShareMessage(pin, url));
+    shareStatus.textContent = "Copiado.";
   } catch {
     shareStatus.textContent = url;
   }
@@ -241,6 +276,7 @@ async function enterRoom(rawPin, options = {}) {
   updateShareLinks(result.pin);
   shareStatus.textContent = "";
   history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
+  showShareGate(result.pin);
 
   const wardName = normalizeUnitText(options.wardName, 60);
   if (wardName) {
@@ -259,6 +295,16 @@ async function enterRoom(rawPin, options = {}) {
       // sin localStorage
     }
   }
+}
+
+if (shareGateWhatsapp) {
+  shareGateWhatsapp.addEventListener("click", () => {
+    // Deja un momento para abrir WhatsApp y luego permite continuar.
+    window.setTimeout(hideShareGate, 600);
+  });
+}
+if (shareGateDone) {
+  shareGateDone.addEventListener("click", hideShareGate);
 }
 
 pinInput.addEventListener("input", () => {

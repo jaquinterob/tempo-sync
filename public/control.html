@@ -15,7 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=7" />
+    <link rel="stylesheet" href="/css/styles.css?v=8" />
   </head>
   <body class="control-page">
     <script>
@@ -356,8 +356,22 @@
       <p class="control-credit">Developer: <strong>JohnQ</strong> · All rights reserved</p>
     </main>
 
+    <div id="share-gate" class="share-gate is-hidden" role="dialog" aria-modal="true" aria-labelledby="share-gate-title">
+      <div class="share-gate-card">
+        <p class="share-gate-kicker">Último paso</p>
+        <h2 id="share-gate-title">Envía el código al otro celular</h2>
+        <p class="share-gate-code" id="share-gate-pin">—</p>
+        <a id="share-gate-whatsapp" class="entry-button share-gate-whatsapp" href="#" target="_blank" rel="noreferrer">
+          Enviar por WhatsApp
+        </a>
+        <button id="share-gate-done" type="button" class="entry-button entry-button-ghost">
+          Ya lo envié
+        </button>
+      </div>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/shared.js?v=7"></script>
-    <script src="/js/control.js?v=7"></script>
+    <script src="/js/shared.js?v=8"></script>
+    <script src="/js/control.js?v=8"></script>
   </body>
 </html>
