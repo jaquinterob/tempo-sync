@@ -20,6 +20,30 @@
     return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
   }
 
+  let warmupTimeoutIds = [];
+
+  function clearWarmupKeepAlive() {
+    for (const id of warmupTimeoutIds) clearTimeout(id);
+    warmupTimeoutIds = [];
+  }
+
+  // Tras usar la app, mantiene despierto Render Free ~70 min (10 pings cada 7 min).
+  function startWarmupKeepAlive({
+    intervalMs = 7 * 60 * 1000,
+    times = 10,
+    path = "/api/warmup",
+  } = {}) {
+    clearWarmupKeepAlive();
+    const url = path.startsWith("http") ? path : `${window.location.origin}${path}`;
+
+    for (let index = 0; index < times; index += 1) {
+      const id = setTimeout(() => {
+        fetch(url, { cache: "no-store", credentials: "omit" }).catch(() => {});
+      }, index * intervalMs);
+      warmupTimeoutIds.push(id);
+    }
+  }
+
   function createTimerClient({ onState, onConnection }) {
     const socket = io();
     let pin = null;
@@ -39,6 +63,7 @@
           if (result.ok) {
             pin = result.pin;
             receiveState(result.state);
+            startWarmupKeepAlive();
           }
           resolve(result);
         });
@@ -132,11 +157,13 @@
 
   window.TimerTools = {
     cleanPin,
+    clearWarmupKeepAlive,
     createRoomPin,
     createTimerClient,
     displayShareUrl,
     formatTime,
     pinFromUrl,
+    startWarmupKeepAlive,
     wardFromUrl,
     renderTimer,
     updateConnectionBadge,
