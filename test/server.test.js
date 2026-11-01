@@ -157,3 +157,13 @@ test("marca el temporizador como terminado al llegar a cero", async () => {
   const finalState = await completed;
   assert.equal(finalState.endsAt, null);
 });
+
+test("responde el endpoint de warmup", async () => {
+  const response = await fetch(`${baseUrl}/api/warmup`);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.ok, true);
+  assert.equal(body.service, "pulpit-timer");
+  assert.equal(typeof body.warmedAt, "string");
+  assert.ok(body.uptimeSec >= 0);
+});

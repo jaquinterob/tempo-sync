@@ -117,6 +117,15 @@ function createTimerServer() {
     return connections;
   }
 
+  app.get("/api/warmup", (_request, response) => {
+    response.json({
+      ok: true,
+      service: "pulpit-timer",
+      warmedAt: new Date().toISOString(),
+      uptimeSec: Math.round(process.uptime()),
+    });
+  });
+
   app.get("/admin", (_request, response) => {
     response.sendFile(path.join(__dirname, "public", "admin.html"));
   });
