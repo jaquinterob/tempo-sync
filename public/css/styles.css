@@ -561,57 +561,78 @@ input:focus {
 .display-page .display-connection {
   position: absolute;
   z-index: 5;
-  top: max(16px, env(safe-area-inset-top));
+  top: max(14px, env(safe-area-inset-top));
   right: max(16px, env(safe-area-inset-right));
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  width: 6px;
+  height: 6px;
   margin: 0;
-  padding: 4px 10px;
-  border: 1px solid rgba(68, 64, 60, 0.28);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  color: #57534e;
-  font-family: "Source Sans 3", Georgia, serif;
-  font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  backdrop-filter: blur(6px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: #a8a29e;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+  overflow: visible;
+  cursor: default;
 }
 
 .display-page .display-connection::before {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: currentColor;
+  content: none;
+}
+
+.display-page .display-connection::after {
   content: "";
-  opacity: 0.9;
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(168, 162, 158, 0.4);
+  animation: display-connection-pulse 2.8s ease-out infinite;
+  pointer-events: none;
 }
 
 .display-page .display-connection.status-online {
-  border-color: rgba(68, 64, 60, 0.28);
-  background: rgba(255, 255, 255, 0.55);
-  color: #57534e;
+  background: #a8a29e;
 }
 
 .display-page .display-connection.status-offline {
-  border-color: rgba(153, 27, 27, 0.35);
-  background: rgba(254, 226, 226, 0.72);
-  color: #9f1239;
+  background: #9f1239;
+}
+
+.display-page .display-connection.status-offline::after {
+  border-color: rgba(159, 18, 57, 0.4);
 }
 
 .display-page.display-dark .display-connection,
 .display-page.display-dark .display-connection.status-online {
-  border-color: rgba(231, 229, 228, 0.22);
-  background: rgba(255, 255, 255, 0.08);
-  color: #d6d3d1;
+  background: #a8a29e;
 }
 
 .display-page.display-dark .display-connection.status-offline {
-  border-color: rgba(251, 113, 133, 0.4);
-  background: rgba(244, 63, 94, 0.16);
-  color: #fda4af;
+  background: #fda4af;
+}
+
+.display-page.display-dark .display-connection.status-offline::after {
+  border-color: rgba(253, 164, 175, 0.45);
+}
+
+@keyframes display-connection-pulse {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .display-page .display-connection::after {
+    animation: none;
+    opacity: 0.45;
+    transform: none;
+  }
 }
 
 .display-page.display-ward .display-ward-name {

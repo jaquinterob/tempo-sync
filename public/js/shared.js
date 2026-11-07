@@ -212,7 +212,10 @@
 
   function updateConnectionBadge(element, connected) {
     if (!element) return;
-    element.textContent = connected ? "En línea" : "Sin conexión";
+    const label = connected ? "En línea" : "Sin conexión";
+    element.textContent = label;
+    element.title = label;
+    element.setAttribute("aria-label", label);
     element.classList.toggle("status-online", connected);
     element.classList.toggle("status-offline", !connected);
   }
