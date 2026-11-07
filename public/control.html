@@ -22,7 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=20" />
+    <link rel="stylesheet" href="/css/styles.css?v=24" />
   </head>
   <body class="control-page">
     <script>
@@ -175,21 +175,14 @@
                 <span class="share-kicker">Código</span>
                 <strong id="share-pin">—</strong>
               </span>
+              <button id="share-sheet-button" type="button" class="share-action" title="Compartir">
+                <i data-lucide="share-2" data-lucide-class="ui-icon"></i>
+                <span>Compartir</span>
+              </button>
               <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
                 <i data-lucide="copy" data-lucide-class="ui-icon"></i>
                 <span>Copiar</span>
               </button>
-              <a
-                id="whatsapp-share"
-                class="share-action share-action-primary"
-                href="#"
-                target="_blank"
-                rel="noreferrer"
-                title="Enviar por WhatsApp"
-              >
-                <i data-lucide="message-circle" data-lucide-class="ui-icon"></i>
-                <span>WhatsApp</span>
-              </a>
               <a
                 id="display-link"
                 class="share-action"
@@ -309,18 +302,9 @@
         <h2 id="share-gate-title">Envía el código<br />al otro celular</h2>
         <p class="share-gate-code" id="share-gate-pin">—</p>
         <p id="share-gate-url" class="share-gate-url" hidden></p>
-        <a
-          id="share-gate-whatsapp"
-          class="share-gate-whatsapp"
-          href="#"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Enviar por WhatsApp
-        </a>
-        <div class="share-gate-secondary">
-          <button id="share-gate-copy" type="button" class="share-gate-text">
-            Copiar
+        <div class="share-gate-actions">
+          <button id="share-gate-share" type="button" class="share-gate-text">
+            Compartir
           </button>
           <button id="share-gate-done" type="button" class="share-gate-text">
             Continuar
@@ -330,10 +314,42 @@
       </div>
     </div>
 
+    <div
+      id="share-menu"
+      class="share-menu is-hidden"
+      hidden
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-menu-title"
+    >
+      <button type="button" class="share-menu-backdrop" id="share-menu-backdrop" aria-label="Cerrar"></button>
+      <div class="share-menu-sheet">
+        <p class="share-menu-kicker" id="share-menu-title">Compartir con</p>
+        <a
+          id="share-menu-whatsapp"
+          class="share-menu-item"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WhatsApp
+        </a>
+        <button id="share-menu-copy" type="button" class="share-menu-item">
+          Copiar enlace
+        </button>
+        <a id="share-menu-sms" class="share-menu-item" href="#">
+          Mensajes
+        </a>
+        <button id="share-menu-close" type="button" class="share-menu-item share-menu-cancel">
+          Cancelar
+        </button>
+      </div>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/icons.js?v=12"></script>
+    <script src="/js/icons.js?v=23"></script>
     <script src="/js/shared.js?v=19"></script>
-    <script src="/js/control.js?v=19"></script>
+    <script src="/js/control.js?v=23"></script>
     <script>
       window.PulpitIcons?.createIcons();
     </script>

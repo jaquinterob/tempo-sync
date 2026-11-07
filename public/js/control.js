@@ -43,7 +43,7 @@ const clearMessageButton = document.querySelector("#clear-message-button");
 const displayLink = document.querySelector("#display-link");
 const changeRoomButton = document.querySelector("#change-room-button");
 const copyDisplayLinkButton = document.querySelector("#copy-display-link");
-const whatsappShare = document.querySelector("#whatsapp-share");
+const shareSheetButton = document.querySelector("#share-sheet-button");
 const sharePin = document.querySelector("#share-pin");
 const shareStatus = document.querySelector("#share-status");
 const brandingForm = document.querySelector("#branding-form");
@@ -56,15 +56,21 @@ const themeToggle = document.querySelector("#theme-toggle");
 const timeMeterFill = document.querySelector("#time-meter-fill");
 const shareGate = document.querySelector("#share-gate");
 const shareGatePin = document.querySelector("#share-gate-pin");
-const shareGateWhatsapp = document.querySelector("#share-gate-whatsapp");
-const shareGateCopy = document.querySelector("#share-gate-copy");
+const shareGateShare = document.querySelector("#share-gate-share");
 const shareGateDone = document.querySelector("#share-gate-done");
 const shareGateStatus = document.querySelector("#share-gate-status");
+const shareMenu = document.querySelector("#share-menu");
+const shareMenuWhatsapp = document.querySelector("#share-menu-whatsapp");
+const shareMenuCopy = document.querySelector("#share-menu-copy");
+const shareMenuSms = document.querySelector("#share-menu-sms");
+const shareMenuClose = document.querySelector("#share-menu-close");
+const shareMenuBackdrop = document.querySelector("#share-menu-backdrop");
 let lastScreenMessage = "";
 let isScreenBlank = false;
 let lastBrandingKey = "";
 let currentTheme = "light";
 let joining = false;
+let shareStatusTarget = shareStatus;
 
 function currentUnitLabel() {
   return normalizeUnitText(unitNameInput.value, 60);
@@ -129,23 +135,74 @@ function whatsappShareHref(pin, url) {
   return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildShareMessage(pin, url))}`;
 }
 
+function smsShareHref(pin, url) {
+  const body = encodeURIComponent(buildShareMessage(pin, url));
+  // iOS usa &body=; Android suele aceptar ?body=
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent)
+    ? `sms:&body=${body}`
+    : `sms:?body=${body}`;
+}
+
+function canUseNativeShare() {
+  return typeof navigator.share === "function";
+}
+
 function updateShareLinks(pin) {
   const clean = cleanPin(pin);
   const url = displayShareUrl(clean);
   if (sharePin) sharePin.textContent = clean || "—";
   if (displayLink && url) displayLink.href = url;
-  const href = url ? whatsappShareHref(clean, url) : "#";
-  if (whatsappShare) whatsappShare.href = href;
-  if (shareGateWhatsapp) {
-    shareGateWhatsapp.href = href;
-    shareGateWhatsapp.setAttribute("aria-disabled", url ? "false" : "true");
-  }
   if (shareGatePin) shareGatePin.textContent = clean || "—";
   const shareGateUrl = document.querySelector("#share-gate-url");
   if (shareGateUrl) {
     shareGateUrl.textContent = url || "";
     shareGateUrl.hidden = !url;
   }
+  if (url) {
+    if (shareMenuWhatsapp) shareMenuWhatsapp.href = whatsappShareHref(clean, url);
+    if (shareMenuSms) shareMenuSms.href = smsShareHref(clean, url);
+  }
+}
+
+function showShareMenu() {
+  if (!shareMenu) return;
+  shareMenu.hidden = false;
+  shareMenu.classList.remove("is-hidden");
+  document.body.classList.add("share-menu-open");
+}
+
+function hideShareMenu() {
+  if (!shareMenu) return;
+  shareMenu.classList.add("is-hidden");
+  shareMenu.hidden = true;
+  document.body.classList.remove("share-menu-open");
+}
+
+async function openShareSheet(targetStatus = shareStatus) {
+  shareStatusTarget = targetStatus || shareStatus;
+  await prepareShareOrigin();
+  const pin = client.getPin();
+  updateShareLinks(pin);
+  const url = displayShareUrl(pin);
+  if (!url) return;
+
+  const text = buildShareMessage(pin, url);
+  if (canUseNativeShare()) {
+    try {
+      await navigator.share({
+        title: "Pulpit Timer",
+        text,
+        url,
+      });
+      if (shareStatusTarget) shareStatusTarget.textContent = "Listo.";
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      // Si el sistema falla, cae al menú manual.
+    }
+  }
+
+  showShareMenu();
 }
 
 function shouldShowShareGate(pin) {
@@ -184,6 +241,7 @@ async function showShareGate(pin) {
 function hideShareGate() {
   if (!shareGate) return;
   clearShareGateFlag();
+  hideShareMenu();
   shareGate.classList.add("is-hidden");
   document.body.classList.remove("share-gate-open");
 }
@@ -387,13 +445,40 @@ async function enterRoom(rawPin, options = {}) {
   });
 }
 
-if (shareGateCopy) {
-  shareGateCopy.addEventListener("click", () => {
-    copyDisplayLink(shareGateStatus);
+if (shareGateShare) {
+  shareGateShare.addEventListener("click", () => {
+    openShareSheet(shareGateStatus);
   });
 }
 if (shareGateDone) {
   shareGateDone.addEventListener("click", hideShareGate);
+}
+if (shareSheetButton) {
+  shareSheetButton.addEventListener("click", () => {
+    openShareSheet(shareStatus);
+  });
+}
+if (shareMenuCopy) {
+  shareMenuCopy.addEventListener("click", async () => {
+    await copyDisplayLink(shareStatusTarget);
+    hideShareMenu();
+  });
+}
+if (shareMenuWhatsapp) {
+  shareMenuWhatsapp.addEventListener("click", () => {
+    hideShareMenu();
+  });
+}
+if (shareMenuSms) {
+  shareMenuSms.addEventListener("click", () => {
+    hideShareMenu();
+  });
+}
+if (shareMenuClose) {
+  shareMenuClose.addEventListener("click", hideShareMenu);
+}
+if (shareMenuBackdrop) {
+  shareMenuBackdrop.addEventListener("click", hideShareMenu);
 }
 
 pinInput.addEventListener("input", () => {
@@ -421,7 +506,9 @@ changeRoomButton.addEventListener("click", () => {
   }
   showJoinPanel();
 });
-copyDisplayLinkButton.addEventListener("click", () => copyDisplayLink());
+if (copyDisplayLinkButton) {
+  copyDisplayLinkButton.addEventListener("click", () => copyDisplayLink());
+}
 
 timeForm.addEventListener("submit", (event) => {
   event.preventDefault();
