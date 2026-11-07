@@ -1,5 +1,6 @@
 (() => {
   const STORAGE_KEY = "pulpit-admin-token";
+  const REFRESH_MS = 3000;
 
   const loginCard = document.querySelector("#login-card");
   const loginForm = document.querySelector("#login-form");
@@ -10,36 +11,53 @@
   const adminPanel = document.querySelector("#admin-panel");
   const refreshButton = document.querySelector("#refresh-button");
   const logoutButton = document.querySelector("#logout-button");
+  const autoRefresh = document.querySelector("#auto-refresh");
   const panelError = document.querySelector("#panel-error");
   const connectionsBody = document.querySelector("#connections-body");
-  const statTotal = document.querySelector("#stat-total");
-  const statRooms = document.querySelector("#stat-rooms");
+  const roomsList = document.querySelector("#rooms-list");
   const adminStatus = document.querySelector("#admin-status");
+  const towerClock = document.querySelector("#tower-clock");
+  const towerUpdated = document.querySelector("#tower-updated");
 
-  let token = localStorage.getItem(STORAGE_KEY);
+  const statUptime = document.querySelector("#stat-uptime");
+  const statEnv = document.querySelector("#stat-env");
+  const statSockets = document.querySelector("#stat-sockets");
+  const statEngine = document.querySelector("#stat-engine");
+  const statRoles = document.querySelector("#stat-roles");
+  const statRooms = document.querySelector("#stat-rooms");
+  const statMemory = document.querySelector("#stat-memory");
+  const roomsCount = document.querySelector("#rooms-count");
+  const sessionsCount = document.querySelector("#sessions-count");
+  const statRoomsDetail = document.querySelector("#stat-rooms-detail");
+  const purgeInactiveButton = document.querySelector("#purge-inactive-button");
 
-  function getToken() {
-    return token;
+  let token = null;
+  try {
+    token = localStorage.getItem(STORAGE_KEY);
+  } catch {
+    token = null;
   }
+
+  let refreshTimer = null;
+  let clockTimer = null;
 
   function setToken(nextToken) {
     token = nextToken;
-    if (nextToken) {
-      localStorage.setItem(STORAGE_KEY, nextToken);
-    } else {
-      localStorage.removeItem(STORAGE_KEY);
+    try {
+      if (nextToken) localStorage.setItem(STORAGE_KEY, nextToken);
+      else localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // sin localStorage
     }
   }
 
   async function api(path, options = {}) {
     const headers = new Headers(options.headers || {});
     headers.set("Content-Type", "application/json");
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
+    if (token) headers.set("Authorization", `Bearer ${token}`);
 
     const response = await fetch(path, { ...options, headers });
-    let data = null;
+    let data = {};
     try {
       data = await response.json();
     } catch {
@@ -47,51 +65,200 @@
     }
 
     if (!response.ok) {
-      throw new Error(data.error || "Error de conexión con el servidor.");
+      const error = new Error(data.error || "Error de conexión con el servidor.");
+      error.status = response.status;
+      throw error;
     }
-
     return data;
   }
 
+  function formatDuration(ms) {
+    const total = Math.max(0, Math.floor(Number(ms) / 1000));
+    const hours = Math.floor(total / 3600);
+    const minutes = Math.floor((total % 3600) / 60);
+    const seconds = total % 60;
+    if (hours > 0) return `${hours}h ${minutes}m`;
+    if (minutes > 0) return `${minutes}m ${seconds}s`;
+    return `${seconds}s`;
+  }
+
+  function formatClock(ms) {
+    const total = Math.max(0, Math.ceil(Number(ms) / 1000));
+    const minutes = Math.floor(total / 60);
+    const seconds = total % 60;
+    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  }
+
+  function roleLabel(role) {
+    if (role === "control") return "Control";
+    if (role === "display") return "Display";
+    return "Idle";
+  }
+
+  function tickClock() {
+    if (!towerClock) return;
+    towerClock.textContent = new Date().toLocaleTimeString("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  }
+
   function showLogin() {
+    stopRefresh();
+    loginCard.hidden = false;
     loginCard.style.display = "";
-    adminPanel.classList.remove("visible");
-    adminStatus.textContent = "LOCKED";
-    adminStatus.classList.add("status-offline");
-    adminStatus.classList.remove("status-online");
+    adminPanel.hidden = true;
+    adminPanel.classList.add("is-hidden");
+    adminStatus.textContent = "Bloqueado";
+    adminStatus.classList.add("is-locked");
+    adminStatus.classList.remove("is-live");
   }
 
   function showPanel() {
+    loginCard.hidden = true;
     loginCard.style.display = "none";
-    adminPanel.classList.add("visible");
-    adminStatus.textContent = "ONLINE";
-    adminStatus.classList.add("status-online");
-    adminStatus.classList.remove("status-offline");
-    loadConnections();
+    adminPanel.hidden = false;
+    adminPanel.classList.remove("is-hidden");
+    adminStatus.textContent = "En vivo";
+    adminStatus.classList.add("is-live");
+    adminStatus.classList.remove("is-locked");
+    loadTower();
+    syncRefreshTimer();
   }
 
-  function formatDuration(ms) {
-    const seconds = Math.floor(ms / 1000);
-    if (seconds < 60) return `${seconds}s`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ${seconds % 60}s`;
-    const hours = Math.floor(minutes / 60);
-    return `${hours}h ${minutes % 60}m`;
+  function stopRefresh() {
+    if (refreshTimer) {
+      clearInterval(refreshTimer);
+      refreshTimer = null;
+    }
+  }
+
+  function syncRefreshTimer() {
+    stopRefresh();
+    if (!autoRefresh?.checked || adminPanel.hidden) return;
+    refreshTimer = setInterval(loadTower, REFRESH_MS);
+  }
+
+  function renderRooms(rooms) {
+    const inactiveCount = rooms.filter((room) => room.inactive).length;
+    roomsCount.textContent = String(rooms.length);
+    if (purgeInactiveButton) {
+      purgeInactiveButton.disabled = inactiveCount === 0;
+      purgeInactiveButton.title =
+        inactiveCount === 0
+          ? "No hay salas inactivas"
+          : `Eliminar ${inactiveCount} sala${inactiveCount === 1 ? "" : "s"} sin sockets`;
+    }
+    roomsList.innerHTML = "";
+
+    if (rooms.length === 0) {
+      const empty = document.createElement("p");
+      empty.className = "tower-empty";
+      empty.textContent = "No hay salas en memoria.";
+      roomsList.appendChild(empty);
+      return;
+    }
+
+    for (const room of rooms) {
+      const card = document.createElement("article");
+      card.className = `tower-room${room.inactive ? " is-inactive" : ""}`;
+
+      const top = document.createElement("div");
+      top.className = "tower-room-top";
+
+      const pin = document.createElement("strong");
+      pin.className = "tower-room-pin";
+      pin.textContent = room.pin;
+
+      const meta = document.createElement("div");
+      meta.className = "tower-room-meta";
+
+      if (room.inactive) {
+        const inactive = document.createElement("span");
+        inactive.className = "tower-badge is-inactive";
+        inactive.textContent = "Inactiva";
+        meta.appendChild(inactive);
+      }
+
+      const state = document.createElement("span");
+      state.className = `tower-badge${room.isRunning ? " is-running" : ""}`;
+      state.textContent = room.isRunning ? "En curso" : "En espera";
+      meta.appendChild(state);
+
+      if (room.isBlank) {
+        const blank = document.createElement("span");
+        blank.className = "tower-badge is-blank";
+        blank.textContent = "Pantalla oculta";
+        meta.appendChild(blank);
+      }
+
+      top.appendChild(pin);
+      top.appendChild(meta);
+
+      const grid = document.createElement("div");
+      grid.className = "tower-room-grid";
+
+      const cells = [
+        ["Unidad", room.wardName || "—"],
+        ["Restante", formatClock(room.remainingMs)],
+        ["Duración", formatClock(room.durationMs)],
+        ["Edad", room.ageMs != null ? formatDuration(room.ageMs) : "—"],
+        ["Sockets", `${room.sockets} · ${room.controls}C / ${room.displays}D`],
+        ["Tema", room.theme === "dark" ? "Oscuro" : "Claro"],
+        ["Revisión", String(room.revision ?? 0)],
+        ["Mensaje", room.message ? room.message : "—"],
+      ];
+
+      for (const [label, value] of cells) {
+        const cell = document.createElement("div");
+        const span = document.createElement("span");
+        span.textContent = label;
+        const strong = document.createElement("strong");
+        strong.textContent = value;
+        strong.title = value;
+        cell.appendChild(span);
+        cell.appendChild(strong);
+        grid.appendChild(cell);
+      }
+
+      const foot = document.createElement("div");
+      foot.className = "tower-room-foot";
+
+      const details = document.createElement("p");
+      details.className = "tower-room-notes";
+      const thanks = room.finishThanks || "—";
+      const done = room.finishDone || "—";
+      details.textContent = `Cierre: “${thanks}” · “${done}”`;
+      details.title = details.textContent;
+
+      const deleteButton = document.createElement("button");
+      deleteButton.type = "button";
+      deleteButton.className = "tower-kick";
+      deleteButton.textContent = room.inactive ? "Eliminar" : "Cerrar sala";
+      deleteButton.addEventListener("click", () => deleteRoom(room.pin, room.inactive, deleteButton));
+
+      foot.append(details, deleteButton);
+
+      card.appendChild(top);
+      card.appendChild(grid);
+      card.appendChild(foot);
+      roomsList.appendChild(card);
+    }
+
+    window.PulpitIcons?.createIcons?.(roomsList);
   }
 
   function renderConnections(connections) {
-    const pins = new Set(connections.map((c) => c.pin).filter(Boolean));
-    statTotal.textContent = String(connections.length);
-    statRooms.textContent = String(pins.size);
-
+    sessionsCount.textContent = String(connections.length);
     connectionsBody.innerHTML = "";
 
     if (connections.length === 0) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
-      cell.colSpan = 5;
-      cell.className = "empty-state";
-      cell.textContent = "No hay conexiones activas en este momento.";
+      cell.colSpan = 6;
+      cell.className = "tower-empty";
+      cell.textContent = "No hay sesiones socket activas.";
       row.appendChild(cell);
       connectionsBody.appendChild(row);
       return;
@@ -101,10 +268,20 @@
       const row = document.createElement("tr");
 
       const pinCell = document.createElement("td");
-      const pinBadge = document.createElement("span");
-      pinBadge.className = `pin-badge${connection.pin ? "" : " none"}`;
-      pinBadge.textContent = connection.pin || "—";
-      pinCell.appendChild(pinBadge);
+      pinCell.className = "mono";
+      pinCell.textContent = connection.pin || "—";
+
+      const roleCell = document.createElement("td");
+      const role = document.createElement("span");
+      role.className = `tower-role${
+        connection.role === "control"
+          ? " is-control"
+          : connection.role === "display"
+            ? " is-display"
+            : ""
+      }`;
+      role.textContent = roleLabel(connection.role);
+      roleCell.appendChild(role);
 
       const addressCell = document.createElement("td");
       addressCell.className = "mono";
@@ -115,41 +292,66 @@
       timeCell.textContent = formatDuration(connection.connectedForMs);
 
       const idCell = document.createElement("td");
-      idCell.className = "mono connection-id";
+      idCell.className = "mono socket-id";
       idCell.title = connection.id;
       idCell.textContent = connection.id;
 
       const actionCell = document.createElement("td");
       const kickButton = document.createElement("button");
       kickButton.type = "button";
-      kickButton.className = "kick-button";
-      kickButton.textContent = "Eliminar";
+      kickButton.className = "tower-kick";
+      kickButton.textContent = "Expulsar";
       kickButton.addEventListener("click", () => kickConnection(connection.id, kickButton));
       actionCell.appendChild(kickButton);
 
-      row.appendChild(pinCell);
-      row.appendChild(addressCell);
-      row.appendChild(timeCell);
-      row.appendChild(idCell);
-      row.appendChild(actionCell);
-
+      row.append(pinCell, roleCell, addressCell, timeCell, idCell, actionCell);
       connectionsBody.appendChild(row);
     }
   }
 
-  async function loadConnections() {
+  function renderTower(data) {
+    const server = data.server || {};
+    const socket = data.socket || {};
+    const rooms = data.rooms || [];
+    const connections = data.connections || [];
+
+    statUptime.textContent = formatDuration((server.uptimeSec || 0) * 1000);
+    statEnv.textContent = server.env || "—";
+    statSockets.textContent = String(socket.sockets ?? 0);
+    statEngine.textContent = `engine ${socket.engineClients ?? "—"}`;
+    statRoles.textContent = `${socket.controls ?? 0} / ${socket.displays ?? 0}`;
+    const inactiveRooms = rooms.filter((room) => room.inactive).length;
+    const activeRooms = rooms.length - inactiveRooms;
+    statRooms.textContent = String(socket.roomsTracked ?? rooms.length);
+    if (statRoomsDetail) {
+      statRoomsDetail.textContent = `${activeRooms} activas · ${inactiveRooms} inactivas · mem ${
+        server.memory?.heapUsedMb ?? "—"
+      } MB`;
+    }
+    if (statMemory) {
+      statMemory.textContent = `mem ${server.memory?.heapUsedMb ?? "—"} MB`;
+    }
+
+    towerUpdated.textContent = `Actualizado ${new Date(
+      data.generatedAt || Date.now(),
+    ).toLocaleTimeString("es-CO")}`;
+
+    renderRooms(rooms);
+    renderConnections(connections);
+  }
+
+  async function loadTower() {
     panelError.textContent = "";
     try {
-      const data = await api("/api/admin/connections");
-      renderConnections(data.connections || []);
+      const data = await api("/api/admin/tower");
+      renderTower(data);
     } catch (error) {
-      if (String(error.message).toLowerCase().includes("401") || String(error.message).includes("No autorizado")) {
+      if (error.status === 401 || /no autorizado|expir/i.test(String(error.message))) {
         setToken(null);
         showLogin();
-        loginError.textContent = "Tu sesión expiró. Vuelve a iniciar sesión.";
+        loginError.textContent = "Tu sesión expiró. Vuelve a entrar.";
         return;
       }
-      connectionsBody.innerHTML = "";
       panelError.textContent = error.message;
     }
   }
@@ -162,9 +364,45 @@
         method: "POST",
         body: JSON.stringify({ socketId }),
       });
-      loadConnections();
+      await loadTower();
     } catch (error) {
       button.disabled = false;
+      panelError.textContent = error.message;
+    }
+  }
+
+  async function deleteRoom(pin, inactive, button) {
+    const confirmText = inactive
+      ? `¿Eliminar la sala inactiva ${pin}?`
+      : `La sala ${pin} tiene sesiones activas. ¿Expulsar a todos y cerrarla?`;
+    if (!window.confirm(confirmText)) return;
+
+    button.disabled = true;
+    panelError.textContent = "";
+    try {
+      await api("/api/admin/rooms/delete", {
+        method: "POST",
+        body: JSON.stringify({ pin }),
+      });
+      await loadTower();
+    } catch (error) {
+      button.disabled = false;
+      panelError.textContent = error.message;
+    }
+  }
+
+  async function purgeInactive() {
+    if (!window.confirm("¿Eliminar todas las salas sin sockets conectados?")) return;
+    purgeInactiveButton.disabled = true;
+    panelError.textContent = "";
+    try {
+      const result = await api("/api/admin/rooms/purge-inactive", { method: "POST" });
+      await loadTower();
+      if (result.count === 0) {
+        panelError.textContent = "No había salas inactivas.";
+      }
+    } catch (error) {
+      purgeInactiveButton.disabled = false;
       panelError.textContent = error.message;
     }
   }
@@ -188,7 +426,9 @@
     }
   });
 
-  refreshButton.addEventListener("click", loadConnections);
+  refreshButton.addEventListener("click", loadTower);
+  purgeInactiveButton?.addEventListener("click", purgeInactive);
+  autoRefresh?.addEventListener("change", syncRefreshTimer);
 
   logoutButton.addEventListener("click", async () => {
     try {
@@ -200,9 +440,14 @@
     showLogin();
   });
 
-  if (token) {
-    showPanel();
-  } else {
-    showLogin();
-  }
+  tickClock();
+  clockTimer = setInterval(tickClock, 1000);
+
+  if (token) showPanel();
+  else showLogin();
+
+  window.addEventListener("beforeunload", () => {
+    stopRefresh();
+    if (clockTimer) clearInterval(clockTimer);
+  });
 })();

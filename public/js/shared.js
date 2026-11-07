@@ -44,9 +44,41 @@
     }
   }
 
-  function createTimerClient({ onState, onConnection }) {
+  function readStoredControlToken(pin) {
+    const clean = cleanPin(pin);
+    if (!clean) return "";
+    try {
+      return String(sessionStorage.getItem(`pulpit-control-token:${clean}`) || "");
+    } catch {
+      return "";
+    }
+  }
+
+  function storeControlToken(pin, token) {
+    const clean = cleanPin(pin);
+    if (!clean || !token) return;
+    try {
+      sessionStorage.setItem(`pulpit-control-token:${clean}`, token);
+    } catch {
+      // sin sessionStorage
+    }
+  }
+
+  function clearControlToken(pin) {
+    const clean = cleanPin(pin);
+    if (!clean) return;
+    try {
+      sessionStorage.removeItem(`pulpit-control-token:${clean}`);
+    } catch {
+      // sin sessionStorage
+    }
+  }
+
+  function createTimerClient({ onState, onConnection, role = "display" }) {
     const socket = io();
     let pin = null;
+    let controlToken = null;
+    let clientRole = role === "control" ? "control" : "display";
     let state = null;
     let serverOffset = 0;
 
@@ -56,12 +88,14 @@
       onState?.(nextState);
     }
 
-    function join(nextPin) {
-      pin = cleanPin(nextPin);
+    function createRoom() {
       return new Promise((resolve) => {
-        socket.emit("room:join", pin, (result) => {
-          if (result.ok) {
+        socket.emit("room:create", (result) => {
+          if (result?.ok) {
             pin = result.pin;
+            controlToken = result.controlToken;
+            clientRole = "control";
+            storeControlToken(pin, controlToken);
             receiveState(result.state);
             startWarmupKeepAlive();
           }
@@ -70,10 +104,60 @@
       });
     }
 
+    function join(nextPin, options = {}) {
+      pin = cleanPin(nextPin);
+      const nextRole = options.role === "control" ? "control" : "display";
+      controlToken =
+        nextRole === "control"
+          ? String(options.controlToken || readStoredControlToken(pin) || "")
+          : null;
+      clientRole = nextRole;
+
+      return new Promise((resolve) => {
+        socket.emit(
+          "room:join",
+          {
+            pin,
+            role: nextRole,
+            controlToken: controlToken || undefined,
+          },
+          (result) => {
+            if (result?.ok) {
+              pin = result.pin;
+              clientRole = result.role;
+              if (result.controlToken) {
+                controlToken = result.controlToken;
+                storeControlToken(pin, controlToken);
+              }
+              receiveState(result.state);
+              startWarmupKeepAlive();
+            }
+            resolve(result);
+          },
+        );
+      });
+    }
+
+    function leave() {
+      const previousPin = pin;
+      return new Promise((resolve) => {
+        socket.emit("room:leave", () => {
+          pin = null;
+          controlToken = null;
+          state = null;
+          if (previousPin) clearControlToken(previousPin);
+          resolve({ ok: true });
+        });
+      });
+    }
+
     socket.on("connect", () => {
       onConnection?.(true);
-      if (pin) {
-        join(pin);
+      if (!pin) return;
+      if (clientRole === "control") {
+        join(pin, { role: "control", controlToken });
+      } else {
+        join(pin, { role: "display" });
       }
     });
     socket.on("disconnect", () => onConnection?.(false));
@@ -81,8 +165,12 @@
 
     return {
       socket,
+      createRoom,
       join,
+      leave,
       getPin: () => pin,
+      getRole: () => clientRole,
+      getControlToken: () => controlToken,
       getState: () => state,
       getRemaining: () => {
         if (!state) return 0;
@@ -124,18 +212,22 @@
 
   function updateConnectionBadge(element, connected) {
     if (!element) return;
-    const terminal = document.body.classList.contains("control-page");
-    element.textContent = connected
-      ? terminal
-        ? "En línea"
-        : "Conectado"
-      : "Desconectado";
+    element.textContent = connected ? "En línea" : "Sin conexión";
     element.classList.toggle("status-online", connected);
     element.classList.toggle("status-offline", !connected);
   }
 
   function pinFromUrl() {
     return cleanPin(new URLSearchParams(window.location.search).get("pin"));
+  }
+
+  function keyFromUrl() {
+    return String(new URLSearchParams(window.location.search).get("key") ?? "").trim();
+  }
+
+  function shouldCreateFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("create") === "1";
   }
 
   function wardFromUrl() {
@@ -145,7 +237,6 @@
       .slice(0, 60);
   }
 
-  const UNIT_TYPES = ["Barrio", "Estaca"];
   const UNIT_PLACEHOLDER = "Tu unidad";
 
   function normalizeUnitText(value, maxLength = 60) {
@@ -155,69 +246,81 @@
       .slice(0, maxLength);
   }
 
-  function normalizeUnitType(value) {
-    const text = normalizeUnitText(value, 20);
-    if (/^estaca$/i.test(text)) return "Estaca";
-    return "Barrio";
-  }
-
-  function composeUnitLabel(type, name) {
-    const unitType = normalizeUnitType(type);
-    const unitName = normalizeUnitText(name, 50);
-    if (!unitName) return "";
-    return normalizeUnitText(`${unitType} ${unitName}`, 60);
-  }
-
-  function parseUnitLabel(value) {
-    const full = normalizeUnitText(value, 60);
-    if (!full) {
-      return { type: "Barrio", name: "" };
-    }
-    if (/^estaca\b/i.test(full)) {
-      return {
-        type: "Estaca",
-        name: normalizeUnitText(full.replace(/^estaca\s+/i, ""), 50),
-      };
-    }
-    if (/^barrio\b/i.test(full)) {
-      return {
-        type: "Barrio",
-        name: normalizeUnitText(full.replace(/^barrio\s+/i, ""), 50),
-      };
-    }
-    return { type: "Barrio", name: full };
-  }
-
   function displayUnitLabel(value) {
     return normalizeUnitText(value, 60) || UNIT_PLACEHOLDER;
   }
 
-  function createRoomPin() {
-    return String(1000 + Math.floor(Math.random() * 9000));
+  let shareOrigin = window.location.origin;
+
+  function isLoopbackHost(hostname) {
+    return hostname === "localhost" || hostname === "127.0.0.1" || hostname === "::1";
+  }
+
+  function isPrivateHost(hostname) {
+    return (
+      /^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+      /^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname) ||
+      /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname)
+    );
+  }
+
+  function normalizeShareOrigin(origin) {
+    try {
+      const url = new URL(origin);
+      if (isLoopbackHost(url.hostname) || isPrivateHost(url.hostname)) {
+        url.protocol = "http:";
+      }
+      return url.origin;
+    } catch {
+      return String(origin || "").replace(/^https:/i, "http:");
+    }
+  }
+
+  async function prepareShareOrigin() {
+    shareOrigin = normalizeShareOrigin(window.location.origin);
+
+    try {
+      const response = await fetch("/api/warmup");
+      if (!response.ok) return shareOrigin;
+      const data = await response.json();
+      const lanOrigin = Array.isArray(data.lanOrigins) ? data.lanOrigins[0] : "";
+      const currentHost = new URL(shareOrigin).hostname;
+      if (lanOrigin && isLoopbackHost(currentHost)) {
+        shareOrigin = normalizeShareOrigin(lanOrigin);
+      }
+    } catch {
+      // conservar origin actual
+    }
+    return shareOrigin;
+  }
+
+  function getShareOrigin() {
+    return normalizeShareOrigin(shareOrigin || window.location.origin);
   }
 
   function displayShareUrl(pin) {
     const clean = cleanPin(pin);
     if (!clean) return "";
-    return `${window.location.origin}/display?pin=${encodeURIComponent(clean)}`;
+    return `${getShareOrigin()}/display?pin=${encodeURIComponent(clean)}`;
   }
 
   window.TimerTools = {
     UNIT_PLACEHOLDER,
-    UNIT_TYPES,
     cleanPin,
     clearWarmupKeepAlive,
-    composeUnitLabel,
-    createRoomPin,
     createTimerClient,
     displayShareUrl,
     displayUnitLabel,
     formatTime,
+    getShareOrigin,
+    keyFromUrl,
     normalizeUnitText,
-    normalizeUnitType,
-    parseUnitLabel,
     pinFromUrl,
+    prepareShareOrigin,
+    readStoredControlToken,
+    shouldCreateFromUrl,
     startWarmupKeepAlive,
+    storeControlToken,
     wardFromUrl,
     renderTimer,
     updateConnectionBadge,

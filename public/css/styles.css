@@ -515,10 +515,10 @@ input:focus {
 .display-page.display-ward .display-join .button-primary {
   border: 1px solid #57534e;
   border-radius: 0;
-  min-height: 38px;
-  padding: 8px 12px;
-  background: transparent;
-  color: #44403c;
+  min-height: 48px;
+  padding: 10px 16px;
+  background: #57534e;
+  color: #f7f4ef;
   font-weight: 500;
 }
 
@@ -556,6 +556,62 @@ input:focus {
   font-weight: 400;
   letter-spacing: 0.01em;
   line-height: 1.25;
+}
+
+.display-page .display-connection {
+  position: absolute;
+  z-index: 5;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid rgba(68, 64, 60, 0.28);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #57534e;
+  font-family: "Source Sans 3", Georgia, serif;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  backdrop-filter: blur(6px);
+}
+
+.display-page .display-connection::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+  opacity: 0.9;
+}
+
+.display-page .display-connection.status-online {
+  border-color: rgba(68, 64, 60, 0.28);
+  background: rgba(255, 255, 255, 0.55);
+  color: #57534e;
+}
+
+.display-page .display-connection.status-offline {
+  border-color: rgba(153, 27, 27, 0.35);
+  background: rgba(254, 226, 226, 0.72);
+  color: #9f1239;
+}
+
+.display-page.display-dark .display-connection,
+.display-page.display-dark .display-connection.status-online {
+  border-color: rgba(231, 229, 228, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: #d6d3d1;
+}
+
+.display-page.display-dark .display-connection.status-offline {
+  border-color: rgba(251, 113, 133, 0.4);
+  background: rgba(244, 63, 94, 0.16);
+  color: #fda4af;
 }
 
 .display-page.display-ward .display-ward-name {
@@ -934,14 +990,15 @@ input:focus {
   opacity: 1;
 }
 
-.fullscreen-button svg {
+.fullscreen-button svg,
+.fullscreen-button svg.lucide {
   width: 18px;
   height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.8;
+  stroke-width: 1.75;
 }
 
 .fullscreen-button.is-active,
@@ -1657,15 +1714,15 @@ input:focus {
   }
 }
 
-/* Ward cream theme — control keeps retro structure, display colors */
+/* Ward cream theme — control calm/serif-friendly for chapel use */
 .control-page {
   --meter-color: #57534e;
   color: #111827;
   background:
     radial-gradient(circle at top left, rgba(255, 255, 255, 0.85), transparent 42%),
     linear-gradient(180deg, #fbfaf7 0%, #f7f4ef 55%, #efebe3 100%);
-  font-family: "VT323", "Courier New", monospace;
-  font-size: 1.2rem;
+  font-family: "Source Sans 3", Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
   text-shadow: none;
 }
 
@@ -1821,16 +1878,18 @@ input:focus {
   clip: rect(0 0 0 0);
 }
 
-.control-page .ui-icon {
-  width: 14px;
-  height: 14px;
+.control-page .ui-icon,
+.control-page svg.lucide.ui-icon {
+  width: 18px;
+  height: 18px;
   flex: 0 0 auto;
   display: block;
 }
 
-.control-page .share-action .ui-icon {
-  width: 13px;
-  height: 13px;
+.control-page .share-action .ui-icon,
+.control-page .share-action svg.lucide {
+  width: 18px;
+  height: 18px;
 }
 
 .control-page .theme-toggle.is-active {
@@ -1862,60 +1921,7 @@ input:focus {
 }
 
 .control-page .brand-unit-field {
-  border: 0;
-  padding: 0;
   min-width: 0;
-}
-
-.control-page .brand-unit-controls {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 6px;
-  align-items: center;
-  min-width: 0;
-}
-
-.control-page .brand-unit-type {
-  display: grid;
-  grid-template-columns: auto auto;
-  gap: 4px;
-}
-
-.control-page .brand-unit-option {
-  display: block;
-  margin: 0;
-  cursor: pointer;
-}
-
-.control-page .brand-unit-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.control-page .brand-unit-option span {
-  display: grid;
-  place-items: center;
-  min-height: 32px;
-  padding: 0 8px;
-  border: 1px solid #9ca3af;
-  background: #fff;
-  color: #4b5563;
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.control-page .brand-unit-option input:checked + span {
-  border-color: #374151;
-  background: #374151;
-  color: #f9fafb;
-}
-
-.control-page .brand-unit-option input:focus-visible + span {
-  outline: 2px solid #6b7280;
-  outline-offset: 1px;
 }
 
 .control-page #control-ward-title.is-placeholder,
@@ -1963,18 +1969,15 @@ input:focus {
 }
 
 .control-page .control-credit {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   padding: 0 2px;
   color: #a8a29e;
-  font-family: "VT323", monospace;
-  font-size: 0.85rem;
-  letter-spacing: 0.04em;
+  font-family: "Source Sans 3", Georgia, serif;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
   text-align: center;
   line-height: 1.3;
-}
-.control-page .control-credit strong {
-  color: #78716c;
-  font-weight: 400;
+  opacity: 0.85;
 }
 
 .control-page .eyebrow {
@@ -2308,17 +2311,17 @@ input:focus {
 .control-page .matrix-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  grid-auto-rows: minmax(44px, auto);
-  gap: 6px;
+  grid-auto-rows: minmax(48px, auto);
+  gap: 8px;
   align-items: stretch;
 }
 
 .control-page .matrix-grid .preset-button,
 .control-page .matrix-grid .button {
-  min-height: 0;
+  min-height: 48px;
   height: 100%;
   margin: 0;
-  padding: 6px;
+  padding: 8px;
 }
 
 .control-page .matrix-grid .blank-screen-button {
@@ -2455,8 +2458,12 @@ input:focus {
 
   .control-page .matrix-grid {
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: minmax(40px, auto);
-    gap: 4px;
+    grid-auto-rows: minmax(48px, auto);
+    gap: 8px;
+  }
+
+  .control-page .matrix-grid .matrix-tall {
+    min-height: 56px;
   }
 
   .control-page .matrix-tall {
@@ -2589,48 +2596,6 @@ input:focus {
 
 .entry-ward.is-placeholder {
   color: #a8a29e;
-}
-
-.entry-unit-type {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.entry-unit-option {
-  display: block;
-  margin: 0;
-  cursor: pointer;
-}
-
-.entry-unit-option input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.entry-unit-option span {
-  display: grid;
-  place-items: center;
-  min-height: 44px;
-  border: 1px solid #a8a29e;
-  background: rgba(255, 255, 255, 0.72);
-  color: #57534e;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 1rem;
-  letter-spacing: 0.04em;
-}
-
-.entry-unit-option input:focus-visible + span {
-  outline: 2px solid #78716c;
-  outline-offset: 1px;
-}
-
-.entry-unit-option input:checked + span {
-  border-color: #57534e;
-  background: #57534e;
-  color: #f7f4ef;
 }
 
 .entry-stepper {
@@ -2864,21 +2829,57 @@ input:focus {
 }
 
 .share-gate-code {
-  margin: 4px 0;
+  margin: 4px 0 0;
   color: #1c1917;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 2.4rem;
+  font-family: "Source Sans 3", Georgia, sans-serif;
+  font-size: 2.2rem;
   font-weight: 700;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.14em;
+  text-shadow: none;
+}
+
+.share-gate-url {
+  margin: 0 0 4px;
+  padding: 0 4px;
+  color: #78716c;
+  font-family: "Source Sans 3", ui-monospace, monospace;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  word-break: break-all;
 }
 
 .share-gate-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-color: #166534;
   background: #166534;
+  color: #f7f4ef;
+  min-height: 48px;
+  text-decoration: none;
 }
 
-.share-gate-whatsapp:hover {
+.share-gate-whatsapp:hover,
+.share-gate-whatsapp:visited,
+.share-gate-whatsapp:active {
   background: #14532d;
+  color: #f7f4ef;
+  text-decoration: none;
+}
+
+.share-gate-card .entry-button {
+  min-height: 48px;
+}
+
+.share-gate-status {
+  margin: 0;
+  min-height: 1.2em;
+  color: #57534e;
+  font-size: 0.95rem;
+}
+
+.share-gate-status:empty {
+  display: none;
 }
 
 body.share-gate-open {
@@ -2925,15 +2926,15 @@ body.share-gate-open {
   justify-content: center;
   flex: 0 0 auto;
   gap: 5px;
-  min-height: 28px;
+  min-height: 44px;
   margin: 0;
   border: 1px solid #6b7280;
   border-radius: 0;
-  padding: 2px 8px;
+  padding: 8px 12px;
   background: rgba(255, 255, 255, 0.72);
   color: #111827;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   letter-spacing: 0.04em;
   line-height: 1;
   text-decoration: none;
@@ -2972,16 +2973,22 @@ body.share-gate-open {
   text-decoration: underline;
 }
 
-/* ————— Base: íconos y etiquetas en botones ————— */
-.control-page .btn-icon {
+/* ————— Base: íconos Lucide unificados ————— */
+.control-page .btn-icon,
+.control-page svg.lucide.btn-icon {
   display: block;
   flex: none;
   width: 22px;
   height: 22px;
   fill: none;
   stroke: currentColor;
+  stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+.control-page svg.lucide {
+  vector-effect: non-scaling-stroke;
 }
 
 .control-page .btn-label {

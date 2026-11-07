@@ -4,10 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f4ef" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pulpit Timer" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="/manifest.webmanifest?v=3" />
     <title>Pulpit Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +19,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=8" />
+    <link rel="stylesheet" href="/css/styles.css?v=9" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
@@ -41,31 +45,16 @@
           <h2 id="step-1-title">Escribe el nombre</h2>
 
           <form id="unit-form" class="entry-form" novalidate>
-            <div
-              class="entry-unit-type"
-              role="radiogroup"
-              aria-label="Tipo de unidad"
-            >
-              <label class="entry-unit-option">
-                <input type="radio" name="unit-type" value="Barrio" checked />
-                <span>Barrio</span>
-              </label>
-              <label class="entry-unit-option">
-                <input type="radio" name="unit-type" value="Estaca" />
-                <span>Estaca</span>
-              </label>
-            </div>
-
-            <label class="entry-label" for="unit-name">Nombre</label>
+            <label class="entry-label" for="unit-name">Nombre de tu unidad</label>
             <input
               id="unit-name"
               class="entry-input"
               type="text"
               name="unit"
-              maxlength="50"
+              maxlength="60"
               required
               autocomplete="organization"
-              placeholder="Ejemplo: Sabaneta"
+              placeholder="Ej. Barrio Sabaneta"
             />
             <p id="unit-error" class="entry-step-error" role="alert" hidden>
               Falta el nombre.
@@ -106,15 +95,11 @@
       </div>
     </main>
 
-    <script src="/js/shared.js?v=8"></script>
+    <script src="/js/shared.js?v=9"></script>
     <script>
       const {
         UNIT_PLACEHOLDER,
-        composeUnitLabel,
-        cleanPin,
         normalizeUnitText,
-        normalizeUnitType,
-        parseUnitLabel,
       } = window.TimerTools;
 
       const stepper = document.querySelector(".entry-stepper");
@@ -123,24 +108,11 @@
       const unitNameInput = document.querySelector("#unit-name");
       const unitError = document.querySelector("#unit-error");
       const wardTitle = document.querySelector("#entry-ward-title");
-      const typeInputs = [...document.querySelectorAll('input[name="unit-type"]')];
       const TOTAL_STEPS = panels.length;
       let currentStep = 0;
 
-      function selectedType() {
-        const checked = typeInputs.find((input) => input.checked);
-        return normalizeUnitType(checked?.value);
-      }
-
-      function setSelectedType(type) {
-        const next = normalizeUnitType(type);
-        for (const input of typeInputs) {
-          input.checked = input.value === next;
-        }
-      }
-
       function currentLabel() {
-        return composeUnitLabel(selectedType(), unitNameInput.value);
+        return normalizeUnitText(unitNameInput.value, 60);
       }
 
       function syncTitle() {
@@ -171,7 +143,7 @@
       }
 
       function unitIsValid() {
-        const ok = Boolean(normalizeUnitText(unitNameInput.value, 50));
+        const ok = Boolean(currentLabel());
         unitError.hidden = ok;
         return ok;
       }
@@ -189,28 +161,24 @@
           // sin localStorage
         }
 
-        const pin = cleanPin(String(1000 + Math.floor(Math.random() * 9000)));
-        try {
-          sessionStorage.setItem("pulpit-need-share", pin);
-        } catch {
-          // sin sessionStorage
-        }
-        window.location.href = `/control?${new URLSearchParams({ pin, ward })}`;
+        window.location.href = `/control?${new URLSearchParams({
+          create: "1",
+          ward,
+        })}`;
       }
 
       try {
-        const parsed = parseUnitLabel(localStorage.getItem("pulpit-ward-name"));
-        setSelectedType(parsed.type);
-        unitNameInput.value = parsed.name;
+        unitNameInput.value = normalizeUnitText(
+          localStorage.getItem("pulpit-ward-name"),
+          60,
+        );
       } catch {
-        setSelectedType("Barrio");
         unitNameInput.value = "";
       }
 
       syncTitle();
       setStep(0);
 
-      for (const input of typeInputs) input.addEventListener("change", syncTitle);
       unitNameInput.addEventListener("input", () => {
         unitError.hidden = true;
         syncTitle();
@@ -232,5 +200,5 @@
         setStep(1);
       });
     </script>
-  </body>
+</body>
 </html>

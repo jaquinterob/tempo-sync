@@ -11,10 +11,10 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Pulpit Timer" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="/manifest.webmanifest?v=3" />
     <title>Pulpit Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -22,7 +22,7 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=8" />
+    <link rel="stylesheet" href="/css/styles.css?v=10" />
   </head>
   <body class="display-page display-ward">
     <main class="display-shell">
@@ -44,7 +44,7 @@
         <div class="display-join-body">
           <h1>Abrir la pantalla del reloj</h1>
           <p>
-            Escribe el código de 4 números que te enviaron por WhatsApp
+            Escribe el código que te enviaron por WhatsApp
             (o el que aparece en el otro celular, en el panel de control).
           </p>
           <form id="join-form" class="join-form display-join-form">
@@ -57,8 +57,9 @@
                 minlength="3"
                 maxlength="12"
                 pattern="[A-Za-z0-9]+"
+                inputmode="text"
                 autocomplete="off"
-                placeholder="EJ. 1234"
+                placeholder="Ej. 7K3P9M"
                 required
               />
               <button type="submit" class="button button-primary">Mostrar</button>
@@ -84,6 +85,7 @@
             <strong id="display-ward-name" class="display-ward-name">Tu unidad</strong>
           </div>
         </header>
+        <span id="display-connection-status" class="display-connection status-offline">Conectando…</span>
 
         <div id="screen-message-banner" class="screen-message-banner is-hidden" aria-live="polite">
           <div id="screen-message" class="screen-message"></div>
@@ -114,9 +116,7 @@
           aria-label="Activar pantalla completa"
           title="Pantalla completa"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" />
-          </svg>
+          <i data-lucide="maximize" data-lucide-class="ui-icon"></i>
           <span>Pantalla completa</span>
         </button>
       </section>
@@ -168,7 +168,11 @@
     </main>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/shared.js?v=8"></script>
-    <script src="/js/display.js?v=8"></script>
-  </body>
+    <script src="/js/icons.js?v=10"></script>
+    <script src="/js/shared.js?v=10"></script>
+    <script src="/js/display.js?v=10"></script>
+    <script>
+      window.PulpitIcons?.createIcons();
+    </script>
+</body>
 </html>

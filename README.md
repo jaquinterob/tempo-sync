@@ -43,6 +43,12 @@ npm run dev
 npm test
 ```
 
+## PWA
+
+- Manifest + iconos + service worker (`/sw.js`) para instalar como app.
+- En **HTTPS** (p. ej. Render) o `localhost`: el navegador puede mostrar “Instalar app”.
+- En **HTTP por IP de Wi‑Fi** el service worker no se registra (limitación del navegador); en iPhone sigue valiendo **Compartir → Agregar a pantalla de inicio**.
+
 ## Notas
 
 - El estado vive en memoria y se pierde al reiniciar el servidor.

@@ -1,12 +1,17 @@
 {
+  "id": "/",
   "name": "Pulpit Timer",
   "short_name": "Pulpit Timer",
-  "description": "Temporizador sincronizado para reuniones sacramentales",
+  "description": "Temporizador sincronizado para reuniones",
+  "lang": "es",
+  "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#f7f4ef",
   "theme_color": "#f7f4ef",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/assets/brand/icon-192.png",
@@ -21,7 +26,7 @@
       "purpose": "any"
     },
     {
-      "src": "/assets/brand/icon-512.png",
+      "src": "/assets/brand/icon-512-maskable.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

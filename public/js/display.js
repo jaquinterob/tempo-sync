@@ -5,6 +5,7 @@ const {
   normalizeUnitText,
   pinFromUrl,
   renderTimer,
+  updateConnectionBadge,
 } = window.TimerTools;
 
 const joinForm = document.querySelector("#join-form");
@@ -12,6 +13,7 @@ const joinPanel = document.querySelector("#join-panel");
 const displayPanel = document.querySelector("#display-panel");
 const pinInput = document.querySelector("#pin");
 const joinError = document.querySelector("#join-error");
+const joinSubmit = joinForm.querySelector('button[type="submit"]');
 const timerElement = document.querySelector("#timer");
 const timerLabel = document.querySelector("#timer-label");
 const timeMeterFill = document.querySelector("#time-meter-fill");
@@ -24,6 +26,7 @@ const displayRoomPin = document.querySelector("#display-room-pin");
 const displayChurchName = document.querySelector("#display-church-name");
 const displayWardName = document.querySelector("#display-ward-name");
 const displayJoinWard = document.querySelector(".display-join-ward");
+const displayConnectionStatus = document.querySelector("#display-connection-status");
 const finalThanks = document.querySelector("#final-thanks");
 const finalAlertText = document.querySelector("#final-alert-text");
 const iosFullscreenHint = document.querySelector("#ios-fullscreen-hint");
@@ -31,6 +34,7 @@ const iosFullscreenDismiss = document.querySelector("#ios-fullscreen-dismiss");
 let lastScreenMessage = "";
 let finishPhase = "idle";
 let finishTimers = [];
+let joining = false;
 
 function isStandaloneDisplay() {
   return (
@@ -136,8 +140,9 @@ function updateScreenMessage(value) {
   }
 }
 
-function showJoinPanel() {
+async function showJoinPanel() {
   joinError.textContent = "";
+  await client.leave();
   displayPanel.classList.add("is-hidden");
   resetFinishSequence();
   document.body.classList.remove("screen-blanked");
@@ -236,6 +241,10 @@ document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 updateFullscreenButton();
 
 const client = createTimerClient({
+  role: "display",
+  onConnection: (connected) => {
+    updateConnectionBadge(displayConnectionStatus, connected);
+  },
   onState: (state) => {
     const hasFinished = !state.isRunning && state.remainingMs === 0;
     document.body.classList.toggle("screen-blanked", state.isBlank);
@@ -265,7 +274,6 @@ function updateTimerColor() {
 
   let color = "";
   if (state && ratio <= 0.2 && finishPhase === "idle") {
-    // Ámbar cálido → rojo terracota sobrio (encaja con el cierre)
     const urgency = Math.min(1, Math.max(0, 1 - ratio / 0.2));
     const hue = 28 - urgency * 20;
     const saturation = 34 + urgency * 22;
@@ -292,12 +300,24 @@ function updateTimerColor() {
 requestAnimationFrame(updateTimerColor);
 
 async function enterRoom(rawPin) {
+  if (joining) return;
   const pin = cleanPin(rawPin);
   joinError.textContent = "";
+  joining = true;
+  if (joinSubmit) {
+    joinSubmit.disabled = true;
+    joinSubmit.textContent = "Entrando…";
+  }
 
-  const result = await client.join(pin);
-  if (!result.ok) {
-    joinError.textContent = result.error;
+  const result = await client.join(pin, { role: "display" });
+  joining = false;
+  if (joinSubmit) {
+    joinSubmit.disabled = false;
+    joinSubmit.textContent = "Mostrar";
+  }
+
+  if (!result?.ok) {
+    joinError.textContent = result?.error || "No se pudo abrir la sala.";
     return;
   }
 

@@ -1,0 +1,543 @@
+.tower-page {
+  min-height: 100vh;
+  margin: 0;
+  color: #1c1917;
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 40%),
+    linear-gradient(180deg, #fbfaf7 0%, #f7f4ef 55%, #efebe3 100%);
+  font-family: "Source Sans 3", Georgia, "Times New Roman", serif;
+}
+
+.tower-page .button {
+  border-radius: 0;
+  font-weight: 600;
+}
+
+.tower-page .button-primary {
+  background: #44403c;
+  color: #fafaf9;
+}
+
+.tower-page .button-secondary {
+  border: 1px solid #a8a29e;
+  background: rgba(255, 255, 255, 0.75);
+  color: #44403c;
+}
+
+.tower-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 28px 0 48px;
+}
+
+.tower-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.tower-kicker {
+  margin: 0 0 4px;
+  color: #78716c;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tower-header h1 {
+  margin: 0;
+  font-family: Cinzel, Georgia, serif;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.tower-header-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.tower-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border: 1px solid #a8a29e;
+  color: #57534e;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tower-pill.is-locked {
+  border-color: #b91c1c;
+  color: #991b1b;
+  background: rgba(254, 226, 226, 0.55);
+}
+
+.tower-pill.is-live {
+  border-color: #57534e;
+  color: #292524;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.tower-clock {
+  color: #78716c;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tower-card {
+  border: 1px solid #d6d3d1;
+  background: rgba(255, 255, 255, 0.72);
+  padding: 18px;
+}
+
+.tower-login {
+  max-width: 420px;
+  margin: 24px auto 0;
+}
+
+.tower-login h2 {
+  margin: 0 0 8px;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.tower-help {
+  margin: 0 0 16px;
+  color: #57534e;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.tower-help code {
+  font-size: 0.85em;
+  color: #44403c;
+}
+
+.tower-login-form {
+  display: grid;
+  gap: 8px;
+}
+
+.tower-login-form label {
+  color: #78716c;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tower-login-form input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #a8a29e;
+  border-radius: 0;
+  padding: 10px 12px;
+  background: #fbfaf7;
+  color: #1c1917;
+  font: inherit;
+}
+
+.tower-login-form input:focus {
+  outline: 2px solid #78716c;
+  outline-offset: 1px;
+}
+
+.tower-panel.is-hidden,
+.tower-panel[hidden] {
+  display: none !important;
+}
+
+.tower-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.tower-updated {
+  margin: 0;
+  color: #78716c;
+  font-size: 0.9rem;
+}
+
+.tower-toolbar-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tower-toolbar-actions .button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+}
+
+.tower-auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #57534e;
+  font-size: 0.9rem;
+}
+
+.tower-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.tower-stat {
+  border: 1px solid #d6d3d1;
+  background: rgba(255, 255, 255, 0.7);
+  padding: 14px 16px;
+}
+
+.tower-stat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #78716c;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tower-stat strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.tower-stat small {
+  display: block;
+  margin-top: 6px;
+  color: #78716c;
+  font-size: 0.85rem;
+}
+
+.tower-grid {
+  display: grid;
+  gap: 14px;
+}
+
+.tower-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.tower-card-head h2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: Cinzel, Georgia, serif;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.tower-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  min-height: 28px;
+  padding: 0 8px;
+  border: 1px solid #a8a29e;
+  color: #44403c;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.tower-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.tower-purge {
+  min-height: 34px;
+  padding: 0 10px;
+  font-size: 0.85rem;
+}
+
+.tower-purge:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tower-rooms {
+  display: grid;
+  gap: 10px;
+  max-height: min(70vh, 760px);
+  overflow: auto;
+}
+
+.tower-room {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e7e5e4;
+  background: rgba(251, 250, 247, 0.9);
+}
+
+.tower-room.is-inactive {
+  border-style: dashed;
+  background: rgba(245, 245, 244, 0.7);
+  opacity: 0.92;
+}
+
+.tower-room-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.tower-room-pin {
+  font-family: Cinzel, Georgia, serif;
+  font-size: 1.15rem;
+  letter-spacing: 0.12em;
+}
+
+.tower-room-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tower-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid #d6d3d1;
+  color: #57534e;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tower-badge.is-running {
+  border-color: #166534;
+  color: #14532d;
+  background: rgba(220, 252, 231, 0.7);
+}
+
+.tower-badge.is-blank {
+  border-color: #9a5348;
+  color: #9a5348;
+  background: rgba(254, 226, 226, 0.45);
+}
+
+.tower-badge.is-inactive {
+  border-color: #a8a29e;
+  color: #78716c;
+  background: rgba(231, 229, 228, 0.7);
+}
+
+.tower-room-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tower-room-grid div {
+  min-width: 0;
+}
+
+.tower-room-grid span {
+  display: block;
+  color: #78716c;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tower-room-grid strong {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tower-room-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(231, 229, 228, 0.9);
+}
+
+.tower-room-notes {
+  margin: 0;
+  flex: 1 1 180px;
+  color: #78716c;
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .tower-room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.tower-table-wrap {
+  overflow: auto;
+  max-height: min(52vh, 560px);
+}
+
+.tower-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.tower-table th,
+.tower-table td {
+  padding: 10px 8px;
+  text-align: left;
+  border-bottom: 1px solid rgba(168, 162, 158, 0.4);
+  vertical-align: middle;
+}
+
+.tower-table th {
+  color: #78716c;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.tower-table .mono {
+  font-variant-numeric: tabular-nums;
+  color: #44403c;
+}
+
+.tower-table .socket-id {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tower-empty {
+  padding: 28px 12px !important;
+  text-align: center;
+  color: #78716c;
+}
+
+.tower-role {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  padding: 0 8px;
+  border: 1px solid #d6d3d1;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tower-role.is-control {
+  border-color: #57534e;
+  background: #57534e;
+  color: #fafaf9;
+}
+
+.tower-role.is-display {
+  border-color: #a8a29e;
+  color: #44403c;
+}
+
+.tower-kick {
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid #9a5348;
+  background: transparent;
+  color: #9a5348;
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.tower-kick:hover {
+  background: rgba(154, 83, 72, 0.08);
+}
+
+.tower-kick:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.tower-error {
+  min-height: 1.2em;
+  margin: 12px 0 0;
+  color: #b91c1c;
+  font-size: 0.95rem;
+}
+
+.tower-footer {
+  margin: 18px 0 0;
+  color: #a8a29e;
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  text-align: center;
+  opacity: 0.85;
+}
+
+.tower-page svg.lucide.ui-icon {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+@media (max-width: 900px) {
+  .tower-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tower-room-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .tower-header {
+    flex-direction: column;
+  }
+
+  .tower-header-meta {
+    align-items: flex-start;
+  }
+
+  .tower-stats {
+    grid-template-columns: 1fr;
+  }
+}

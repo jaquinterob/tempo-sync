@@ -1,0 +1,1 @@
+# Lucide (vendored subset)\n\nIcons come from [Lucide](https://lucide.dev) v1.66.0 (ISC).\nFull package kept in node_modules; runtime uses `public/js/icons.js` (only icons used by Pulpit Timer).\n

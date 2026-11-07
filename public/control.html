@@ -4,18 +4,22 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f4ef" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pulpit Timer" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png?v=3" />
+    <link rel="manifest" href="/manifest.webmanifest?v=3" />
     <title>Control · Pulpit Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&family=Source+Sans+3:wght@400;600;700&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=8" />
+    <link rel="stylesheet" href="/css/styles.css?v=12" />
   </head>
   <body class="control-page">
     <script>
@@ -38,22 +42,25 @@
           />
           <div>
             <h1 id="control-ward-title" class="is-placeholder">Tu unidad</h1>
-            <p class="brand-sub">Pulpit Timer · reunión sacramental</p>
+            <p class="brand-sub">Pulpit Timer</p>
           </div>
         </div>
-        <span id="connection-status" class="status-pill status-offline">OFFLINE</span>
+        <span id="connection-status" class="status-pill status-offline">Conectando…</span>
       </header>
 
       <section id="join-panel" class="card join-card">
         <div>
-          <h2>¿Ya tienes un código?</h2>
+          <h2>Control de la sala</h2>
           <p>
-            Si alguien te envió un código de 4 números, escríbelo aquí para entrar al control.
-            Si todavía no tienes código, vuelve al inicio y crea una sala nueva.
+            Crea una sala nueva en este celular. El código solo sirve para abrir
+            la pantalla del reloj en el otro celular.
           </p>
         </div>
+        <button id="create-room-button" type="button" class="button button-primary">
+          Crear sala nueva
+        </button>
         <form id="join-form" class="join-form">
-          <label for="pin">Código de la sala</label>
+          <label for="pin">¿Ya controlabas una sala en este celular?</label>
           <div class="inline-fields">
             <input
               id="pin"
@@ -62,15 +69,16 @@
               minlength="3"
               maxlength="12"
               pattern="[A-Za-z0-9]+"
+              inputmode="text"
               autocomplete="off"
-              placeholder="EJ. 1505"
+              placeholder="Ej. 7K3P9M"
               required
             />
             <button type="submit" class="button button-primary">Entrar</button>
           </div>
           <p id="join-error" class="form-error" role="alert"></p>
           <p class="join-home-link">
-            <a href="/">← Crear sala nueva</a>
+            <a href="/">← Volver al inicio</a>
           </p>
         </form>
       </section>
@@ -98,40 +106,26 @@
         <article class="card matrix-board">
           <div class="matrix-grid">
             <button type="button" class="preset-button preset-wide" data-duration-ms="480000">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="9" y="3" width="6" height="11" rx="3" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-              </svg>
+              <i data-lucide="mic" data-lucide-class="btn-icon"></i>
               <span class="preset-label">
                 <strong>Discursos</strong>
                 <span>8 min</span>
               </span>
             </button>
             <button id="start-button" type="button" class="button button-start matrix-tall">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 5.5v13l11-6.5z" fill="currentColor" />
-              </svg>
+              <i data-lucide="play" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Iniciar</span>
             </button>
             <button id="blank-screen-button" type="button" class="button blank-screen-button matrix-tall">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <rect x="3" y="4.5" width="18" height="13" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M9 20.5h6M12 17.5v3" fill="none" stroke="currentColor" stroke-width="1.8" />
-                <path d="M7 9.5l5 4M17 9.5l-5 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-              </svg>
+              <i data-lucide="monitor-off" data-lucide-class="btn-icon"></i>
               <span id="blank-screen-label" class="btn-label">Ocultar pantalla</span>
             </button>
             <button id="pause-button" type="button" class="button button-secondary button-pause">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M8 5v14M16 5v14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" />
-              </svg>
+              <i data-lucide="pause" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Pausar</span>
             </button>
             <button id="reset-button" type="button" class="button button-danger">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M20 12a8 8 0 1 1-2.34-5.66" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
-                <path d="M20 4v4h-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <i data-lucide="rotate-ccw" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Reiniciar</span>
             </button>
 
@@ -146,9 +140,7 @@
                 <input id="seconds" type="number" min="0" max="59" value="0" inputmode="numeric" />
               </label>
               <button type="submit" class="button button-secondary btn-inline">
-                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
+                <i data-lucide="check" data-lucide-class="btn-icon"></i>
                 <span class="btn-label">Aplicar</span>
               </button>
               <p id="time-error" class="form-error" role="alert"></p>
@@ -164,16 +156,11 @@
                 placeholder="Por favor, concluya su discurso"
               />
               <button type="submit" class="button button-primary btn-inline">
-                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
-                  <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" />
-                </svg>
+                <i data-lucide="eye" data-lucide-class="btn-icon"></i>
                 <span class="btn-label">Mostrar</span>
               </button>
               <button id="clear-message-button" type="button" class="button button-secondary btn-inline">
-                <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-                </svg>
+                <i data-lucide="x" data-lucide-class="btn-icon"></i>
                 <span class="btn-label">Quitar</span>
               </button>
             </form>
@@ -186,10 +173,7 @@
                 <strong id="share-pin">—</strong>
               </span>
               <button id="copy-display-link" type="button" class="share-action" title="Copiar enlace">
-                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="8" y="8" width="11" height="13" rx="1" fill="none" stroke="currentColor" stroke-width="1.7" />
-                  <path d="M6 16H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" fill="none" stroke="currentColor" stroke-width="1.7" />
-                </svg>
+                <i data-lucide="copy" data-lucide-class="ui-icon"></i>
                 <span>Copiar</span>
               </button>
               <a
@@ -200,19 +184,7 @@
                 rel="noreferrer"
                 title="Enviar por WhatsApp"
               >
-                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M5 19l1.2-3.5A7.5 7.5 0 1 1 19.5 12 7.5 7.5 0 0 1 8.2 17.8L5 19z"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.7"
-                  />
-                  <path
-                    d="M9.2 10.2c.3-.5.5-.5.8-.5h.6c.2 0 .4.1.5.4l.7 1.7c.1.2 0 .4-.1.6l-.4.5c-.1.1-.1.3 0 .4.5.8 1.3 1.5 2.1 1.9.2.1.3.1.5 0l.7-.4c.2-.1.4-.1.5.1l1.2 1.4c.2.2.1.5-.1.7-.4.3-1 .6-1.6.6-2.3 0-5.1-2.5-5.8-4.7-.2-.7-.1-1.4.2-1.9z"
-                    fill="currentColor"
-                    opacity="0.9"
-                  />
-                </svg>
+                <i data-lucide="message-circle" data-lucide-class="ui-icon"></i>
                 <span>WhatsApp</span>
               </a>
               <a
@@ -223,10 +195,7 @@
                 rel="noreferrer"
                 title="Abrir pantalla"
               >
-                <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                  <rect x="3" y="5" width="18" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7" />
-                  <path d="M9 20h6M12 17v3" fill="none" stroke="currentColor" stroke-width="1.7" />
-                </svg>
+                <i data-lucide="monitor" data-lucide-class="ui-icon"></i>
                 <span>Abrir</span>
               </a>
             </div>
@@ -247,9 +216,7 @@
                   aria-expanded="false"
                 >
                   <span id="panel-theme-label" class="theme-toggle-label">PANEL: Clásico</span>
-                  <svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                  </svg>
+                  <i data-lucide="chevron-down" data-lucide-class="ui-icon"></i>
                 </button>
                 <div
                   id="panel-theme-options"
@@ -280,49 +247,22 @@
                 title="Tema display"
               >
                 <span class="theme-toggle-label">DISPLAY: Claro</span>
-                <svg
-                  id="theme-icon"
-                  class="ui-icon"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />
-                  <path
-                    d="M12 5v1.2M12 17.8V19M5 12h1.2M17.8 12H19M7.1 7.1l.85.85M16.05 16.05l.85.85M16.9 7.1l-.85.85M7.95 16.05l-.85.85"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                  />
-                </svg>
+                <i id="theme-icon" data-lucide="sun" data-lucide-class="ui-icon"></i>
               </button>
               <p id="branding-status" class="branding-status" aria-live="polite"></p>
             </div>
           </div>
           <form id="branding-form" class="branding-form">
-            <fieldset class="brand-field brand-unit-field">
-              <legend class="visually-hidden">Unidad</legend>
+            <label class="brand-field brand-unit-field">
               <span>Unidad</span>
-              <div class="brand-unit-controls">
-                <div class="brand-unit-type" role="radiogroup" aria-label="Tipo de unidad">
-                  <label class="brand-unit-option">
-                    <input type="radio" name="unit-type" value="Barrio" checked />
-                    <span>Barrio</span>
-                  </label>
-                  <label class="brand-unit-option">
-                    <input type="radio" name="unit-type" value="Estaca" />
-                    <span>Estaca</span>
-                  </label>
-                </div>
-                <input
-                  id="unit-name"
-                  type="text"
-                  maxlength="50"
-                  placeholder="Ej. Sabaneta"
-                  required
-                />
-              </div>
-            </fieldset>
+              <input
+                id="unit-name"
+                type="text"
+                maxlength="60"
+                placeholder="Ej. Barrio Sabaneta"
+                required
+              />
+            </label>
             <label class="brand-field">
               <span>Mensaje al terminar</span>
               <input
@@ -344,16 +284,14 @@
               />
             </label>
             <button type="submit" class="button button-primary brand-save btn-inline">
-              <svg class="btn-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <i data-lucide="check" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Guardar</span>
             </button>
           </form>
         </article>
       </section>
 
-      <p class="control-credit">Developer: <strong>JohnQ</strong> · All rights reserved</p>
+      <p class="control-credit">© JohnQ</p>
     </main>
 
     <div id="share-gate" class="share-gate is-hidden" role="dialog" aria-modal="true" aria-labelledby="share-gate-title">
@@ -361,17 +299,32 @@
         <p class="share-gate-kicker">Último paso</p>
         <h2 id="share-gate-title">Envía el código al otro celular</h2>
         <p class="share-gate-code" id="share-gate-pin">—</p>
-        <a id="share-gate-whatsapp" class="entry-button share-gate-whatsapp" href="#" target="_blank" rel="noreferrer">
+        <p id="share-gate-url" class="share-gate-url" hidden></p>
+        <a
+          id="share-gate-whatsapp"
+          class="entry-button share-gate-whatsapp"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           Enviar por WhatsApp
         </a>
-        <button id="share-gate-done" type="button" class="entry-button entry-button-ghost">
-          Ya lo envié
+        <button id="share-gate-copy" type="button" class="entry-button entry-button-ghost">
+          Copiar enlace
         </button>
+        <button id="share-gate-done" type="button" class="entry-button entry-button-ghost">
+          Continuar
+        </button>
+        <p id="share-gate-status" class="share-gate-status" aria-live="polite"></p>
       </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/shared.js?v=8"></script>
-    <script src="/js/control.js?v=8"></script>
-  </body>
+    <script src="/js/icons.js?v=12"></script>
+    <script src="/js/shared.js?v=12"></script>
+    <script src="/js/control.js?v=12"></script>
+    <script>
+      window.PulpitIcons?.createIcons();
+    </script>
+</body>
 </html>

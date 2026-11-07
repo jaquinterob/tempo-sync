@@ -1,13 +1,16 @@
 const {
   cleanPin,
-  composeUnitLabel,
   createTimerClient,
   displayShareUrl,
   displayUnitLabel,
+  getShareOrigin,
+  keyFromUrl,
   normalizeUnitText,
-  normalizeUnitType,
-  parseUnitLabel,
   pinFromUrl,
+  prepareShareOrigin,
+  readStoredControlToken,
+  shouldCreateFromUrl,
+  storeControlToken,
   wardFromUrl,
   renderTimer,
   updateConnectionBadge,
@@ -18,6 +21,7 @@ const joinPanel = document.querySelector("#join-panel");
 const timerPanel = document.querySelector("#timer-panel");
 const pinInput = document.querySelector("#pin");
 const joinError = document.querySelector("#join-error");
+const createRoomButton = document.querySelector("#create-room-button");
 const roomPin = document.querySelector("#room-pin");
 const connectionStatus = document.querySelector("#connection-status");
 const connectionStatusInline = document.querySelector("#connection-status-inline");
@@ -44,7 +48,6 @@ const sharePin = document.querySelector("#share-pin");
 const shareStatus = document.querySelector("#share-status");
 const brandingForm = document.querySelector("#branding-form");
 const unitNameInput = document.querySelector("#unit-name");
-const unitTypeInputs = [...document.querySelectorAll('input[name="unit-type"]')];
 const finishThanksInput = document.querySelector("#finish-thanks");
 const finishDoneInput = document.querySelector("#finish-done");
 const brandingStatus = document.querySelector("#branding-status");
@@ -54,33 +57,22 @@ const timeMeterFill = document.querySelector("#time-meter-fill");
 const shareGate = document.querySelector("#share-gate");
 const shareGatePin = document.querySelector("#share-gate-pin");
 const shareGateWhatsapp = document.querySelector("#share-gate-whatsapp");
+const shareGateCopy = document.querySelector("#share-gate-copy");
 const shareGateDone = document.querySelector("#share-gate-done");
+const shareGateStatus = document.querySelector("#share-gate-status");
 let lastScreenMessage = "";
 let isScreenBlank = false;
 let lastBrandingKey = "";
 let currentTheme = "light";
-
-function selectedUnitType() {
-  const checked = unitTypeInputs.find((input) => input.checked);
-  return normalizeUnitType(checked?.value);
-}
-
-function setSelectedUnitType(type) {
-  const next = normalizeUnitType(type);
-  for (const input of unitTypeInputs) {
-    input.checked = input.value === next;
-  }
-}
+let joining = false;
 
 function currentUnitLabel() {
-  return composeUnitLabel(selectedUnitType(), unitNameInput.value);
+  return normalizeUnitText(unitNameInput.value, 60);
 }
 
 function fillUnitFields(wardName) {
-  const parsed = parseUnitLabel(wardName);
-  setSelectedUnitType(parsed.type);
   if (document.activeElement !== unitNameInput) {
-    unitNameInput.value = parsed.name;
+    unitNameInput.value = normalizeUnitText(wardName, 60);
   }
 }
 
@@ -89,20 +81,18 @@ function syncConnectionBadge(connected) {
   updateConnectionBadge(connectionStatusInline, connected);
 }
 
-const THEME_ICON_SUN =
-  '<circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6" />' +
-  '<path d="M12 5v1.2M12 17.8V19M5 12h1.2M17.8 12H19M7.1 7.1l.85.85M16.05 16.05l.85.85M16.9 7.1l-.85.85M7.95 16.05l-.85.85" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />';
-const THEME_ICON_MOON =
-  '<path d="M15.8 13.4A5.8 5.8 0 0 1 10.2 6.6 6.2 6.2 0 1 0 15.8 13.4z" fill="none" stroke="currentColor" stroke-width="1.6" />';
-
 function applyTheme(theme) {
   currentTheme = theme === "dark" ? "dark" : "light";
   const isDark = currentTheme === "dark";
   const label = themeToggle.querySelector(".theme-toggle-label");
   if (label) label.textContent = isDark ? "DISPLAY: Oscuro" : "DISPLAY: Claro";
   const themeIcon = themeToggle.querySelector("#theme-icon");
-  if (themeIcon) {
-    themeIcon.innerHTML = isDark ? THEME_ICON_MOON : THEME_ICON_SUN;
+  if (themeIcon && window.PulpitIcons) {
+    window.PulpitIcons.setIcon(
+      themeIcon,
+      isDark ? "moon" : "sun",
+      "ui-icon lucide",
+    );
   }
   themeToggle.classList.toggle("is-active", isDark);
   themeToggle.setAttribute("aria-pressed", String(isDark));
@@ -129,19 +119,33 @@ function applyBranding(branding) {
 
 function buildShareMessage(pin, url) {
   return (
-    `Abre este enlace en el celular del reloj (horizontal):\n${url}\n\n` +
-    `Código: ${pin}`
+    `Pulpit Timer — abre este enlace en el celular del reloj (horizontal).\n` +
+    `Usa http (no https):\n${url}\n\n` +
+    `Si el enlace no abre, entra a la app y escribe el código: ${pin}`
   );
 }
 
+function whatsappShareHref(pin, url) {
+  return `https://api.whatsapp.com/send?text=${encodeURIComponent(buildShareMessage(pin, url))}`;
+}
+
 function updateShareLinks(pin) {
-  const url = displayShareUrl(pin);
-  sharePin.textContent = pin;
-  displayLink.href = url;
-  const href = `https://wa.me/?text=${encodeURIComponent(buildShareMessage(pin, url))}`;
-  whatsappShare.href = href;
-  if (shareGateWhatsapp) shareGateWhatsapp.href = href;
-  if (shareGatePin) shareGatePin.textContent = pin;
+  const clean = cleanPin(pin);
+  const url = displayShareUrl(clean);
+  if (sharePin) sharePin.textContent = clean || "—";
+  if (displayLink && url) displayLink.href = url;
+  const href = url ? whatsappShareHref(clean, url) : "#";
+  if (whatsappShare) whatsappShare.href = href;
+  if (shareGateWhatsapp) {
+    shareGateWhatsapp.href = href;
+    shareGateWhatsapp.setAttribute("aria-disabled", url ? "false" : "true");
+  }
+  if (shareGatePin) shareGatePin.textContent = clean || "—";
+  const shareGateUrl = document.querySelector("#share-gate-url");
+  if (shareGateUrl) {
+    shareGateUrl.textContent = url || "";
+    shareGateUrl.hidden = !url;
+  }
 }
 
 function shouldShowShareGate(pin) {
@@ -149,6 +153,14 @@ function shouldShowShareGate(pin) {
     return sessionStorage.getItem("pulpit-need-share") === pin;
   } catch {
     return false;
+  }
+}
+
+function markNeedShare(pin) {
+  try {
+    sessionStorage.setItem("pulpit-need-share", pin);
+  } catch {
+    // sin sessionStorage
   }
 }
 
@@ -160,9 +172,11 @@ function clearShareGateFlag() {
   }
 }
 
-function showShareGate(pin) {
+async function showShareGate(pin) {
   if (!shareGate || !shouldShowShareGate(pin)) return;
+  await prepareShareOrigin();
   updateShareLinks(pin);
+  if (shareGateStatus) shareGateStatus.textContent = "";
   shareGate.classList.remove("is-hidden");
   document.body.classList.add("share-gate-open");
 }
@@ -174,30 +188,48 @@ function hideShareGate() {
   document.body.classList.remove("share-gate-open");
 }
 
-async function copyDisplayLink() {
+async function copyDisplayLink(targetStatus = shareStatus) {
+  await prepareShareOrigin();
   const pin = client.getPin();
+  updateShareLinks(pin);
   const url = displayShareUrl(pin);
   if (!url) return;
 
   try {
     await navigator.clipboard.writeText(buildShareMessage(pin, url));
-    shareStatus.textContent = "Copiado.";
+    if (targetStatus) {
+      const viaLan = getShareOrigin() !== window.location.origin;
+      targetStatus.textContent = viaLan
+        ? "Enlace copiado (Wi‑Fi local)."
+        : "Enlace copiado.";
+    }
   } catch {
-    shareStatus.textContent = url;
+    if (targetStatus) targetStatus.textContent = url;
   }
 }
 
-function showJoinPanel() {
+function controlUrl(pin, token) {
+  const params = new URLSearchParams({
+    pin,
+    key: token,
+  });
+  return `?${params.toString()}`;
+}
+
+async function showJoinPanel() {
   joinError.textContent = "";
+  await client.leave();
   timerPanel.classList.add("is-hidden");
   joinPanel.classList.remove("is-hidden");
   shareStatus.textContent = "";
+  hideShareGate();
   history.replaceState(null, "", window.location.pathname);
   pinInput.focus();
   pinInput.select();
 }
 
 const client = createTimerClient({
+  role: "control",
   onConnection: syncConnectionBadge,
   onState: (state) => {
     const totalSeconds = Math.round(state.durationMs / 1000);
@@ -259,26 +291,43 @@ function updateControlMeter() {
 
 requestAnimationFrame(updateControlMeter);
 
-async function enterRoom(rawPin, options = {}) {
-  const pin = cleanPin(rawPin);
-  joinError.textContent = "";
-
-  const result = await client.join(pin);
-  if (!result.ok) {
-    joinError.textContent = result.error;
-    return;
+function setJoining(isJoining, label = "Crear sala nueva") {
+  joining = isJoining;
+  if (createRoomButton) {
+    createRoomButton.disabled = isJoining;
+    createRoomButton.textContent = isJoining ? "Creando…" : label;
   }
+  const submit = joinForm.querySelector('button[type="submit"]');
+  if (submit) {
+    submit.disabled = isJoining;
+    submit.textContent = isJoining ? "Entrando…" : "Entrar";
+  }
+}
 
+function activateControlRoom(result, options = {}) {
   pinInput.value = result.pin;
   roomPin.textContent = result.pin;
   joinPanel.classList.add("is-hidden");
   timerPanel.classList.remove("is-hidden");
   updateShareLinks(result.pin);
   shareStatus.textContent = "";
-  history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
+  storeControlToken(result.pin, result.controlToken || client.getControlToken());
+  history.replaceState(
+    null,
+    "",
+    controlUrl(result.pin, result.controlToken || client.getControlToken()),
+  );
+  if (options.needShare) markNeedShare(result.pin);
   showShareGate(result.pin);
 
-  const wardName = normalizeUnitText(options.wardName, 60);
+  let wardName = normalizeUnitText(options.wardName, 60);
+  if (!wardName) {
+    try {
+      wardName = normalizeUnitText(localStorage.getItem("pulpit-ward-name"), 60);
+    } catch {
+      wardName = "";
+    }
+  }
   if (wardName) {
     fillUnitFields(wardName);
     const finishThanks =
@@ -297,10 +346,48 @@ async function enterRoom(rawPin, options = {}) {
   }
 }
 
-if (shareGateWhatsapp) {
-  shareGateWhatsapp.addEventListener("click", () => {
-    // Deja un momento para abrir WhatsApp y luego permite continuar.
-    window.setTimeout(hideShareGate, 600);
+async function createControlRoom(options = {}) {
+  if (joining) return;
+  joinError.textContent = "";
+  setJoining(true);
+  const result = await client.createRoom();
+  setJoining(false);
+  if (!result?.ok) {
+    joinError.textContent = result?.error || "No se pudo crear la sala.";
+    return;
+  }
+  activateControlRoom(result, {
+    wardName: options.wardName,
+    needShare: options.needShare !== false,
+  });
+}
+
+async function enterRoom(rawPin, options = {}) {
+  if (joining) return;
+  const pin = cleanPin(rawPin);
+  joinError.textContent = "";
+  setJoining(true, "Entrando…");
+
+  const result = await client.join(pin, {
+    role: "control",
+    controlToken: options.controlToken || readStoredControlToken(pin) || keyFromUrl(),
+  });
+  setJoining(false);
+
+  if (!result?.ok) {
+    joinError.textContent = result?.error || "No se pudo entrar.";
+    return;
+  }
+
+  activateControlRoom(result, {
+    wardName: options.wardName,
+    needShare: options.needShare,
+  });
+}
+
+if (shareGateCopy) {
+  shareGateCopy.addEventListener("click", () => {
+    copyDisplayLink(shareGateStatus);
   });
 }
 if (shareGateDone) {
@@ -316,8 +403,23 @@ joinForm.addEventListener("submit", (event) => {
   enterRoom(pinInput.value);
 });
 
-changeRoomButton.addEventListener("click", showJoinPanel);
-copyDisplayLinkButton.addEventListener("click", copyDisplayLink);
+if (createRoomButton) {
+  createRoomButton.addEventListener("click", () => {
+    createControlRoom({ needShare: true });
+  });
+}
+
+changeRoomButton.addEventListener("click", () => {
+  const state = client.getState();
+  if (state?.isRunning) {
+    const ok = window.confirm(
+      "¿Salir del control de esta sala? El reloj en la pantalla grande sigue corriendo.",
+    );
+    if (!ok) return;
+  }
+  showJoinPanel();
+});
+copyDisplayLinkButton.addEventListener("click", () => copyDisplayLink());
 
 timeForm.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -464,8 +566,19 @@ client.socket.on("room:error", (message) => {
 });
 
 const initialPin = pinFromUrl();
+const initialKey = keyFromUrl();
 const initialWard = wardFromUrl();
-if (initialPin) {
-  pinInput.value = initialPin;
-  enterRoom(initialPin, { wardName: initialWard });
-}
+const wantsCreate = shouldCreateFromUrl();
+
+prepareShareOrigin().finally(() => {
+  if (wantsCreate) {
+    createControlRoom({ wardName: initialWard, needShare: true });
+  } else if (initialPin && (initialKey || readStoredControlToken(initialPin))) {
+    pinInput.value = initialPin;
+    enterRoom(initialPin, {
+      wardName: initialWard,
+      controlToken: initialKey || readStoredControlToken(initialPin),
+      needShare: false,
+    });
+  }
+});

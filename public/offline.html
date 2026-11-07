@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f4ef" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>Sin conexión · Pulpit Timer</title>
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+      .offline-shell {
+        min-height: 100dvh;
+        display: grid;
+        place-content: center;
+        gap: 0.75rem;
+        padding: 2rem 1.25rem;
+        text-align: center;
+        background: #f7f4ef;
+        color: #1c1917;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+      .offline-shell img {
+        margin: 0 auto 0.5rem;
+      }
+      .offline-shell h1 {
+        font-size: 1.35rem;
+        font-weight: 500;
+        margin: 0;
+      }
+      .offline-shell p {
+        margin: 0;
+        opacity: 0.8;
+        max-width: 22rem;
+      }
+      .offline-shell button {
+        margin-top: 1rem;
+        appearance: none;
+        border: 1px solid #1c1917;
+        background: #1c1917;
+        color: #f7f4ef;
+        border-radius: 999px;
+        padding: 0.7rem 1.4rem;
+        font: inherit;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="offline-shell">
+      <img
+        src="/assets/brand/church-logo.png"
+        alt=""
+        width="48"
+        height="86"
+      />
+      <h1>Sin conexión</h1>
+      <p>
+        Pulpit Timer necesita red para sincronizar el control y la pantalla.
+        Revisa el Wi‑Fi e inténtalo de nuevo.
+      </p>
+      <button type="button" onclick="location.reload()">Reintentar</button>
+    </main>
+  </body>
+</html>

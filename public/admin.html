@@ -4,318 +4,151 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f4ef" />
-    <link rel="icon" href="/favicon.ico" sizes="any" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
-    <title>Admin · Pulpit Timer</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Pulpit Timer" />
+    <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
+    <title>Torre · Pulpit Timer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=VT323&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=2" />
-    <style>
-      .admin-shell {
-        width: min(960px, calc(100% - 32px));
-        margin: 0 auto;
-        padding: 40px 0 56px;
-      }
-
-      .admin-panel {
-        display: none;
-      }
-
-      .admin-panel.visible {
-        display: block;
-      }
-
-      .admin-login-card {
-        max-width: 400px;
-        margin: 32px auto 0;
-        padding: 24px;
-      }
-
-      .admin-login-card h2 {
-        margin: 0 0 16px;
-      }
-
-      .admin-login-form {
-        display: grid;
-        gap: 12px;
-      }
-
-      .admin-login-form label {
-        color: #6b7280;
-        font-size: 0.8rem;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-      }
-
-      .admin-login-form input {
-        width: 100%;
-        min-width: 0;
-        border: 1px solid #9ca3af;
-        border-radius: 0;
-        background: #fbfaf7;
-        color: #111827;
-        font-family: "VT323", monospace;
-        font-size: 1.1rem;
-        font-weight: 400;
-        padding: 10px 12px;
-        letter-spacing: 0.04em;
-      }
-
-      .admin-login-form input:focus {
-        border-color: #4b5563;
-        box-shadow: 0 0 0 1px #4b5563;
-      }
-
-      .admin-error {
-        min-height: 18px;
-        margin: 0;
-        color: #b91c1c;
-        font-size: 0.95rem;
-      }
-
-      .admin-toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        margin: 20px 0 16px;
-      }
-
-      .admin-toolbar .eyebrow {
-        margin: 0;
-      }
-
-      .admin-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        gap: 8px;
-        margin-bottom: 16px;
-      }
-
-      .admin-stat {
-        padding: 14px 18px;
-        border: 1px solid #9ca3af;
-        background: rgba(255, 255, 255, 0.55);
-      }
-
-      .admin-stat strong {
-        display: block;
-        color: #111827;
-        font-size: 2rem;
-        font-weight: 400;
-        line-height: 1;
-      }
-
-      .admin-stat span {
-        display: block;
-        margin-top: 6px;
-        color: #6b7280;
-        font-size: 0.72rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-      }
-
-      .connections-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.95rem;
-      }
-
-      .connections-table th,
-      .connections-table td {
-        padding: 10px 12px;
-        text-align: left;
-        border-bottom: 1px solid rgba(107, 114, 128, 0.35);
-        vertical-align: middle;
-      }
-
-      .connections-table th {
-        color: #6b7280;
-        font-size: 0.7rem;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        font-weight: 400;
-      }
-
-      .connections-table td {
-        color: #111827;
-      }
-
-      .pin-badge {
-        display: inline-block;
-        padding: 1px 10px;
-        border: 1px solid #4b5563;
-        color: #111827;
-        font-family: "VT323", monospace;
-        font-size: 0.95rem;
-        letter-spacing: 0.06em;
-      }
-
-      .pin-badge.none {
-        border-style: dashed;
-        color: #6b7280;
-      }
-
-      .mono {
-        font-family: "VT323", monospace;
-        font-size: 0.95rem;
-        color: #4b5563;
-      }
-
-      .connection-id {
-        max-width: 160px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .kick-button {
-        padding: 4px 14px;
-        border: 1px solid #9a5348;
-        border-radius: 0;
-        background: rgba(255, 255, 255, 0.85);
-        color: #9a5348;
-        font-family: "VT323", monospace;
-        font-size: 0.95rem;
-        letter-spacing: 0.06em;
-        cursor: pointer;
-      }
-
-      .kick-button:hover {
-        background: rgba(154, 83, 72, 0.12);
-      }
-
-      .kick-button:disabled {
-        opacity: 0.5;
-        cursor: default;
-      }
-
-      .empty-state {
-        padding: 28px;
-        text-align: center;
-        color: #6b7280;
-        font-family: "VT323", monospace;
-        font-size: 1rem;
-      }
-
-      .loading-row {
-        padding: 20px;
-        text-align: center;
-        color: #6b7280;
-        font-family: "VT323", monospace;
-        font-size: 1rem;
-      }
-
-      .admin-footer {
-        margin: 12px 0 0;
-        padding: 0 2px;
-        color: #a8a29e;
-        font-family: "VT323", monospace;
-        font-size: 0.85rem;
-        letter-spacing: 0.04em;
-        text-align: center;
-        line-height: 1.3;
-      }
-
-      .admin-footer strong {
-        color: #78716c;
-        font-weight: 400;
-      }
-    </style>
+    <link rel="stylesheet" href="/css/styles.css?v=11" />
+    <link rel="stylesheet" href="/css/admin.css?v=11" />
   </head>
-  <body class="control-page">
-    <main class="admin-shell">
-      <header class="page-header brand-header">
-        <div class="brand-lockup">
-          <img
-            class="brand-mark brand-mark-church"
-            src="/assets/brand/church-logo.png"
-            alt="La Iglesia de Jesucristo de los Santos de los Últimos Días"
-            width="40"
-            height="72"
-          />
-          <div>
-            <p class="eyebrow">&gt; SUPER_ADMIN // conexiones del socket</p>
-            <h1>Panel de control</h1>
-          </div>
+  <body class="tower-page">
+    <main class="tower-shell">
+      <header class="tower-header">
+        <div class="tower-brand">
+          <p class="tower-kicker">Pulpit Timer</p>
+          <h1>Torre de control</h1>
         </div>
-        <span id="admin-status" class="status-pill status-offline">LOCKED</span>
+        <div class="tower-header-meta">
+          <span id="admin-status" class="tower-pill is-locked">Bloqueado</span>
+          <span id="tower-clock" class="tower-clock">—</span>
+        </div>
       </header>
 
-      <section id="login-card" class="card admin-login-card">
-        <h2>ACCESO</h2>
-        <form id="login-form" class="admin-login-form">
-          <label for="admin-user">USUARIO</label>
-          <input id="admin-user" type="text" autocomplete="username" placeholder="SA" required />
-          <label for="admin-password">CONTRASEÑA</label>
+      <section id="login-card" class="tower-card tower-login">
+        <h2>Acceso privado</h2>
+        <p class="tower-help">
+          Usa las credenciales definidas en las variables de entorno de Render
+          (<code>ADMIN_USER</code> / <code>ADMIN_PASSWORD</code>).
+        </p>
+        <form id="login-form" class="tower-login-form">
+          <label for="admin-user">Usuario</label>
+          <input id="admin-user" type="text" autocomplete="username" required />
+          <label for="admin-password">Contraseña</label>
           <input
             id="admin-password"
             type="password"
             autocomplete="current-password"
-            placeholder="••••••"
             required
           />
-          <p class="admin-error" id="login-error" role="alert"></p>
-          <button type="submit" class="button button-primary">[ INGRESAR ]</button>
+          <p class="tower-error" id="login-error" role="alert"></p>
+          <button type="submit" class="button button-primary">Entrar</button>
         </form>
       </section>
 
-      <section id="admin-panel" class="admin-panel">
-        <div class="admin-toolbar">
-          <p class="eyebrow">CONEXIONES_ACTIVAS</p>
-          <button type="button" class="button button-secondary" id="refresh-button">
-            [ ACTUALIZAR ]
-          </button>
+      <section id="admin-panel" class="tower-panel is-hidden" hidden>
+        <div class="tower-toolbar">
+          <p id="tower-updated" class="tower-updated">Sin datos</p>
+          <div class="tower-toolbar-actions">
+            <label class="tower-auto">
+              <input id="auto-refresh" type="checkbox" checked />
+              Auto 3s
+            </label>
+            <button type="button" class="button button-secondary" id="refresh-button">
+              <i data-lucide="refresh-cw" data-lucide-class="ui-icon"></i>
+              Actualizar
+            </button>
+            <button type="button" class="button button-secondary" id="logout-button">
+              <i data-lucide="log-out" data-lucide-class="ui-icon"></i>
+              Salir
+            </button>
+          </div>
         </div>
 
-        <div class="admin-stats">
-          <div class="admin-stat">
-            <strong id="stat-total">0</strong>
-            <span>Conexiones</span>
-          </div>
-          <div class="admin-stat">
+        <div class="tower-stats" id="tower-stats">
+          <article class="tower-stat">
+            <span class="tower-stat-label"><i data-lucide="server" data-lucide-class="ui-icon"></i> Servidor</span>
+            <strong id="stat-uptime">—</strong>
+            <small id="stat-env">—</small>
+          </article>
+          <article class="tower-stat">
+            <span class="tower-stat-label"><i data-lucide="radio" data-lucide-class="ui-icon"></i> Sockets</span>
+            <strong id="stat-sockets">0</strong>
+            <small id="stat-engine">engine —</small>
+          </article>
+          <article class="tower-stat">
+            <span class="tower-stat-label"><i data-lucide="users" data-lucide-class="ui-icon"></i> Roles</span>
+            <strong id="stat-roles">0 / 0</strong>
+            <small>control / display</small>
+          </article>
+          <article class="tower-stat">
+            <span class="tower-stat-label"><i data-lucide="timer" data-lucide-class="ui-icon"></i> Salas</span>
             <strong id="stat-rooms">0</strong>
-            <span>Salas (PIN)</span>
-          </div>
+            <small id="stat-rooms-detail">0 activas · 0 inactivas</small>
+          </article>
         </div>
 
-        <div class="card" style="overflow: auto; max-height: 58vh; padding: 0;">
-          <table class="connections-table">
-            <thead>
-              <tr>
-                <th>PIN</th>
-                <th>IP</th>
-                <th>Conectado</th>
-                <th>Socket ID</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="connections-body">
-              <tr>
-                <td colspan="5" class="loading-row">…CARGANDO…</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="tower-grid">
+          <section class="tower-card">
+            <header class="tower-card-head">
+              <h2><i data-lucide="activity" data-lucide-class="ui-icon"></i> Salas en vivo</h2>
+              <div class="tower-card-actions">
+                <button type="button" class="button button-secondary tower-purge" id="purge-inactive-button">
+                  <i data-lucide="trash-2" data-lucide-class="ui-icon"></i>
+                  Limpiar inactivas
+                </button>
+                <span id="rooms-count" class="tower-chip">0</span>
+              </div>
+            </header>
+            <div id="rooms-list" class="tower-rooms"></div>
+          </section>
+
+          <section class="tower-card">
+            <header class="tower-card-head">
+              <h2><i data-lucide="wifi" data-lucide-class="ui-icon"></i> Sesiones socket</h2>
+              <span id="sessions-count" class="tower-chip">0</span>
+            </header>
+            <div class="tower-table-wrap">
+              <table class="tower-table">
+                <thead>
+                  <tr>
+                    <th>PIN</th>
+                    <th>Rol</th>
+                    <th>IP</th>
+                    <th>Tiempo</th>
+                    <th>Socket</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="connections-body">
+                  <tr>
+                    <td colspan="6" class="tower-empty">Cargando…</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
-        <p class="admin-error" id="panel-error" role="alert"></p>
-
-        <div class="admin-toolbar" style="margin-top: 16px;">
-          <button type="button" class="button button-secondary" id="logout-button">
-            [ CERRAR SESIÓN ]
-          </button>
-        </div>
+        <p class="tower-error" id="panel-error" role="alert"></p>
       </section>
 
-      <p class="admin-footer">Developer: <strong>JohnQ</strong> · All rights reserved</p>
+      <p class="tower-footer">© JohnQ</p>
     </main>
 
-    <script src="/js/admin.js"></script>
-  </body>
+    <script src="/js/icons.js?v=11"></script>
+    <script src="/js/admin.js?v=11"></script>
+    <script>
+      window.PulpitIcons?.createIcons();
+    </script>
+</body>
 </html>

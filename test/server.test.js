@@ -19,8 +19,12 @@ function connectClient() {
   });
 }
 
-function joinRoom(client, pin) {
-  return new Promise((resolve) => client.emit("room:join", pin, resolve));
+function createRoom(client) {
+  return new Promise((resolve) => client.emit("room:create", resolve));
+}
+
+function joinRoom(client, payload) {
+  return new Promise((resolve) => client.emit("room:join", payload, resolve));
 }
 
 function nextState(client, predicate = () => true, timeoutMs = 2_000) {
@@ -66,10 +70,24 @@ test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async (
   const control = await connectClient();
   const display = await connectClient();
 
-  const controlJoin = await joinRoom(control, "4321");
-  const displayJoin = await joinRoom(display, "4321");
-  assert.equal(controlJoin.ok, true);
+  const created = await createRoom(control);
+  assert.equal(created.ok, true);
+  assert.match(created.pin, /^[A-Z0-9]{6}$/);
+  assert.ok(created.controlToken);
+
+  const displayJoin = await joinRoom(display, {
+    pin: created.pin,
+    role: "display",
+  });
+  assert.equal(displayJoin.ok, true);
   assert.equal(displayJoin.state.durationMs, 480_000);
+
+  const stranger = await connectClient();
+  const strangerJoin = await joinRoom(stranger, {
+    pin: created.pin,
+    role: "control",
+  });
+  assert.equal(strangerJoin.ok, false);
 
   const messageOnDisplay = nextState(
     display,
@@ -134,15 +152,47 @@ test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async (
 
   display.disconnect();
   const reconnectedDisplay = await connectClient();
-  const rejoined = await joinRoom(reconnectedDisplay, "4321");
+  const rejoined = await joinRoom(reconnectedDisplay, {
+    pin: created.pin,
+    role: "display",
+  });
   assert.equal(rejoined.state.remainingMs, 3_000);
   assert.equal(rejoined.state.isRunning, false);
   assert.equal(rejoined.state.message, "Por favor, concluya su discurso.");
 });
 
+test("rechaza display sin sala y control sin token", async () => {
+  const display = await connectClient();
+  const missing = await joinRoom(display, { pin: "ABCDEF", role: "display" });
+  assert.equal(missing.ok, false);
+
+  const control = await connectClient();
+  const created = await createRoom(control);
+  const hijack = await connectClient();
+  const denied = await joinRoom(hijack, {
+    pin: created.pin,
+    role: "control",
+    controlToken: "token-falso",
+  });
+  assert.equal(denied.ok, false);
+
+  const displayOnly = await connectClient();
+  const displayOk = await joinRoom(displayOnly, {
+    pin: created.pin,
+    role: "display",
+  });
+  assert.equal(displayOk.ok, true);
+  const error = await new Promise((resolve) => {
+    displayOnly.once("room:error", resolve);
+    displayOnly.emit("timer:start");
+  });
+  assert.match(error, /control/i);
+});
+
 test("marca el temporizador como terminado al llegar a cero", async () => {
   const control = await connectClient();
-  await joinRoom(control, "FIN");
+  const created = await createRoom(control);
+  assert.equal(created.ok, true);
 
   const configured = nextState(control, (state) => state.durationMs === 1_000);
   control.emit("timer:set", 1_000);
@@ -166,4 +216,60 @@ test("responde el endpoint de warmup", async () => {
   assert.equal(body.service, "pulpit-timer");
   assert.equal(typeof body.warmedAt, "string");
   assert.ok(body.uptimeSec >= 0);
+  assert.ok(Array.isArray(body.lanOrigins));
+});
+
+test("torre de control admin requiere autenticación y reporta sockets", async () => {
+  const denied = await fetch(`${baseUrl}/api/admin/tower`);
+  assert.equal(denied.status, 401);
+
+  const login = await fetch(`${baseUrl}/api/admin/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user: "SA", password: "qwe123" }),
+  });
+  assert.equal(login.status, 200);
+  const { token } = await login.json();
+  assert.ok(token);
+
+  const control = await connectClient();
+  const created = await createRoom(control);
+  assert.equal(created.ok, true);
+
+  const tower = await fetch(`${baseUrl}/api/admin/tower`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  assert.equal(tower.status, 200);
+  const body = await tower.json();
+  assert.equal(body.ok, true);
+  assert.ok(body.socket.sockets >= 1);
+  assert.ok(body.rooms.some((room) => room.pin === created.pin));
+
+  control.disconnect();
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  const towerAfterLeave = await fetch(`${baseUrl}/api/admin/tower`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const afterLeave = await towerAfterLeave.json();
+  const idleRoom = afterLeave.rooms.find((room) => room.pin === created.pin);
+  assert.ok(idleRoom);
+  assert.equal(idleRoom.inactive, true);
+
+  const purge = await fetch(`${baseUrl}/api/admin/rooms/purge-inactive`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  assert.equal(purge.status, 200);
+  const purged = await purge.json();
+  assert.ok(purged.removed.includes(created.pin));
+
+  const towerClean = await fetch(`${baseUrl}/api/admin/tower`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const clean = await towerClean.json();
+  assert.equal(
+    clean.rooms.some((room) => room.pin === created.pin),
+    false,
+  );
 });

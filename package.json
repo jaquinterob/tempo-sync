@@ -1,18 +1,23 @@
 {
   "name": "pulpit-timer",
   "version": "1.0.0",
-  "description": "Pulpit Timer — temporizador sincronizado para reuniones sacramentales",
+  "description": "Pulpit Timer — temporizador sincronizado para reuniones",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test": "node --test"
   },
-  "keywords": ["pulpit-timer", "church", "timer"],
+  "keywords": [
+    "pulpit-timer",
+    "church",
+    "timer"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^5.2.1",
+    "lucide": "^1.66.0",
     "socket.io": "^4.8.3"
   },
   "devDependencies": {
