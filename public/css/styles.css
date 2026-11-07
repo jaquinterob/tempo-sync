@@ -2686,33 +2686,55 @@ html:has(body.control-page) {
     width: 100%;
     max-width: 100%;
     overflow: hidden;
+    margin-top: 2px;
+    padding-top: 2px;
   }
 
   .control-page .share-row {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 40px);
+    gap: 4px;
+    align-items: center;
     width: 100%;
   }
 
   .control-page .share-pin-chip {
-    grid-column: 1 / -1;
+    grid-column: auto;
     justify-content: flex-start;
-    margin: 0 0 2px;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .control-page .share-kicker {
+    font-size: 0.7rem;
+  }
+
+  .control-page .share-pin-chip strong {
+    font-size: 0.92rem;
   }
 
   .control-page .share-action {
     flex: unset;
-    width: 100%;
-    min-width: 0;
-    padding: 8px 6px;
-    font-size: 0.82rem;
-    gap: 4px;
+    width: 40px;
+    min-width: 40px;
+    min-height: 36px;
+    padding: 0;
+    font-size: 0;
+    gap: 0;
   }
 
   .control-page .share-action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
     overflow: hidden;
-    text-overflow: ellipsis;
+    clip: rect(0 0 0 0);
+  }
+
+  .control-page .share-action .ui-icon,
+  .control-page .share-action svg.lucide {
+    width: 16px;
+    height: 16px;
   }
 
   .control-page:has(.matrix-layout:not(.is-hidden)) #control-ward-title {
@@ -2720,35 +2742,46 @@ html:has(body.control-page) {
   }
 
   .control-page .brand-config-card {
-    padding: 8px;
+    padding: 6px 8px;
     width: 100%;
     box-sizing: border-box;
   }
 
   .control-page .brand-config-head {
-    flex-wrap: wrap;
-    align-items: flex-start;
-    margin-bottom: 8px;
-    gap: 8px;
+    flex-wrap: nowrap;
+    align-items: center;
+    margin-bottom: 4px;
+    gap: 6px;
+    min-height: 0;
   }
 
   .control-page .brand-config-card h2 {
-    font-size: 0.85rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #78716c;
+    flex: 0 0 auto;
   }
 
   .control-page .brand-config-actions {
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    width: 100%;
-    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 4px;
   }
 
   .control-page .theme-toggle {
-    flex: 1 1 calc(50% - 6px);
+    flex: 1 1 0;
     min-width: 0;
+    min-height: 28px;
+    height: 28px;
     justify-content: center;
     white-space: nowrap;
     overflow: hidden;
+    padding: 0 5px;
+    font-size: 0.68rem;
   }
 
   .control-page .theme-toggle-label {
@@ -2757,7 +2790,7 @@ html:has(body.control-page) {
   }
 
   .control-page .panel-theme-menu {
-    flex: 1 1 calc(50% - 6px);
+    flex: 1 1 0;
     min-width: 0;
   }
 
@@ -2766,36 +2799,40 @@ html:has(body.control-page) {
   }
 
   .control-page .branding-form {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
     width: 100%;
+    align-items: end;
   }
 
   .control-page .brand-field,
   .control-page .brand-field:nth-child(1),
   .control-page .brand-field:nth-child(2),
   .control-page .brand-field:nth-child(3) {
-    grid-column: 1;
     grid-template-columns: 1fr;
-    gap: 4px;
-    font-size: 0.78rem;
+    gap: 2px;
+    font-size: 0.68rem;
+  }
+
+  .control-page .brand-field:nth-child(1) {
+    grid-column: 1 / -1;
+  }
+
+  .control-page .brand-field:nth-child(2),
+  .control-page .brand-field:nth-child(3) {
+    grid-column: auto;
   }
 
   .control-page .brand-field span {
-    white-space: normal;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .control-page .branding-form input {
-    padding: 10px 10px;
+    padding: 6px 8px;
     font-size: 16px; /* evita zoom forzado en iOS */
-  }
-
-  .control-page .brand-save {
-    grid-column: 1;
-    grid-row: auto;
-    min-height: 44px;
-    padding: 8px 12px;
-    width: 100%;
+    min-height: 36px;
   }
 
   .control-page .matrix-time-form input,
@@ -2819,9 +2856,6 @@ html:has(body.control-page) {
     font-size: 0.85rem;
   }
 
-  .control-page .share-action span {
-    font-size: 0.78rem;
-  }
 }
 
 /* Entry landing — Quiet Luxury + Soft rise (M01) */
@@ -4471,26 +4505,37 @@ body.share-menu-open {
 @media (max-width: 760px) {
   .control-page .share-row {
     display: grid !important;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 6px;
+    grid-template-columns: minmax(0, 1fr) repeat(3, 40px);
+    gap: 4px;
     width: 100%;
     flex-wrap: unset;
+    align-items: center;
   }
 
   .control-page .share-pin-chip {
-    grid-column: 1 / -1;
-    width: 100%;
-    margin: 0 0 2px;
+    grid-column: auto;
+    width: auto;
+    margin: 0;
+    min-width: 0;
   }
 
   .control-page .share-action {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
+    width: 40px;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 36px;
     flex: unset;
     justify-content: center;
-    padding: 8px 6px;
-    font-size: 0.82rem;
+    padding: 0;
+    font-size: 0;
     box-sizing: border-box;
+  }
+
+  .control-page .share-action span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
 }

@@ -71,6 +71,8 @@ let lastBrandingKey = "";
 let currentTheme = "light";
 let joining = false;
 let shareStatusTarget = shareStatus;
+let brandingSaveTimer = 0;
+let lastSentBrandingKey = "";
 
 function currentUnitLabel() {
   return normalizeUnitText(unitNameInput.value, 60);
@@ -558,27 +560,72 @@ clearMessageButton.addEventListener("click", () => {
   client.socket.emit("timer:message", "");
 });
 
-brandingForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  brandingStatus.textContent = "";
+function brandingPayload() {
   const wardName = currentUnitLabel();
-  if (!wardName) {
-    brandingStatus.textContent = "Escribe el nombre de la unidad.";
-    unitNameInput.focus();
-    return;
-  }
+  const finishThanks = finishThanksInput.value.trim();
+  const finishDone = finishDoneInput.value.trim();
+  return { wardName, finishThanks, finishDone };
+}
+
+function syncLocalUnitTitle(wardName) {
+  controlWardTitle.textContent = displayUnitLabel(wardName);
+  controlWardTitle.classList.toggle("is-placeholder", !wardName);
+}
+
+function saveBranding({ force = false } = {}) {
+  if (!client.socket.connected) return;
+  const { wardName, finishThanks, finishDone } = brandingPayload();
+  if (!wardName || !finishThanks || !finishDone) return;
+
+  const key = `${wardName}|${finishThanks}|${finishDone}`;
+  if (!force && key === lastSentBrandingKey) return;
+
+  lastSentBrandingKey = key;
+  lastBrandingKey = key;
   client.socket.emit("branding:update", {
     wardName,
-    finishThanks: finishThanksInput.value,
-    finishDone: finishDoneInput.value,
+    finishThanks,
+    finishDone,
   });
   try {
     localStorage.setItem("pulpit-ward-name", wardName);
   } catch {
     // sin localStorage
   }
-  brandingStatus.textContent = "CFG guardada.";
+  brandingStatus.textContent = "Guardado";
+}
+
+function scheduleBrandingSave() {
+  window.clearTimeout(brandingSaveTimer);
+  brandingSaveTimer = window.setTimeout(() => {
+    saveBranding();
+  }, 320);
+}
+
+function onBrandingFieldInput() {
+  syncLocalUnitTitle(currentUnitLabel());
+  scheduleBrandingSave();
+}
+
+brandingForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  window.clearTimeout(brandingSaveTimer);
+  const { wardName } = brandingPayload();
+  if (!wardName) {
+    brandingStatus.textContent = "Escribe el nombre de la unidad.";
+    unitNameInput.focus();
+    return;
+  }
+  saveBranding({ force: true });
 });
+
+for (const input of [unitNameInput, finishThanksInput, finishDoneInput]) {
+  input.addEventListener("input", onBrandingFieldInput);
+  input.addEventListener("change", () => {
+    window.clearTimeout(brandingSaveTimer);
+    saveBranding({ force: true });
+  });
+}
 
 themeToggle.addEventListener("click", () => {
   const nextTheme = currentTheme === "dark" ? "light" : "dark";

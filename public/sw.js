@@ -1,5 +1,5 @@
 /* Pulpit Timer service worker — shell cache for installable PWA. */
-const CACHE_VERSION = "pulpit-timer-v3";
+const CACHE_VERSION = "pulpit-timer-v4";
 const PRECACHE = [
   "/",
   "/control",
@@ -115,10 +115,34 @@ async function networkFirstNavigation(request) {
 
 async function staleWhileRevalidate(request) {
   const cache = await caches.open(CACHE_VERSION);
-  const cached = await cache.match(request);
+  const url = new URL(request.url);
+  const versioned = url.searchParams.has("v");
+
+  // Versioned assets (?v=) prefer network so local/CSS bumps aren't stuck on stale cache.
+  if (versioned) {
+    try {
+      const response = await fetch(request, { cache: "no-store" });
+      if (response.ok) {
+        await cache.put(url.pathname, response.clone());
+        await cache.put(request, response.clone());
+      }
+      return response;
+    } catch {
+      const cached =
+        (await cache.match(request)) || (await cache.match(url.pathname));
+      if (cached) return cached;
+      return new Response("", { status: 504 });
+    }
+  }
+
+  const cached =
+    (await cache.match(request)) || (await cache.match(url.pathname));
   const networkPromise = fetch(request)
     .then((response) => {
-      if (response.ok) cache.put(request, response.clone());
+      if (response.ok) {
+        cache.put(request, response.clone());
+        cache.put(url.pathname, response.clone());
+      }
       return response;
     })
     .catch(() => null);
