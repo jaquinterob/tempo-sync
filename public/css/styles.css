@@ -908,8 +908,16 @@ input:focus {
 .display-timer {
   display: grid;
   min-height: 100vh;
-  padding: 0;
+  min-height: 100dvh;
+  padding:
+    max(24px, env(safe-area-inset-top, 0px))
+    max(20px, env(safe-area-inset-right, 0px))
+    /* Reserva fija para código/cambiar y pantalla completa */
+    max(88px, calc(env(safe-area-inset-bottom, 0px) + 76px))
+    max(20px, env(safe-area-inset-left, 0px));
   place-items: center;
+  align-content: center;
+  box-sizing: border-box;
 }
 
 .screen-message-banner {
@@ -1003,7 +1011,7 @@ input:focus {
   position: fixed;
   z-index: 30;
   right: max(18px, env(safe-area-inset-right));
-  bottom: max(16px, env(safe-area-inset-bottom));
+  bottom: max(20px, env(safe-area-inset-bottom));
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -1130,7 +1138,7 @@ input:focus {
   position: fixed;
   z-index: 30;
   left: max(18px, env(safe-area-inset-left));
-  bottom: max(16px, env(safe-area-inset-bottom));
+  bottom: max(20px, env(safe-area-inset-bottom));
   display: inline-flex;
   min-height: 42px;
   flex-direction: column;
@@ -1720,7 +1728,30 @@ input:focus {
   }
 
   .display-timer {
-    padding: 20px;
+    padding:
+      max(20px, env(safe-area-inset-top, 0px))
+      20px
+      max(88px, calc(env(safe-area-inset-bottom, 0px) + 76px))
+      20px;
+  }
+}
+
+/* Landscape corto (iPhone horizontal): evita que la barra toque el chip */
+@media (orientation: landscape) and (max-height: 520px) {
+  .display-page .timer-giant {
+    font-size: clamp(4.2rem, 26vh, 11rem);
+  }
+
+  .display-content {
+    max-width: min(86vw, 980px);
+  }
+
+  .time-meter {
+    margin-top: clamp(0.7rem, 2.8vh, 1.35rem);
+  }
+
+  .display-timer {
+    padding-bottom: max(92px, calc(env(safe-area-inset-bottom, 0px) + 80px));
   }
 }
 
