@@ -912,8 +912,7 @@ input:focus {
   padding:
     max(24px, env(safe-area-inset-top, 0px))
     max(20px, env(safe-area-inset-right, 0px))
-    /* Reserva fija para código/cambiar y pantalla completa */
-    max(88px, calc(env(safe-area-inset-bottom, 0px) + 76px))
+    max(56px, calc(env(safe-area-inset-bottom, 0px) + 44px))
     max(20px, env(safe-area-inset-left, 0px));
   place-items: center;
   align-content: center;
@@ -1137,22 +1136,24 @@ input:focus {
 .change-room-button {
   position: fixed;
   z-index: 30;
-  left: max(18px, env(safe-area-inset-left));
-  bottom: max(20px, env(safe-area-inset-bottom));
+  left: max(14px, env(safe-area-inset-left));
+  bottom: max(14px, env(safe-area-inset-bottom));
   display: inline-flex;
-  min-height: 42px;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: baseline;
   justify-content: center;
-  gap: 1px;
+  gap: 6px;
+  min-height: 0;
   border: 1px solid #475569;
-  border-radius: 8px;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 5px 9px;
   background: rgba(18, 21, 25, 0.82);
   color: #cbd5e1;
   font-family: "Avenir Next", "Helvetica Neue", Arial, sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
+  line-height: 1;
   text-align: left;
   cursor: pointer;
   opacity: 0.72;
@@ -1161,7 +1162,7 @@ input:focus {
 
 .change-room-button small {
   color: #94a3b8;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: lowercase;
@@ -1731,27 +1732,45 @@ input:focus {
     padding:
       max(20px, env(safe-area-inset-top, 0px))
       20px
-      max(88px, calc(env(safe-area-inset-bottom, 0px) + 76px))
+      max(52px, calc(env(safe-area-inset-bottom, 0px) + 40px))
       20px;
   }
 }
 
-/* Landscape corto (iPhone horizontal): evita que la barra toque el chip */
+/* Landscape corto: un poco menos de aire bajo el metro, reloj sigue grande */
 @media (orientation: landscape) and (max-height: 520px) {
-  .display-page .timer-giant {
-    font-size: clamp(4.2rem, 26vh, 11rem);
-  }
-
-  .display-content {
-    max-width: min(86vw, 980px);
-  }
-
   .time-meter {
-    margin-top: clamp(0.7rem, 2.8vh, 1.35rem);
+    margin-top: clamp(0.85rem, 3vh, 1.6rem);
   }
 
   .display-timer {
-    padding-bottom: max(92px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+    padding-bottom: max(48px, calc(env(safe-area-inset-bottom, 0px) + 36px));
+  }
+
+  .change-room-button {
+    left: max(10px, env(safe-area-inset-left));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    padding: 4px 8px;
+    font-size: 0.64rem;
+  }
+
+  .change-room-button small {
+    font-size: 0.58rem;
+  }
+
+  .fullscreen-button {
+    right: max(10px, env(safe-area-inset-right));
+    bottom: max(10px, env(safe-area-inset-bottom));
+    min-height: 0;
+    padding: 5px 8px;
+    font-size: 0.68rem;
+    gap: 5px;
+  }
+
+  .fullscreen-button svg,
+  .fullscreen-button svg.lucide {
+    width: 15px;
+    height: 15px;
   }
 }
 
