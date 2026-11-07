@@ -217,6 +217,7 @@ function controlUrl(pin, token) {
 }
 
 async function showJoinPanel() {
+  const lastPin = cleanPin(client.getPin() || pinInput.value);
   joinError.textContent = "";
   await client.leave();
   timerPanel.classList.add("is-hidden");
@@ -224,6 +225,7 @@ async function showJoinPanel() {
   shareStatus.textContent = "";
   hideShareGate();
   history.replaceState(null, "", window.location.pathname);
+  if (lastPin) pinInput.value = lastPin;
   pinInput.focus();
   pinInput.select();
 }

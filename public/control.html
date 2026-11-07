@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#f7f4ef" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -16,10 +19,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&family=Source+Sans+3:wght@400;600;700&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=12" />
+    <link rel="stylesheet" href="/css/styles.css?v=20" />
   </head>
   <body class="control-page">
     <script>
@@ -294,35 +297,43 @@
       <p class="control-credit">© JohnQ</p>
     </main>
 
-    <div id="share-gate" class="share-gate is-hidden" role="dialog" aria-modal="true" aria-labelledby="share-gate-title">
+    <div
+      id="share-gate"
+      class="share-gate share-gate-whisper is-hidden"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="share-gate-title"
+    >
       <div class="share-gate-card">
         <p class="share-gate-kicker">Último paso</p>
-        <h2 id="share-gate-title">Envía el código al otro celular</h2>
+        <h2 id="share-gate-title">Envía el código<br />al otro celular</h2>
         <p class="share-gate-code" id="share-gate-pin">—</p>
         <p id="share-gate-url" class="share-gate-url" hidden></p>
         <a
           id="share-gate-whatsapp"
-          class="entry-button share-gate-whatsapp"
+          class="share-gate-whatsapp"
           href="#"
           target="_blank"
           rel="noopener noreferrer"
         >
           Enviar por WhatsApp
         </a>
-        <button id="share-gate-copy" type="button" class="entry-button entry-button-ghost">
-          Copiar enlace
-        </button>
-        <button id="share-gate-done" type="button" class="entry-button entry-button-ghost">
-          Continuar
-        </button>
+        <div class="share-gate-secondary">
+          <button id="share-gate-copy" type="button" class="share-gate-text">
+            Copiar
+          </button>
+          <button id="share-gate-done" type="button" class="share-gate-text">
+            Continuar
+          </button>
+        </div>
         <p id="share-gate-status" class="share-gate-status" aria-live="polite"></p>
       </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/icons.js?v=12"></script>
-    <script src="/js/shared.js?v=12"></script>
-    <script src="/js/control.js?v=12"></script>
+    <script src="/js/shared.js?v=19"></script>
+    <script src="/js/control.js?v=19"></script>
     <script>
       window.PulpitIcons?.createIcons();
     </script>

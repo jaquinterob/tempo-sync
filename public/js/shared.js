@@ -139,13 +139,12 @@
     }
 
     function leave() {
-      const previousPin = pin;
       return new Promise((resolve) => {
         socket.emit("room:leave", () => {
+          // Conserva el token en sessionStorage para poder volver a la misma sala.
           pin = null;
           controlToken = null;
           state = null;
-          if (previousPin) clearControlToken(previousPin);
           resolve({ ok: true });
         });
       });

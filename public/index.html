@@ -2,7 +2,10 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#f7f4ef" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -16,100 +19,117 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Georgia&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=9" />
+    <link rel="stylesheet" href="/css/styles.css?v=18" />
   </head>
   <body class="entry-page">
     <main class="entry-shell">
-      <img
-        class="entry-logo"
-        src="/assets/brand/church-logo.png"
-        alt=""
-        width="48"
-        height="86"
-      />
-      <p class="entry-product">Pulpit Timer</p>
-      <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
+      <div class="entry-brand">
+        <img
+          class="entry-logo"
+          src="/assets/brand/church-logo.png"
+          alt=""
+          width="48"
+          height="86"
+        />
+        <p class="entry-product">Pulpit Timer</p>
+        <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
+      </div>
+
+      <div class="entry-progress" aria-hidden="true">
+        <div class="entry-hair"></div>
+        <p class="entry-meta" id="entry-step-meta">1 · 3</p>
+      </div>
 
       <div class="entry-stepper" data-step="0">
-        <ol class="entry-stepper-dots" aria-label="Progreso">
-          <li class="is-active" aria-current="step"><span>1</span></li>
-          <li><span>2</span></li>
-          <li><span>3</span></li>
-        </ol>
+        <div class="entry-stage">
+          <section
+            class="entry-step is-active"
+            data-step-panel="0"
+            aria-labelledby="step-1-title"
+          >
+            <h2 id="step-1-title">Escribe el nombre</h2>
+            <form id="unit-form" class="entry-form" novalidate>
+              <label class="entry-label" for="unit-name">Nombre de tu unidad</label>
+              <input
+                id="unit-name"
+                class="entry-input"
+                type="text"
+                name="unit"
+                maxlength="60"
+                required
+                autocomplete="organization"
+                placeholder="Ej. Barrio Sabaneta"
+              />
+              <p id="unit-error" class="entry-step-error" role="alert" hidden>
+                Falta el nombre.
+              </p>
+            </form>
+          </section>
 
-        <section class="entry-step is-active" data-step-panel="0" aria-labelledby="step-1-title">
-          <p class="entry-step-kicker">1 / 3</p>
-          <h2 id="step-1-title">Escribe el nombre</h2>
+          <section
+            class="entry-step"
+            data-step-panel="1"
+            hidden
+            aria-labelledby="step-2-title"
+          >
+            <h2 id="step-2-title">Usa 2 celulares</h2>
+            <div class="entry-simple-cards">
+              <p>
+                <strong>Este celular</strong><br />Aquí controlas el tiempo.
+              </p>
+              <p>
+                <strong>El otro celular</strong><br />Ahí se ve el reloj grande.
+              </p>
+            </div>
+          </section>
 
-          <form id="unit-form" class="entry-form" novalidate>
-            <label class="entry-label" for="unit-name">Nombre de tu unidad</label>
-            <input
-              id="unit-name"
-              class="entry-input"
-              type="text"
-              name="unit"
-              maxlength="60"
-              required
-              autocomplete="organization"
-              placeholder="Ej. Barrio Sabaneta"
-            />
-            <p id="unit-error" class="entry-step-error" role="alert" hidden>
-              Falta el nombre.
+          <section
+            class="entry-step"
+            data-step-panel="2"
+            hidden
+            aria-labelledby="step-3-title"
+          >
+            <h2 id="step-3-title">Luego envía el código</h2>
+            <p>
+              En la siguiente pantalla toca el botón verde
+              <strong>WhatsApp</strong> y envía el código al otro celular.
             </p>
-          </form>
+            <p>Ese celular abre el enlace y listo.</p>
+          </section>
+        </div>
 
-          <div class="entry-step-actions">
-            <button type="button" class="entry-button" data-next>Continuar</button>
-          </div>
-        </section>
-
-        <section class="entry-step" data-step-panel="1" hidden aria-labelledby="step-2-title">
-          <p class="entry-step-kicker">2 / 3</p>
-          <h2 id="step-2-title">Usa 2 celulares</h2>
-          <div class="entry-simple-cards">
-            <p><strong>Este celular</strong><br />Aquí controlas el tiempo.</p>
-            <p><strong>El otro celular</strong><br />Ahí se ve el reloj grande.</p>
-          </div>
-          <div class="entry-step-actions">
-            <button type="button" class="entry-button" data-next>Continuar</button>
-          </div>
-        </section>
-
-        <section class="entry-step" data-step-panel="2" hidden aria-labelledby="step-3-title">
-          <p class="entry-step-kicker">3 / 3</p>
-          <h2 id="step-3-title">Luego envía el código</h2>
-          <p>
-            En la siguiente pantalla toca el botón verde
-            <strong>WhatsApp</strong> y envía el código al otro celular.
-          </p>
-          <p>Ese celular abre el enlace y listo.</p>
-          <div class="entry-step-actions">
-            <button id="create-room" type="button" class="entry-button">
-              Crear sala
-            </button>
-          </div>
-        </section>
+        <div class="entry-footer">
+          <button type="button" class="entry-button" id="entry-primary" data-next>
+            Continuar
+          </button>
+        </div>
       </div>
     </main>
 
-    <script src="/js/shared.js?v=9"></script>
+    <script src="/js/shared.js?v=13"></script>
+    <script src="/js/pwa.js?v=17"></script>
     <script>
       const {
         UNIT_PLACEHOLDER,
         normalizeUnitText,
       } = window.TimerTools;
 
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       const stepper = document.querySelector(".entry-stepper");
+      const stage = document.querySelector(".entry-stage");
       const panels = [...document.querySelectorAll("[data-step-panel]")];
-      const dots = [...document.querySelectorAll(".entry-stepper-dots li")];
       const unitNameInput = document.querySelector("#unit-name");
       const unitError = document.querySelector("#unit-error");
       const wardTitle = document.querySelector("#entry-ward-title");
+      const stepMeta = document.querySelector("#entry-step-meta");
+      const primaryButton = document.querySelector("#entry-primary");
       const TOTAL_STEPS = panels.length;
+      const CTA_LABELS = ["Continuar", "Continuar", "Crear sala"];
       let currentStep = 0;
+      let busy = false;
 
       function currentLabel() {
         return normalizeUnitText(unitNameInput.value, 60);
@@ -121,31 +141,78 @@
         wardTitle.classList.toggle("is-placeholder", !label);
       }
 
-      function setStep(nextStep) {
-        currentStep = Math.max(0, Math.min(TOTAL_STEPS - 1, nextStep));
-        stepper.dataset.step = String(currentStep);
-
-        for (const [index, panel] of panels.entries()) {
-          const active = index === currentStep;
-          panel.classList.toggle("is-active", active);
-          panel.hidden = !active;
-        }
-
-        for (const [index, dot] of dots.entries()) {
-          const active = index === currentStep;
-          dot.classList.toggle("is-active", active);
-          dot.classList.toggle("is-done", index < currentStep);
-          if (active) dot.setAttribute("aria-current", "step");
-          else dot.removeAttribute("aria-current");
-        }
-
-        if (currentStep === 0) unitNameInput.focus();
-      }
-
       function unitIsValid() {
         const ok = Boolean(currentLabel());
         unitError.hidden = ok;
         return ok;
+      }
+
+      function wait(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      function showPanel(index) {
+        for (const [i, panel] of panels.entries()) {
+          const active = i === index;
+          panel.classList.toggle("is-active", active);
+          panel.hidden = !active;
+          panel.classList.remove("is-enter", "is-leave");
+        }
+      }
+
+      async function setStep(nextStep) {
+        const target = Math.max(0, Math.min(TOTAL_STEPS - 1, nextStep));
+        if (busy || target === currentStep) {
+          showPanel(target);
+          currentStep = target;
+          stepper.dataset.step = String(currentStep);
+          stepMeta.textContent = `${currentStep + 1} · ${TOTAL_STEPS}`;
+          primaryButton.textContent = CTA_LABELS[currentStep];
+          primaryButton.toggleAttribute("data-next", currentStep < TOTAL_STEPS - 1);
+          primaryButton.id = currentStep === TOTAL_STEPS - 1 ? "create-room" : "entry-primary";
+          if (currentStep === 0) unitNameInput.focus();
+          return;
+        }
+
+        busy = true;
+        const from = currentStep;
+        const outgoing = panels[from];
+        const incoming = panels[target];
+
+        stepper.dataset.step = String(target);
+        stepMeta.textContent = `${target + 1} · ${TOTAL_STEPS}`;
+        primaryButton.textContent = CTA_LABELS[target];
+        if (target === TOTAL_STEPS - 1) {
+          primaryButton.removeAttribute("data-next");
+          primaryButton.id = "create-room";
+        } else {
+          primaryButton.setAttribute("data-next", "");
+          primaryButton.id = "entry-primary";
+        }
+
+        if (reduceMotion) {
+          showPanel(target);
+          currentStep = target;
+          busy = false;
+          if (currentStep === 0) unitNameInput.focus();
+          return;
+        }
+
+        outgoing.classList.remove("is-active");
+        outgoing.classList.add("is-leave");
+        incoming.hidden = false;
+        incoming.classList.add("is-enter");
+        stage.offsetHeight;
+
+        await wait(420);
+
+        outgoing.hidden = true;
+        outgoing.classList.remove("is-leave");
+        incoming.classList.remove("is-enter");
+        incoming.classList.add("is-active");
+        currentStep = target;
+        busy = false;
+        if (currentStep === 0) unitNameInput.focus();
       }
 
       function goCreateRoom() {
@@ -184,8 +251,11 @@
         syncTitle();
       });
 
-      stepper.addEventListener("click", (event) => {
-        if (!event.target.closest("[data-next]")) return;
+      primaryButton.addEventListener("click", () => {
+        if (currentStep >= TOTAL_STEPS - 1) {
+          goCreateRoom();
+          return;
+        }
         if (currentStep === 0 && !unitIsValid()) {
           unitNameInput.focus();
           return;
@@ -193,12 +263,11 @@
         setStep(currentStep + 1);
       });
 
-      document.querySelector("#create-room").addEventListener("click", goCreateRoom);
       document.querySelector("#unit-form").addEventListener("submit", (event) => {
         event.preventDefault();
         if (!unitIsValid()) return;
         setStep(1);
       });
     </script>
-</body>
+  </body>
 </html>
