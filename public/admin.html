@@ -2,8 +2,12 @@
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <meta name="theme-color" content="#f7f4ef" />
+    <meta name="color-scheme" content="light" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -12,16 +16,30 @@
     <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
     <link rel="icon" href="/favicon.svg?v=3" type="image/svg+xml" />
     <title>Torre · Pulpit Timer</title>
+    <style>
+      html {
+        color-scheme: light;
+        background: #f7f4ef;
+      }
+      body.tower-page {
+        margin: 0;
+        background: #f7f4ef;
+        color: #1c1917;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add("tower-html");
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Source+Sans+3:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=11" />
-    <link rel="stylesheet" href="/css/admin.css?v=11" />
+    <link rel="stylesheet" href="/css/styles.css?v=34" />
+    <link rel="stylesheet" href="/css/admin.css?v=18" />
   </head>
-  <body class="tower-page">
+  <body class="tower-page is-gate">
     <main class="tower-shell">
       <header class="tower-header">
         <div class="tower-brand">
@@ -34,25 +52,33 @@
         </div>
       </header>
 
-      <section id="login-card" class="tower-card tower-login">
-        <h2>Acceso privado</h2>
-        <p class="tower-help">
-          Usa las credenciales definidas en las variables de entorno de Render
-          (<code>ADMIN_USER</code> / <code>ADMIN_PASSWORD</code>).
-        </p>
-        <form id="login-form" class="tower-login-form">
-          <label for="admin-user">Usuario</label>
-          <input id="admin-user" type="text" autocomplete="username" required />
-          <label for="admin-password">Contraseña</label>
-          <input
-            id="admin-password"
-            type="password"
-            autocomplete="current-password"
-            required
-          />
-          <p class="tower-error" id="login-error" role="alert"></p>
-          <button type="submit" class="button button-primary">Entrar</button>
-        </form>
+      <section id="login-card" class="tower-login" aria-labelledby="login-title">
+        <div class="tower-login-stage">
+          <p class="tower-login-brand">Pulpit Timer</p>
+          <h2 id="login-title">Torre</h2>
+          <p class="tower-help">Acceso privado para operadores.</p>
+          <form id="login-form" class="tower-login-form">
+            <label for="admin-user">Usuario</label>
+            <input
+              id="admin-user"
+              type="text"
+              autocomplete="username"
+              required
+              spellcheck="false"
+            />
+            <label for="admin-password">Contraseña</label>
+            <input
+              id="admin-password"
+              type="password"
+              autocomplete="current-password"
+              required
+            />
+            <p class="tower-error" id="login-error" role="alert"></p>
+            <button type="submit" class="button button-primary tower-login-submit">
+              Entrar
+            </button>
+          </form>
+        </div>
       </section>
 
       <section id="admin-panel" class="tower-panel is-hidden" hidden>
@@ -94,6 +120,11 @@
             <span class="tower-stat-label"><i data-lucide="timer" data-lucide-class="ui-icon"></i> Salas</span>
             <strong id="stat-rooms">0</strong>
             <small id="stat-rooms-detail">0 activas · 0 inactivas</small>
+          </article>
+          <article class="tower-stat">
+            <span class="tower-stat-label"><i data-lucide="sun" data-lucide-class="ui-icon"></i> Warm</span>
+            <strong id="stat-warmup">0</strong>
+            <small id="stat-warmup-detail">sin pings aún</small>
           </article>
         </div>
 
@@ -137,6 +168,29 @@
               </table>
             </div>
           </section>
+
+          <section class="tower-card">
+            <header class="tower-card-head">
+              <h2><i data-lucide="sun" data-lucide-class="ui-icon"></i> Pings warm</h2>
+              <span id="warmup-count" class="tower-chip">0</span>
+            </header>
+            <div class="tower-table-wrap">
+              <table class="tower-table">
+                <thead>
+                  <tr>
+                    <th>Hora</th>
+                    <th>IP</th>
+                    <th>Cliente</th>
+                  </tr>
+                </thead>
+                <tbody id="warmup-body">
+                  <tr>
+                    <td colspan="3" class="tower-empty">Sin pings warm todavía.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
         </div>
 
         <p class="tower-error" id="panel-error" role="alert"></p>
@@ -146,7 +200,7 @@
     </main>
 
     <script src="/js/icons.js?v=11"></script>
-    <script src="/js/admin.js?v=11"></script>
+    <script src="/js/admin.js?v=13"></script>
     <script>
       window.PulpitIcons?.createIcons();
     </script>

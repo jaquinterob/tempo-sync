@@ -1,5 +1,5 @@
 /* Pulpit Timer service worker — shell cache for installable PWA. */
-const CACHE_VERSION = "pulpit-timer-v4";
+const CACHE_VERSION = "pulpit-timer-v5";
 const PRECACHE = [
   "/",
   "/control",

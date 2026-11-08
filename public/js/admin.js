@@ -26,8 +26,12 @@
   const statRoles = document.querySelector("#stat-roles");
   const statRooms = document.querySelector("#stat-rooms");
   const statMemory = document.querySelector("#stat-memory");
+  const statWarmup = document.querySelector("#stat-warmup");
+  const statWarmupDetail = document.querySelector("#stat-warmup-detail");
   const roomsCount = document.querySelector("#rooms-count");
   const sessionsCount = document.querySelector("#sessions-count");
+  const warmupCount = document.querySelector("#warmup-count");
+  const warmupBody = document.querySelector("#warmup-body");
   const statRoomsDetail = document.querySelector("#stat-rooms-detail");
   const purgeInactiveButton = document.querySelector("#purge-inactive-button");
 
@@ -95,6 +99,30 @@
     return "Idle";
   }
 
+  function formatRelative(iso) {
+    if (!iso) return "—";
+    const then = Date.parse(iso);
+    if (!Number.isFinite(then)) return "—";
+    const deltaSec = Math.max(0, Math.round((Date.now() - then) / 1000));
+    if (deltaSec < 5) return "ahora";
+    if (deltaSec < 60) return `hace ${deltaSec}s`;
+    if (deltaSec < 3600) return `hace ${Math.floor(deltaSec / 60)}m`;
+    return `hace ${Math.floor(deltaSec / 3600)}h`;
+  }
+
+  function shortUa(ua) {
+    const value = String(ua || "").trim();
+    if (!value) return "—";
+    if (/pulpit|keep-?alive/i.test(value)) return "Keep-alive";
+    if (/iPhone|iPad/i.test(value)) return "iOS";
+    if (/Android/i.test(value)) return "Android";
+    if (/Chrome/i.test(value)) return "Chrome";
+    if (/Safari/i.test(value)) return "Safari";
+    if (/Firefox/i.test(value)) return "Firefox";
+    if (/curl|node-fetch|undici|axios/i.test(value)) return "Bot/script";
+    return value.slice(0, 28);
+  }
+
   function tickClock() {
     if (!towerClock) return;
     towerClock.textContent = new Date().toLocaleTimeString("es-CO", {
@@ -106,6 +134,7 @@
 
   function showLogin() {
     stopRefresh();
+    document.body.classList.add("is-gate");
     loginCard.hidden = false;
     loginCard.style.display = "";
     adminPanel.hidden = true;
@@ -116,6 +145,7 @@
   }
 
   function showPanel() {
+    document.body.classList.remove("is-gate");
     loginCard.hidden = true;
     loginCard.style.display = "none";
     adminPanel.hidden = false;
@@ -336,8 +366,59 @@
       data.generatedAt || Date.now(),
     ).toLocaleTimeString("es-CO")}`;
 
+    const warmup = data.warmup || {};
+    const recentWarm = Array.isArray(warmup.recent) ? warmup.recent : [];
+    if (statWarmup) statWarmup.textContent = String(warmup.total ?? 0);
+    if (statWarmupDetail) {
+      statWarmupDetail.textContent = warmup.lastAt
+        ? `último ${formatRelative(warmup.lastAt)}`
+        : "sin pings aún";
+    }
+    if (warmupCount) warmupCount.textContent = String(recentWarm.length);
+    renderWarmups(recentWarm);
+
     renderRooms(rooms);
     renderConnections(connections);
+  }
+
+  function renderWarmups(entries) {
+    if (!warmupBody) return;
+    warmupBody.replaceChildren();
+
+    if (!entries.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = 3;
+      cell.className = "tower-empty";
+      cell.textContent = "Sin pings warm todavía.";
+      row.appendChild(cell);
+      warmupBody.appendChild(row);
+      return;
+    }
+
+    for (const entry of entries) {
+      const row = document.createElement("tr");
+
+      const time = document.createElement("td");
+      time.className = "mono";
+      time.textContent = new Date(entry.at).toLocaleTimeString("es-CO", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      time.title = formatRelative(entry.at);
+
+      const ip = document.createElement("td");
+      ip.className = "mono";
+      ip.textContent = entry.ip || "—";
+
+      const client = document.createElement("td");
+      client.textContent = shortUa(entry.ua);
+      client.title = entry.ua || "";
+
+      row.append(time, ip, client);
+      warmupBody.appendChild(row);
+    }
   }
 
   async function loadTower() {

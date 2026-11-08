@@ -217,6 +217,7 @@ test("responde el endpoint de warmup", async () => {
   assert.equal(typeof body.warmedAt, "string");
   assert.ok(body.uptimeSec >= 0);
   assert.ok(Array.isArray(body.lanOrigins));
+  assert.ok(body.warmupTotal >= 1);
 });
 
 test("torre de control admin requiere autenticación y reporta sockets", async () => {
@@ -236,6 +237,8 @@ test("torre de control admin requiere autenticación y reporta sockets", async (
   const created = await createRoom(control);
   assert.equal(created.ok, true);
 
+  await fetch(`${baseUrl}/api/warmup`);
+
   const tower = await fetch(`${baseUrl}/api/admin/tower`, {
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -244,6 +247,11 @@ test("torre de control admin requiere autenticación y reporta sockets", async (
   assert.equal(body.ok, true);
   assert.ok(body.socket.sockets >= 1);
   assert.ok(body.rooms.some((room) => room.pin === created.pin));
+  assert.ok(body.warmup);
+  assert.ok(body.warmup.total >= 1);
+  assert.ok(Array.isArray(body.warmup.recent));
+  assert.ok(body.warmup.recent.length >= 1);
+  assert.ok(body.warmup.lastAt);
 
   control.disconnect();
   await new Promise((resolve) => setTimeout(resolve, 50));

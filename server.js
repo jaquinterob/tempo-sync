@@ -93,6 +93,10 @@ function createTimerServer() {
   const rooms = new Map();
   const adminSessions = new Map();
   const adminLoginAttempts = new Map();
+  const WARMUP_HISTORY_LIMIT = 40;
+  const warmupRecent = [];
+  let warmupTotal = 0;
+  let warmupLastAt = null;
 
   app.use(express.json({ limit: "10kb" }));
 
@@ -102,6 +106,20 @@ function createTimerServer() {
       request.socket?.remoteAddress ||
       "unknown"
     );
+  }
+
+  function recordWarmup(request) {
+    const at = Date.now();
+    warmupTotal += 1;
+    warmupLastAt = at;
+    warmupRecent.unshift({
+      at: new Date(at).toISOString(),
+      ip: clientIp(request),
+      ua: String(request.headers["user-agent"] || "").slice(0, 140),
+    });
+    if (warmupRecent.length > WARMUP_HISTORY_LIMIT) {
+      warmupRecent.length = WARMUP_HISTORY_LIMIT;
+    }
   }
 
   function consumeAdminLoginAttempt(ip) {
@@ -224,6 +242,11 @@ function createTimerServer() {
       },
       rooms: roomSummaries,
       connections,
+      warmup: {
+        total: warmupTotal,
+        lastAt: warmupLastAt ? new Date(warmupLastAt).toISOString() : null,
+        recent: warmupRecent,
+      },
     };
   }
 
@@ -256,6 +279,7 @@ function createTimerServer() {
   }
 
   app.get("/api/warmup", (request, response) => {
+    recordWarmup(request);
     const port = Number(process.env.PORT) || request.socket?.localPort || 3000;
     const protocol = request.headers["x-forwarded-proto"] || request.protocol || "http";
     const hostHeader = request.headers.host || `localhost:${port}`;
@@ -268,6 +292,7 @@ function createTimerServer() {
       uptimeSec: Math.round(process.uptime()),
       origin: `${protocol}://${hostHeader}`,
       lanOrigins,
+      warmupTotal,
     });
   });
 

@@ -1,11 +1,37 @@
-.tower-page {
-  min-height: 100vh;
-  margin: 0;
+/* Aísla la torre del tema oscuro global de styles.css */
+html:has(body.tower-page),
+html.tower-html {
+  color-scheme: light !important;
   color: #1c1917;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 40%),
-    linear-gradient(180deg, #fbfaf7 0%, #f7f4ef 55%, #efebe3 100%);
-  font-family: "Source Sans 3", Georgia, "Times New Roman", serif;
+  background: #f7f4ef !important;
+}
+
+.tower-page {
+  --tower-ink: #1c1917;
+  --tower-muted: #78716c;
+  --tower-soft: #a8a29e;
+  --tower-line: #d6d3d1;
+  --tower-cream: #f7f4ef;
+  --tower-paper: #fbfaf7;
+  --tower-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+  position: relative;
+  display: block;
+  width: 100% !important;
+  min-width: 0;
+  max-width: none !important;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: clip;
+  color: var(--tower-ink);
+  color-scheme: light !important;
+  background-color: var(--tower-cream) !important;
+  background-image:
+    radial-gradient(ellipse 90% 55% at 50% -10%, rgba(255, 255, 255, 0.95), transparent 55%),
+    radial-gradient(circle at 88% 12%, rgba(120, 113, 108, 0.07), transparent 32%),
+    linear-gradient(180deg, #fbfaf7 0%, #f7f4ef 52%, #efebe3 100%);
+  font-family: "Libre Franklin", "Source Sans 3", system-ui, sans-serif;
 }
 
 .tower-page .button {
@@ -14,20 +40,51 @@
 }
 
 .tower-page .button-primary {
-  background: #44403c;
+  background: #292524;
   color: #fafaf9;
+  transition: background 180ms var(--tower-ease), transform 180ms var(--tower-ease);
+}
+
+.tower-page .button-primary:hover {
+  background: #1c1917;
 }
 
 .tower-page .button-secondary {
-  border: 1px solid #a8a29e;
+  border: 1px solid var(--tower-soft);
   background: rgba(255, 255, 255, 0.75);
   color: #44403c;
 }
 
 .tower-shell {
+  position: relative;
+  z-index: 1;
   width: min(1120px, calc(100% - 32px));
+  max-width: 100%;
   margin: 0 auto;
-  padding: 28px 0 48px;
+  padding:
+    max(28px, env(safe-area-inset-top, 0px))
+    max(0px, env(safe-area-inset-right, 0px))
+    max(48px, env(safe-area-inset-bottom, 0px))
+    max(0px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+}
+
+.tower-page.is-gate .tower-shell {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  width: min(440px, calc(100% - 32px));
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding-top: max(20px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(20px, env(safe-area-inset-bottom, 0px));
+}
+
+.tower-page.is-gate .tower-header {
+  margin-bottom: 0;
+}
+
+.tower-page.is-gate .tower-brand h1 {
+  display: none;
 }
 
 .tower-header {
@@ -36,22 +93,28 @@
   justify-content: space-between;
   gap: 16px;
   margin-bottom: 20px;
+  min-width: 0;
+}
+
+.tower-brand {
+  min-width: 0;
 }
 
 .tower-kicker {
   margin: 0 0 4px;
-  color: #78716c;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
+  color: var(--tower-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
 }
 
 .tower-header h1 {
   margin: 0;
-  font-family: Cinzel, Georgia, serif;
-  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-family: Fraunces, Cinzel, Georgia, serif;
+  font-size: clamp(1.45rem, 3vw, 1.9rem);
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
 }
 
 .tower-header-meta {
@@ -64,19 +127,20 @@
 .tower-pill {
   display: inline-flex;
   align-items: center;
-  min-height: 28px;
+  min-height: 26px;
   padding: 0 10px;
-  border: 1px solid #a8a29e;
+  border: 1px solid var(--tower-soft);
   color: #57534e;
-  font-size: 0.78rem;
-  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
 .tower-pill.is-locked {
-  border-color: #b91c1c;
-  color: #991b1b;
-  background: rgba(254, 226, 226, 0.55);
+  border-color: var(--tower-soft);
+  color: var(--tower-muted);
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .tower-pill.is-live {
@@ -86,67 +150,145 @@
 }
 
 .tower-clock {
-  color: #78716c;
-  font-size: 0.85rem;
+  color: var(--tower-muted);
+  font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
 }
 
 .tower-card {
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--tower-line);
   background: rgba(255, 255, 255, 0.72);
   padding: 18px;
 }
 
 .tower-login {
-  max-width: 420px;
-  margin: 24px auto 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 16px 0;
+  border: 0;
+  background: transparent;
+  min-width: 0;
+}
+
+.tower-login-stage {
+  width: 100%;
+  max-width: 360px;
+  text-align: center;
+  animation: tower-gate-in 420ms var(--tower-ease) both;
+}
+
+@keyframes tower-gate-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tower-login-stage {
+    animation: none;
+  }
+
+  .tower-page .button-primary {
+    transition: none;
+  }
+}
+
+.tower-login-brand {
+  margin: 0 0 10px;
+  color: var(--tower-ink);
+  font-family: Fraunces, Georgia, serif;
+  font-size: clamp(2rem, 7vw, 2.55rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
 }
 
 .tower-login h2 {
   margin: 0 0 8px;
-  font-family: Cinzel, Georgia, serif;
-  font-size: 1.25rem;
-  font-weight: 500;
+  color: var(--tower-muted);
+  font-family: "Libre Franklin", system-ui, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .tower-help {
-  margin: 0 0 16px;
-  color: #57534e;
+  margin: 0 0 28px;
+  color: var(--tower-muted);
   font-size: 0.95rem;
   line-height: 1.45;
-}
-
-.tower-help code {
-  font-size: 0.85em;
-  color: #44403c;
 }
 
 .tower-login-form {
   display: grid;
   gap: 8px;
+  text-align: left;
 }
 
 .tower-login-form label {
-  color: #78716c;
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  color: var(--tower-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
+}
+
+.tower-login-form label[for="admin-password"] {
+  margin-top: 6px;
 }
 
 .tower-login-form input {
   width: 100%;
-  min-height: 44px;
-  border: 1px solid #a8a29e;
+  max-width: 100%;
+  min-height: 48px;
+  border: 1px solid #c4c0b8;
   border-radius: 0;
-  padding: 10px 12px;
-  background: #fbfaf7;
-  color: #1c1917;
+  padding: 12px 14px;
+  background: #fff;
+  color: var(--tower-ink);
+  color-scheme: light;
   font: inherit;
+  font-size: 16px;
+  transition: border-color 160ms ease, background 160ms ease;
+  box-sizing: border-box;
+}
+
+.tower-login-form input:hover {
+  border-color: #a8a29e;
 }
 
 .tower-login-form input:focus {
-  outline: 2px solid #78716c;
-  outline-offset: 1px;
+  outline: none;
+  border-color: #57534e;
+  background: #fff;
+  box-shadow: none;
+}
+
+.tower-login-submit {
+  margin-top: 14px;
+  min-height: 48px;
+  width: 100%;
+  letter-spacing: 0.04em;
+}
+
+.tower-login .tower-error {
+  margin: 4px 0 0;
+  text-align: left;
+  min-height: 1.25em;
+}
+
+.tower-page.is-gate .tower-footer {
+  margin-top: 0;
 }
 
 .tower-panel.is-hidden,
@@ -165,7 +307,7 @@
 
 .tower-updated {
   margin: 0;
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.9rem;
 }
 
@@ -193,13 +335,13 @@
 
 .tower-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
 
 .tower-stat {
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--tower-line);
   background: rgba(255, 255, 255, 0.7);
   padding: 14px 16px;
 }
@@ -208,7 +350,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -226,7 +368,7 @@
 .tower-stat small {
   display: block;
   margin-top: 6px;
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.85rem;
 }
 
@@ -248,7 +390,7 @@
   align-items: center;
   gap: 8px;
   margin: 0;
-  font-family: Cinzel, Georgia, serif;
+  font-family: Fraunces, Cinzel, Georgia, serif;
   font-size: 1.05rem;
   font-weight: 500;
 }
@@ -260,7 +402,7 @@
   min-width: 28px;
   min-height: 28px;
   padding: 0 8px;
-  border: 1px solid #a8a29e;
+  border: 1px solid var(--tower-soft);
   color: #44403c;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
@@ -314,7 +456,7 @@
 }
 
 .tower-room-pin {
-  font-family: Cinzel, Georgia, serif;
+  font-family: Fraunces, Cinzel, Georgia, serif;
   font-size: 1.15rem;
   letter-spacing: 0.12em;
 }
@@ -330,7 +472,7 @@
   align-items: center;
   min-height: 24px;
   padding: 0 8px;
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--tower-line);
   color: #57534e;
   font-size: 0.75rem;
   letter-spacing: 0.04em;
@@ -350,8 +492,8 @@
 }
 
 .tower-badge.is-inactive {
-  border-color: #a8a29e;
-  color: #78716c;
+  border-color: var(--tower-soft);
+  color: var(--tower-muted);
   background: rgba(231, 229, 228, 0.7);
 }
 
@@ -367,7 +509,7 @@
 
 .tower-room-grid span {
   display: block;
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.72rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -396,7 +538,7 @@
 .tower-room-notes {
   margin: 0;
   flex: 1 1 180px;
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.82rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -429,7 +571,7 @@
 }
 
 .tower-table th {
-  color: #78716c;
+  color: var(--tower-muted);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -451,7 +593,7 @@
 .tower-empty {
   padding: 28px 12px !important;
   text-align: center;
-  color: #78716c;
+  color: var(--tower-muted);
 }
 
 .tower-role {
@@ -459,7 +601,7 @@
   min-height: 24px;
   align-items: center;
   padding: 0 8px;
-  border: 1px solid #d6d3d1;
+  border: 1px solid var(--tower-line);
   font-size: 0.75rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -472,7 +614,7 @@
 }
 
 .tower-role.is-display {
-  border-color: #a8a29e;
+  border-color: var(--tower-soft);
   color: #44403c;
 }
 
@@ -505,7 +647,7 @@
 
 .tower-footer {
   margin: 18px 0 0;
-  color: #a8a29e;
+  color: var(--tower-soft);
   font-size: 0.78rem;
   letter-spacing: 0.06em;
   text-align: center;
@@ -516,6 +658,12 @@
   width: 16px;
   height: 16px;
   flex: none;
+}
+
+@media (max-width: 1100px) {
+  .tower-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 900px) {
@@ -529,15 +677,153 @@
 }
 
 @media (max-width: 640px) {
+  .tower-shell {
+    width: 100%;
+    max-width: 100%;
+    padding:
+      max(18px, env(safe-area-inset-top, 0px))
+      max(12px, env(safe-area-inset-right, 0px))
+      max(28px, env(safe-area-inset-bottom, 0px))
+      max(12px, env(safe-area-inset-left, 0px));
+  }
+
+  .tower-page.is-gate .tower-shell {
+    width: 100%;
+    max-width: 100%;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+
+  .tower-page.is-gate .tower-header {
+    justify-content: space-between;
+  }
+
+  .tower-page.is-gate .tower-login-brand {
+    font-size: clamp(1.85rem, 9vw, 2.35rem);
+  }
+
+  .tower-page.is-gate .tower-help {
+    margin-bottom: 22px;
+    font-size: 0.92rem;
+  }
+
+  .tower-page.is-gate .tower-login-stage {
+    max-width: 100%;
+  }
+
   .tower-header {
-    flex-direction: column;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .tower-header h1 {
+    font-size: 1.2rem;
+    line-height: 1.2;
   }
 
   .tower-header-meta {
-    align-items: flex-start;
+    align-items: flex-end;
+    flex: 0 0 auto;
   }
 
   .tower-stats {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .tower-stat {
+    padding: 12px;
+    min-width: 0;
+  }
+
+  .tower-stat strong {
+    font-size: 1.35rem;
+  }
+
+  .tower-stat small {
+    overflow-wrap: anywhere;
+  }
+
+  .tower-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tower-toolbar-actions {
+    width: 100%;
+  }
+
+  .tower-toolbar-actions .button {
+    flex: 1 1 auto;
+    justify-content: center;
+    min-height: 42px;
+    padding: 8px 10px;
+  }
+
+  .tower-card {
+    padding: 14px;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .tower-card-head {
+    display: grid;
     grid-template-columns: 1fr;
+    gap: 10px;
+    align-items: start;
+  }
+
+  .tower-card-head h2 {
+    font-size: 0.98rem;
+  }
+
+  .tower-card-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .tower-purge {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .tower-room-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tower-table-wrap {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tower-table {
+    font-size: 0.82rem;
+    min-width: 520px;
+  }
+
+  .tower-table th,
+  .tower-table td {
+    padding: 8px 6px;
+  }
+
+  .tower-table .socket-id {
+    max-width: 72px;
+  }
+}
+
+@media (max-width: 400px) {
+  .tower-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .tower-pill {
+    font-size: 0.66rem;
+    padding: 0 8px;
+  }
+
+  .tower-clock {
+    font-size: 0.75rem;
   }
 }
