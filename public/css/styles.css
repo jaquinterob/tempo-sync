@@ -2015,24 +2015,27 @@ html:has(body.control-page) {
 
 .control-page .branding-form {
   display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 4px 6px;
+  grid-template-columns: 1fr;
+  gap: 8px;
   align-items: stretch;
 }
 
 .control-page .brand-field {
   display: grid;
-  grid-template-columns: 4.2rem 1fr;
-  gap: 6px;
+  grid-template-columns: 11rem minmax(0, 1fr);
+  gap: 10px;
   align-items: center;
   margin: 0;
   color: #6b7280;
   font-size: 0.78rem;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
 }
 
 .control-page .brand-field span {
-  white-space: nowrap;
+  white-space: normal;
+  line-height: 1.25;
+  overflow: visible;
+  text-overflow: unset;
 }
 
 .control-page .brand-unit-field {
@@ -2045,10 +2048,7 @@ html:has(body.control-page) {
   opacity: 0.55;
 }
 
-.control-page .brand-field:nth-child(1) {
-  grid-column: 1 / -1;
-}
-
+.control-page .brand-field:nth-child(1),
 .control-page .brand-field:nth-child(2),
 .control-page .brand-field:nth-child(3) {
   grid-column: 1;
@@ -2057,18 +2057,13 @@ html:has(body.control-page) {
 .control-page .branding-form input {
   width: 100%;
   min-width: 0;
-  padding: 6px 8px;
+  padding: 8px 10px;
   font-size: 1rem;
   line-height: 1.1;
 }
 
 .control-page .brand-save {
-  grid-column: 2;
-  grid-row: 2 / 4;
-  align-self: stretch;
-  min-height: 0;
-  padding: 6px 10px;
-  white-space: nowrap;
+  display: none;
 }
 
 .control-page .branding-status {
