@@ -764,7 +764,7 @@ html.tower-html {
   .tower-card {
     padding: 14px;
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .tower-card-head {
@@ -788,8 +788,67 @@ html.tower-html {
     min-width: 0;
   }
 
+  .tower-room {
+    min-width: 0;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .tower-room-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .tower-room-meta {
+    width: 100%;
+  }
+
+  /* Filas tipo Identidad: etiqueta | valor, caben a lo ancho */
   .tower-room-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .tower-room-grid div {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .tower-room-grid span {
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .tower-room-grid strong {
+    margin: 0;
+    font-size: 0.92rem;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    overflow-wrap: anywhere;
+  }
+
+  .tower-room-foot {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .tower-room-notes {
+    flex: none;
+    width: 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: unset;
+    line-height: 1.35;
+  }
+
+  .tower-room-foot .tower-kick {
+    width: 100%;
+    min-height: 40px;
   }
 
   .tower-table-wrap {
