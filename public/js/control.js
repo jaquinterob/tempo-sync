@@ -169,7 +169,7 @@ function applyBranding(branding) {
 
 function buildShareMessage(pin, url) {
   return (
-    `Pulpit Timer — abre este enlace en el celular del reloj (horizontal).\n` +
+    `Pulpit Timer — abre este enlace en el dispositivo del reloj (horizontal).\n` +
     `Usa http (no https):\n${url}\n\n` +
     `Si el enlace no abre, entra a la app y escribe el código: ${pin}`
   );

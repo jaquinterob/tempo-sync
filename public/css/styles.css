@@ -4467,3 +4467,96 @@ body.control-dark .share-menu-backdrop {
 .control-page.control-dark .share-menu-cancel {
   color: #c4bfb9;
 }
+
+/* Hovers oscuros — contraste visible (ganan a reglas light) */
+.control-page.control-dark .button:hover,
+.control-page.control-dark .button-secondary:hover,
+.control-page.control-dark .blank-screen-button:hover,
+.control-page.control-dark .preset-button:hover,
+.control-page.control-dark .duration-chip:hover:not(.is-on),
+.control-page.control-dark .share-action:hover,
+.control-page.control-dark .theme-toggle:hover,
+.control-page.control-dark .brand-save:hover,
+.control-page.control-dark .join-card .button:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: #c4bfb9;
+  color: #fafaf9;
+  filter: none;
+}
+
+.control-page.control-dark .duration-step:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fafaf9;
+}
+
+.control-page.control-dark .duration-chip.is-on:hover,
+.control-page.control-dark .button-start:hover,
+.control-page.control-dark .button-primary:hover,
+.control-page.control-dark .share-action-qr:hover,
+.control-page.control-dark .join-card .button-primary:hover {
+  background: #958f87;
+  border-color: #d6d3d1;
+  color: #ffffff;
+}
+
+.control-page.control-dark .duration-chip.is-on:hover .duration-chip-num,
+.control-page.control-dark .duration-chip.is-on:hover .duration-chip-unit,
+.control-page.control-dark .button-start:hover .btn-label,
+.control-page.control-dark .button-primary:hover .btn-label {
+  color: #ffffff;
+}
+
+.control-page.control-dark .button-danger:hover {
+  background: rgba(181, 106, 92, 0.28);
+  border-color: #e8a598;
+  color: #f5c4ba;
+}
+
+.control-page.control-dark .matrix-room-button:hover .matrix-room-hint,
+.control-page.control-dark .matrix-room-button:focus-visible .matrix-room-hint {
+  color: #fafaf9;
+}
+
+.control-page.control-dark .display-link:hover,
+.control-page.control-dark .join-home-link a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.control-page.control-dark .share-menu-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fafaf9;
+}
+
+.control-page.control-dark.control-blanked #blank-screen-button:hover {
+  background: #e7e5e4;
+  border-color: #e7e5e4;
+  color: #171614;
+}
+
+.entry-page.entry-dark .entry-button:hover {
+  background: #958f87;
+  border-color: #d6d3d1;
+  color: #ffffff;
+}
+
+.entry-page.entry-dark .entry-button-ghost:hover {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fafaf9;
+}
+
+.display-page.display-ward.display-dark .change-room-button:hover,
+.display-page.display-ward.display-dark .change-room-button:focus-visible,
+.display-page.display-ward.display-dark .fullscreen-button:hover,
+.display-page.display-ward.display-dark .fullscreen-button:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: #c4bfb9;
+  color: #fafaf9;
+  opacity: 1;
+}
+
+.display-page.display-ward.display-dark .display-join .button-primary:hover {
+  background: #958f87;
+  border-color: #d6d3d1;
+  color: #ffffff;
+}
