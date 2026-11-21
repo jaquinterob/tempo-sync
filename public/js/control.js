@@ -169,7 +169,8 @@ function applyBranding(branding) {
 
 function buildShareMessage(pin, url) {
   return (
-    `Pulpit Timer — abre este enlace en el dispositivo del reloj (horizontal).\n` +
+    `Pulpit Timer — abre este enlace en el dispositivo del púlpito (horizontal).\n` +
+    `Al iniciar desde el control, se muestra la cuenta regresiva.\n` +
     `Usa http (no https):\n${url}\n\n` +
     `Si el enlace no abre, entra a la app y escribe el código: ${pin}`
   );
@@ -654,7 +655,7 @@ changeRoomButton.addEventListener("click", () => {
   const state = client.getState();
   if (state?.isRunning) {
     const ok = window.confirm(
-      "¿Salir del control de esta sala? El reloj en la pantalla grande sigue corriendo.",
+      "¿Salir del control de esta sala? La cuenta regresiva en el otro dispositivo sigue corriendo.",
     );
     if (!ok) return;
   }
