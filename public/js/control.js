@@ -1,4 +1,5 @@
 const {
+  applyThemeColorMeta,
   cleanPin,
   createTimerClient,
   displayShareUrl,
@@ -9,8 +10,10 @@ const {
   pinFromUrl,
   prepareShareOrigin,
   readStoredControlToken,
+  readThemePreference,
   shouldCreateFromUrl,
   storeControlToken,
+  storeThemePreference,
   wardFromUrl,
   renderTimer,
   updateConnectionBadge,
@@ -27,11 +30,17 @@ const connectionStatus = document.querySelector("#connection-status");
 const connectionStatusInline = document.querySelector("#connection-status-inline");
 const timerElement = document.querySelector("#timer");
 const timerLabel = document.querySelector("#timer-label");
-const timeForm = document.querySelector("#time-form");
-const minutesInput = document.querySelector("#minutes");
-const secondsInput = document.querySelector("#seconds");
+const durationChips = document.querySelector("#duration-chips");
+const durationChipButtons = document.querySelectorAll(".duration-chip[data-min]");
+const durationLiveNum = document.querySelector("#duration-live-num");
+const durationMinus = document.querySelector("#duration-minus");
+const durationPlus = document.querySelector("#duration-plus");
 const timeError = document.querySelector("#time-error");
-const presetButtons = document.querySelectorAll(".preset-button");
+const DURATION_MIN = 1;
+const DURATION_MAX_MIN = 60;
+const DURATION_PRESETS = new Set([7, 8, 10]);
+let durationFlashTimer = 0;
+let durationLiveMinutes = 8;
 const startButton = document.querySelector("#start-button");
 const pauseButton = document.querySelector("#pause-button");
 const resetButton = document.querySelector("#reset-button");
@@ -44,6 +53,8 @@ const displayLink = document.querySelector("#display-link");
 const changeRoomButton = document.querySelector("#change-room-button");
 const copyDisplayLinkButton = document.querySelector("#copy-display-link");
 const shareSheetButton = document.querySelector("#share-sheet-button");
+const shareQrButton = document.querySelector("#share-qr-button");
+const shareMenuQr = document.querySelector("#share-menu-qr");
 const sharePin = document.querySelector("#share-pin");
 const shareStatus = document.querySelector("#share-status");
 const brandingForm = document.querySelector("#branding-form");
@@ -56,9 +67,11 @@ const themeToggle = document.querySelector("#theme-toggle");
 const timeMeterFill = document.querySelector("#time-meter-fill");
 const shareGate = document.querySelector("#share-gate");
 const shareGatePin = document.querySelector("#share-gate-pin");
+const shareGateQr = document.querySelector("#share-gate-qr");
 const shareGateShare = document.querySelector("#share-gate-share");
 const shareGateDone = document.querySelector("#share-gate-done");
 const shareGateStatus = document.querySelector("#share-gate-status");
+let shareGateQrInstance = null;
 const shareMenu = document.querySelector("#share-menu");
 const shareMenuWhatsapp = document.querySelector("#share-menu-whatsapp");
 const shareMenuCopy = document.querySelector("#share-menu-copy");
@@ -89,11 +102,19 @@ function syncConnectionBadge(connected) {
   updateConnectionBadge(connectionStatusInline, connected);
 }
 
-function applyTheme(theme) {
-  currentTheme = theme === "dark" ? "dark" : "light";
+function normalizeTheme(theme) {
+  return theme === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme, { persist = false } = {}) {
+  currentTheme = normalizeTheme(theme);
   const isDark = currentTheme === "dark";
+  if (persist) storeThemePreference(currentTheme);
+  document.body.classList.toggle("control-dark", isDark);
+  applyThemeColorMeta(currentTheme);
+  if (!themeToggle) return;
   const label = themeToggle.querySelector(".theme-toggle-label");
-  if (label) label.textContent = isDark ? "DISPLAY: Oscuro" : "DISPLAY: Claro";
+  if (label) label.textContent = isDark ? "Tema: Oscuro" : "Tema: Claro";
   const themeIcon = themeToggle.querySelector("#theme-icon");
   if (themeIcon && window.PulpitIcons) {
     window.PulpitIcons.setIcon(
@@ -104,7 +125,28 @@ function applyTheme(theme) {
   }
   themeToggle.classList.toggle("is-active", isDark);
   themeToggle.setAttribute("aria-pressed", String(isDark));
-  themeToggle.title = isDark ? "DISPLAY: Oscuro" : "DISPLAY: Claro";
+  themeToggle.title = isDark ? "Tema: Oscuro" : "Tema: Claro";
+}
+
+function syncThemePreferenceToRoom() {
+  const preferredTheme = readThemePreference();
+  applyTheme(preferredTheme);
+  if (client.getPin()) {
+    client.socket.emit("theme:update", preferredTheme);
+  }
+}
+
+function coordinateThemeWithRoom(roomTheme) {
+  const preferredTheme = readThemePreference();
+  const remoteTheme = normalizeTheme(roomTheme);
+  if (preferredTheme !== remoteTheme) {
+    applyTheme(preferredTheme);
+    if (client.getPin()) {
+      client.socket.emit("theme:update", preferredTheme);
+    }
+    return;
+  }
+  applyTheme(remoteTheme);
 }
 
 function applyBranding(branding) {
@@ -149,6 +191,26 @@ function canUseNativeShare() {
   return typeof navigator.share === "function";
 }
 
+function renderShareGateQr(url) {
+  if (!shareGateQr || typeof QRCode !== "function") return;
+  shareGateQr.replaceChildren();
+  shareGateQrInstance = null;
+  if (!url) return;
+  try {
+    shareGateQrInstance = new QRCode(shareGateQr, {
+      text: url,
+      width: 196,
+      height: 196,
+      colorDark: "#1c1917",
+      colorLight: "#f7f4ef",
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  } catch {
+    shareGateQr.replaceChildren();
+    shareGateQrInstance = null;
+  }
+}
+
 function updateShareLinks(pin) {
   const clean = cleanPin(pin);
   const url = displayShareUrl(clean);
@@ -158,8 +220,9 @@ function updateShareLinks(pin) {
   const shareGateUrl = document.querySelector("#share-gate-url");
   if (shareGateUrl) {
     shareGateUrl.textContent = url || "";
-    shareGateUrl.hidden = !url;
+    shareGateUrl.hidden = true;
   }
+  renderShareGateQr(url);
   if (url) {
     if (shareMenuWhatsapp) shareMenuWhatsapp.href = whatsappShareHref(clean, url);
     if (shareMenuSms) shareMenuSms.href = smsShareHref(clean, url);
@@ -231,13 +294,21 @@ function clearShareGateFlag() {
   }
 }
 
-async function showShareGate(pin) {
-  if (!shareGate || !shouldShowShareGate(pin)) return;
+async function showShareGate(pin, { force = false } = {}) {
+  if (!shareGate) return;
+  if (!force && !shouldShowShareGate(pin)) return;
   await prepareShareOrigin();
   updateShareLinks(pin);
   if (shareGateStatus) shareGateStatus.textContent = "";
+  hideShareMenu();
   shareGate.classList.remove("is-hidden");
   document.body.classList.add("share-gate-open");
+}
+
+async function openShareGate() {
+  const pin = client.getPin();
+  if (!pin) return;
+  await showShareGate(pin, { force: true });
 }
 
 function hideShareGate() {
@@ -294,23 +365,17 @@ const client = createTimerClient({
   role: "control",
   onConnection: syncConnectionBadge,
   onState: (state) => {
-    const totalSeconds = Math.round(state.durationMs / 1000);
-    minutesInput.value = Math.floor(totalSeconds / 60);
-    secondsInput.value = totalSeconds % 60;
+    const totalMinutes = Math.max(0, Math.round(state.durationMs / 60_000));
+    syncDurationDial(totalMinutes);
     startButton.disabled = state.isRunning;
     pauseButton.disabled = !state.isRunning;
     isScreenBlank = state.isBlank;
-    blankScreenLabel.textContent = isScreenBlank ? "Mostrar pantalla" : "Ocultar pantalla";
+    blankScreenLabel.textContent = isScreenBlank ? "Mostrar pantalla" : "Ocultar";
     blankScreenButton.classList.toggle("is-active", isScreenBlank);
     blankScreenButton.setAttribute("aria-pressed", String(isScreenBlank));
     document.body.classList.toggle("control-blanked", isScreenBlank);
     applyBranding(state.branding);
-    applyTheme(state.theme);
-    for (const button of presetButtons) {
-      const isActive = Number(button.dataset.durationMs) === state.durationMs;
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-pressed", String(isActive));
-    }
+    coordinateThemeWithRoom(state.theme);
     if (
       state.message !== lastScreenMessage &&
       document.activeElement !== screenMessageInput
@@ -320,6 +385,79 @@ const client = createTimerClient({
     lastScreenMessage = state.message;
   },
 });
+
+function currentDurationMinutes() {
+  const state = client.getState();
+  if (state?.durationMs) return Math.max(1, Math.round(state.durationMs / 60_000));
+  if (durationChips?.dataset.minutes) return Number(durationChips.dataset.minutes) || 8;
+  return durationLiveMinutes || 8;
+}
+
+function flashDurationSelection(minutes, { fromPreset = false } = {}) {
+  if (!durationChips) return;
+  window.clearTimeout(durationFlashTimer);
+
+  if (timerElement) {
+    timerElement.classList.remove("is-duration-refresh");
+    void timerElement.offsetWidth;
+    timerElement.classList.add("is-duration-refresh");
+  }
+
+  if (fromPreset) {
+    const chip = durationChips.querySelector(`.duration-chip[data-min="${minutes}"]`);
+    if (chip) {
+      chip.classList.remove("is-pop");
+      void chip.offsetWidth;
+      chip.classList.add("is-pop");
+    }
+  }
+
+  durationFlashTimer = window.setTimeout(() => {
+    timerElement?.classList.remove("is-duration-refresh");
+    durationChipButtons.forEach((btn) => btn.classList.remove("is-pop"));
+  }, 900);
+}
+
+function paintDurationChips(minutes, { animate = false, fromPreset = false } = {}) {
+  if (!durationChips) return;
+  const display = Math.min(DURATION_MAX_MIN, Math.max(DURATION_MIN, Math.round(minutes)));
+  const previous = durationLiveMinutes;
+  durationLiveMinutes = display;
+  durationChips.dataset.minutes = String(display);
+  durationChips.classList.toggle("is-custom", !DURATION_PRESETS.has(display));
+  durationChips.setAttribute("aria-label", `Duración del discurso: ${display} minutos`);
+
+  if (durationLiveNum) {
+    durationLiveNum.textContent = String(display);
+  }
+
+  durationChipButtons.forEach((btn) => {
+    const value = Number(btn.dataset.min);
+    const on = value === display;
+    btn.classList.toggle("is-on", on);
+    btn.setAttribute("aria-checked", String(on));
+  });
+
+  if (durationMinus) durationMinus.disabled = display <= DURATION_MIN;
+  if (durationPlus) durationPlus.disabled = display >= DURATION_MAX_MIN;
+
+  if (animate && previous !== display) {
+    flashDurationSelection(display, {
+      fromPreset: fromPreset || DURATION_PRESETS.has(display),
+    });
+  }
+}
+
+function syncDurationDial(minutes) {
+  paintDurationChips(minutes, { animate: false });
+}
+
+function setDurationMinutes(minutes, { fromPreset = false } = {}) {
+  const next = Math.min(DURATION_MAX_MIN, Math.max(DURATION_MIN, Math.round(minutes)));
+  if (timeError) timeError.textContent = "";
+  paintDurationChips(next, { animate: true, fromPreset });
+  client.socket.emit("timer:set", next * 60_000);
+}
 
 renderTimer({ client, timerElement, labelElement: timerLabel });
 
@@ -380,6 +518,7 @@ function activateControlRoom(result, options = {}) {
     controlUrl(result.pin, result.controlToken || client.getControlToken()),
   );
   if (options.needShare) markNeedShare(result.pin);
+  syncThemePreferenceToRoom();
   showShareGate(result.pin);
 
   let wardName = normalizeUnitText(options.wardName, 60);
@@ -412,7 +551,9 @@ async function createControlRoom(options = {}) {
   if (joining) return;
   joinError.textContent = "";
   setJoining(true);
-  const result = await client.createRoom();
+  const result = await client.createRoom({
+    theme: readThemePreference(),
+  });
   setJoining(false);
   if (!result?.ok) {
     joinError.textContent = result?.error || "No se pudo crear la sala.";
@@ -455,9 +596,20 @@ if (shareGateShare) {
 if (shareGateDone) {
   shareGateDone.addEventListener("click", hideShareGate);
 }
+if (shareQrButton) {
+  shareQrButton.addEventListener("click", () => {
+    openShareGate();
+  });
+}
 if (shareSheetButton) {
   shareSheetButton.addEventListener("click", () => {
     openShareSheet(shareStatus);
+  });
+}
+if (shareMenuQr) {
+  shareMenuQr.addEventListener("click", async () => {
+    hideShareMenu();
+    await openShareGate();
   });
 }
 if (shareMenuCopy) {
@@ -512,34 +664,21 @@ if (copyDisplayLinkButton) {
   copyDisplayLinkButton.addEventListener("click", () => copyDisplayLink());
 }
 
-timeForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  timeError.textContent = "";
+if (durationChips) {
+  paintDurationChips(8, { animate: false });
 
-  const minutes = Number(minutesInput.value);
-  const seconds = Number(secondsInput.value);
-  const durationMs = (minutes * 60 + seconds) * 1000;
+  durationChipButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setDurationMinutes(Number(btn.dataset.min), { fromPreset: true });
+    });
+  });
 
-  if (
-    !Number.isInteger(minutes) ||
-    !Number.isInteger(seconds) ||
-    minutes < 0 ||
-    seconds < 0 ||
-    seconds > 59 ||
-    durationMs < 1_000 ||
-    durationMs > 24 * 60 * 60 * 1000
-  ) {
-    timeError.textContent = "Usa un tiempo entre 1 segundo y 24 horas.";
-    return;
-  }
+  durationMinus?.addEventListener("click", () => {
+    setDurationMinutes(currentDurationMinutes() - 1);
+  });
 
-  client.socket.emit("timer:set", durationMs);
-});
-
-for (const button of presetButtons) {
-  button.addEventListener("click", () => {
-    timeError.textContent = "";
-    client.socket.emit("timer:set", Number(button.dataset.durationMs));
+  durationPlus?.addEventListener("click", () => {
+    setDurationMinutes(currentDurationMinutes() + 1);
   });
 }
 
@@ -627,74 +766,15 @@ for (const input of [unitNameInput, finishThanksInput, finishDoneInput]) {
   });
 }
 
+applyTheme(readThemePreference());
+
 themeToggle.addEventListener("click", () => {
   const nextTheme = currentTheme === "dark" ? "light" : "dark";
-  client.socket.emit("theme:update", nextTheme);
-});
-
-const panelThemeButton = document.querySelector("#panel-theme-button");
-const panelThemeLabel = document.querySelector("#panel-theme-label");
-const panelThemeOptions = document.querySelector("#panel-theme-options");
-const panelThemeOptionButtons = document.querySelectorAll(".panel-theme-option");
-
-const CONTROL_THEME_LABELS = {
-  classic: "PANEL: Clásico",
-  kiosk: "PANEL: Kiosk",
-  print: "PANEL: Print",
-  accessible: "PANEL: Accesible",
-};
-
-function setControlTheme(theme) {
-  const valid = CONTROL_THEME_LABELS[theme] ? theme : "classic";
-  document.body.classList.remove(
-    "control-theme-classic",
-    "control-theme-kiosk",
-    "control-theme-print",
-    "control-theme-accessible",
-  );
-  if (valid !== "classic") document.body.classList.add(`control-theme-${valid}`);
-  panelThemeLabel.textContent = CONTROL_THEME_LABELS[valid];
-  for (const option of panelThemeOptionButtons) {
-    const selected = option.dataset.controlTheme === valid;
-    option.setAttribute("aria-selected", String(selected));
-  }
-  try {
-    localStorage.setItem("pulpit-panel-theme", valid);
-  } catch {
-    // localStorage no disponible: el tema aplica solo en esta sesión.
-  }
-}
-
-function setPanelThemeMenuOpen(open) {
-  panelThemeOptions.classList.toggle("is-hidden", !open);
-  panelThemeButton.setAttribute("aria-expanded", String(open));
-}
-
-panelThemeButton.addEventListener("click", (event) => {
-  event.stopPropagation();
-  setPanelThemeMenuOpen(panelThemeOptions.classList.contains("is-hidden"));
-});
-
-for (const option of panelThemeOptionButtons) {
-  option.addEventListener("click", () => {
-    setControlTheme(option.dataset.controlTheme);
-    setPanelThemeMenuOpen(false);
-  });
-}
-
-document.addEventListener("click", (event) => {
-  if (!event.target.closest(".panel-theme-menu")) {
-    setPanelThemeMenuOpen(false);
+  applyTheme(nextTheme, { persist: true });
+  if (client.getPin()) {
+    client.socket.emit("theme:update", nextTheme);
   }
 });
-
-let storedControlTheme = "classic";
-try {
-  storedControlTheme = localStorage.getItem("pulpit-panel-theme") || "classic";
-} catch {
-  // sin localStorage
-}
-setControlTheme(storedControlTheme);
 
 client.socket.on("room:error", (message) => {
   timeError.textContent = message;

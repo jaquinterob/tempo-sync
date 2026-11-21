@@ -88,9 +88,13 @@
       onState?.(nextState);
     }
 
-    function createRoom() {
+    function createRoom(options = {}) {
+      const theme =
+        options.theme === "dark" || options.theme === "light"
+          ? options.theme
+          : readThemePreference();
       return new Promise((resolve) => {
-        socket.emit("room:create", (result) => {
+        socket.emit("room:create", { theme }, (result) => {
           if (result?.ok) {
             pin = result.pin;
             controlToken = result.controlToken;
@@ -306,8 +310,57 @@
     return `${getShareOrigin()}/display?pin=${encodeURIComponent(clean)}`;
   }
 
+  const ENTRY_SEEN_KEY = "pulpit-entry-seen";
+
+  function hasSeenEntry() {
+    try {
+      return localStorage.getItem(ENTRY_SEEN_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  function markEntrySeen() {
+    try {
+      localStorage.setItem(ENTRY_SEEN_KEY, "1");
+    } catch {
+      // sin localStorage
+    }
+  }
+
+  const THEME_PREFERENCE_KEY = "pulpit-theme";
+
+  function readThemePreference() {
+    try {
+      return localStorage.getItem(THEME_PREFERENCE_KEY) === "dark" ? "dark" : "light";
+    } catch {
+      return "light";
+    }
+  }
+
+  function storeThemePreference(theme) {
+    try {
+      localStorage.setItem(
+        THEME_PREFERENCE_KEY,
+        theme === "dark" ? "dark" : "light",
+      );
+    } catch {
+      // sin localStorage
+    }
+  }
+
+  function applyThemeColorMeta(theme) {
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (!themeColor) return;
+    themeColor.setAttribute(
+      "content",
+      theme === "dark" ? "#171614" : "#f7f4ef",
+    );
+  }
+
   window.TimerTools = {
     UNIT_PLACEHOLDER,
+    applyThemeColorMeta,
     cleanPin,
     clearWarmupKeepAlive,
     createTimerClient,
@@ -315,14 +368,18 @@
     displayUnitLabel,
     formatTime,
     getShareOrigin,
+    hasSeenEntry,
     keyFromUrl,
+    markEntrySeen,
     normalizeUnitText,
     pinFromUrl,
     prepareShareOrigin,
     readStoredControlToken,
+    readThemePreference,
     shouldCreateFromUrl,
     startWarmupKeepAlive,
     storeControlToken,
+    storeThemePreference,
     wardFromUrl,
     renderTimer,
     updateConnectionBadge,

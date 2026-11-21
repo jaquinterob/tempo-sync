@@ -1,10 +1,13 @@
 const {
+  applyThemeColorMeta,
   cleanPin,
   createTimerClient,
   displayUnitLabel,
   normalizeUnitText,
   pinFromUrl,
+  readThemePreference,
   renderTimer,
+  storeThemePreference,
   updateConnectionBadge,
 } = window.TimerTools;
 
@@ -114,14 +117,14 @@ function applyBranding(branding) {
   document.title = hasWard ? `Pulpit Timer · ${wardLabel}` : "Pulpit Timer";
 }
 
-function applyTheme(theme) {
-  const isDark = theme === "dark";
-  document.body.classList.toggle("display-dark", isDark);
-  const themeColor = document.querySelector('meta[name="theme-color"]');
-  if (themeColor) {
-    themeColor.setAttribute("content", isDark ? "#171614" : "#f7f4ef");
-  }
+function applyTheme(theme, { persist = false } = {}) {
+  const nextTheme = theme === "dark" ? "dark" : "light";
+  document.body.classList.toggle("display-dark", nextTheme === "dark");
+  applyThemeColorMeta(nextTheme);
+  if (persist) storeThemePreference(nextTheme);
 }
+
+applyTheme(readThemePreference());
 
 function updateScreenMessage(value) {
   const message = String(value ?? "");
@@ -240,6 +243,20 @@ document.addEventListener("fullscreenchange", updateFullscreenButton);
 document.addEventListener("webkitfullscreenchange", updateFullscreenButton);
 updateFullscreenButton();
 
+let lastDurationMs = null;
+let durationConfirmTimer = 0;
+
+function flashDurationChange() {
+  if (!timerElement || finishPhase !== "idle") return;
+  window.clearTimeout(durationConfirmTimer);
+  timerElement.classList.remove("is-duration-refresh");
+  void timerElement.offsetWidth;
+  timerElement.classList.add("is-duration-refresh");
+  durationConfirmTimer = window.setTimeout(() => {
+    timerElement.classList.remove("is-duration-refresh");
+  }, 900);
+}
+
 const client = createTimerClient({
   role: "display",
   onConnection: (connected) => {
@@ -250,7 +267,13 @@ const client = createTimerClient({
     document.body.classList.toggle("screen-blanked", state.isBlank);
     updateScreenMessage(state.message);
     applyBranding(state.branding);
-    applyTheme(state.theme);
+    applyTheme(state.theme, { persist: true });
+
+    const nextDuration = Number(state.durationMs) || 0;
+    if (lastDurationMs !== null && nextDuration > 0 && nextDuration !== lastDurationMs) {
+      flashDurationChange();
+    }
+    if (nextDuration > 0) lastDurationMs = nextDuration;
 
     if (hasFinished) {
       const accent =

@@ -22,9 +22,18 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=33" />
+    <link rel="stylesheet" href="/css/styles.css?v=69" />
   </head>
   <body class="display-page display-ward">
+    <script>
+      try {
+        if (localStorage.getItem("pulpit-theme") === "dark") {
+          document.body.classList.add("display-dark");
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", "#171614");
+        }
+      } catch (e) {}
+    </script>
     <main class="display-shell">
       <section id="join-panel" class="display-join">
         <header class="display-join-brand">
@@ -169,8 +178,8 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/icons.js?v=10"></script>
-    <script src="/js/shared.js?v=13"></script>
-    <script src="/js/display.js?v=13"></script>
+    <script src="/js/shared.js?v=22"></script>
+    <script src="/js/display.js?v=19"></script>
     <script>
       window.PulpitIcons?.createIcons();
     </script>

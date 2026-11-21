@@ -22,9 +22,27 @@
       href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=29" />
+    <link rel="stylesheet" href="/css/styles.css?v=69" />
+    <script>
+      try {
+        if (localStorage.getItem("pulpit-entry-seen") === "1") {
+          location.replace("/control");
+        }
+      } catch {
+        // sin localStorage: mostrar inicio
+      }
+    </script>
   </head>
   <body class="entry-page">
+    <script>
+      try {
+        if (localStorage.getItem("pulpit-theme") === "dark") {
+          document.body.classList.add("entry-dark");
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", "#171614");
+        }
+      } catch (e) {}
+    </script>
     <main class="entry-shell">
       <div class="entry-brand">
         <img
@@ -38,136 +56,48 @@
         <h1 id="entry-ward-title" class="entry-ward is-placeholder">Tu unidad</h1>
       </div>
 
-      <div class="entry-progress">
-        <p class="entry-meta" id="entry-step-meta" aria-live="polite">Paso 1 de 3</p>
-        <div class="entry-track" role="tablist" aria-label="Pasos">
-          <button
-            type="button"
-            class="entry-track-seg is-active"
-            data-track="0"
-            role="tab"
-            aria-selected="true"
-            aria-label="Paso 1"
-          ></button>
-          <button
-            type="button"
-            class="entry-track-seg"
-            data-track="1"
-            role="tab"
-            aria-selected="false"
-            aria-label="Paso 2"
-            disabled
-          ></button>
-          <button
-            type="button"
-            class="entry-track-seg"
-            data-track="2"
-            role="tab"
-            aria-selected="false"
-            aria-label="Paso 3"
-            disabled
-          ></button>
-        </div>
+      <div class="entry-body">
+        <form id="unit-form" class="entry-form" novalidate>
+          <label class="entry-label" for="unit-name">Nombre de tu unidad</label>
+          <input
+            id="unit-name"
+            class="entry-input"
+            type="text"
+            name="unit"
+            maxlength="60"
+            required
+            autocomplete="organization"
+            placeholder="Ej. Barrio Sabaneta"
+          />
+          <p id="unit-error" class="entry-step-error" role="alert" hidden>
+            Falta el nombre.
+          </p>
+        </form>
+        <p class="entry-tip">
+          Este celular controla el tiempo. El otro muestra el reloj.
+        </p>
       </div>
 
-      <div class="entry-stepper" data-step="0">
-        <div class="entry-stage">
-          <section
-            class="entry-step is-active"
-            data-step-panel="0"
-            aria-labelledby="step-1-title"
-          >
-            <h2 id="step-1-title">Escribe el nombre</h2>
-            <form id="unit-form" class="entry-form" novalidate>
-              <label class="entry-label" for="unit-name">Nombre de tu unidad</label>
-              <input
-                id="unit-name"
-                class="entry-input"
-                type="text"
-                name="unit"
-                maxlength="60"
-                required
-                autocomplete="organization"
-                placeholder="Ej. Barrio Sabaneta"
-              />
-              <p id="unit-error" class="entry-step-error" role="alert" hidden>
-                Falta el nombre.
-              </p>
-            </form>
-          </section>
-
-          <section
-            class="entry-step"
-            data-step-panel="1"
-            aria-labelledby="step-2-title"
-            aria-hidden="true"
-          >
-            <h2 id="step-2-title">Usa 2 celulares</h2>
-            <div class="entry-simple-cards">
-              <p>
-                <strong>Este celular</strong><br />Aquí controlas el tiempo.
-              </p>
-              <p>
-                <strong>El otro celular</strong><br />Ahí se ve el reloj grande.
-              </p>
-            </div>
-          </section>
-
-          <section
-            class="entry-step"
-            data-step-panel="2"
-            aria-labelledby="step-3-title"
-            aria-hidden="true"
-          >
-            <h2 id="step-3-title">Luego envía el código</h2>
-            <p>
-              En la siguiente pantalla toca <strong>Compartir</strong> y elige
-              cómo enviarlo al otro celular.
-            </p>
-            <p>El otro celular abre el enlace y listo.</p>
-          </section>
-        </div>
-
-        <div class="entry-footer">
-          <button type="button" class="entry-button" id="entry-primary" data-next>
-            Continuar
-          </button>
-          <button
-            type="button"
-            class="entry-back is-idle"
-            id="entry-back"
-            aria-hidden="true"
-            tabindex="-1"
-          >
-            Atrás
-          </button>
-        </div>
+      <div class="entry-footer">
+        <button type="button" class="entry-button" id="create-room">
+          Crear sala
+        </button>
       </div>
     </main>
 
-    <script src="/js/shared.js?v=13"></script>
+    <script src="/js/shared.js?v=22"></script>
     <script src="/js/pwa.js?v=17"></script>
     <script>
       const {
         UNIT_PLACEHOLDER,
+        markEntrySeen,
         normalizeUnitText,
       } = window.TimerTools;
 
-      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const stepper = document.querySelector(".entry-stepper");
-      const panels = [...document.querySelectorAll("[data-step-panel]")];
       const unitNameInput = document.querySelector("#unit-name");
       const unitError = document.querySelector("#unit-error");
       const wardTitle = document.querySelector("#entry-ward-title");
-      const stepMeta = document.querySelector("#entry-step-meta");
-      const trackItems = [...document.querySelectorAll(".entry-track [data-track]")];
-      const primaryButton = document.querySelector("#entry-primary");
-      const backButton = document.querySelector("#entry-back");
-      const TOTAL_STEPS = panels.length;
-      const CTA_LABELS = ["Continuar", "Continuar", "Crear sala"];
-      let currentStep = 0;
-      let maxReached = 0;
-      let busy = false;
+      const createButton = document.querySelector("#create-room");
 
       function currentLabel() {
         return normalizeUnitText(unitNameInput.value, 60);
@@ -185,94 +115,9 @@
         return ok;
       }
 
-      function wait(ms) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
-      }
-
-      function syncChrome(step) {
-        stepper.dataset.step = String(step);
-        stepMeta.textContent = `Paso ${step + 1} de ${TOTAL_STEPS}`;
-        stepMeta.classList.remove("is-tick");
-        void stepMeta.offsetWidth;
-        stepMeta.classList.add("is-tick");
-        for (const [index, item] of trackItems.entries()) {
-          const reached = index <= maxReached;
-          item.classList.toggle("is-active", index === step);
-          item.classList.toggle("is-done", index < step);
-          item.disabled = !reached || index === step;
-          item.setAttribute("aria-selected", String(index === step));
-        }
-        const atStart = step === 0;
-        backButton.classList.toggle("is-idle", atStart);
-        backButton.setAttribute("aria-hidden", String(atStart));
-        backButton.tabIndex = atStart ? -1 : 0;
-        primaryButton.textContent = CTA_LABELS[step];
-        if (step === TOTAL_STEPS - 1) {
-          primaryButton.removeAttribute("data-next");
-          primaryButton.id = "create-room";
-        } else {
-          primaryButton.setAttribute("data-next", "");
-          primaryButton.id = "entry-primary";
-        }
-      }
-
-      function showPanel(index) {
-        for (const [i, panel] of panels.entries()) {
-          const active = i === index;
-          panel.classList.toggle("is-active", active);
-          panel.classList.remove("is-enter", "is-leave");
-          panel.setAttribute("aria-hidden", String(!active));
-        }
-      }
-
-      async function setStep(nextStep) {
-        const target = Math.max(0, Math.min(TOTAL_STEPS - 1, nextStep));
-        if (busy || target === currentStep) {
-          showPanel(target);
-          currentStep = target;
-          maxReached = Math.max(maxReached, currentStep);
-          syncChrome(currentStep);
-          if (currentStep === 0) unitNameInput.focus();
-          return;
-        }
-
-        busy = true;
-        const outgoing = panels[currentStep];
-        const incoming = panels[target];
-        maxReached = Math.max(maxReached, target);
-        syncChrome(target);
-
-        if (reduceMotion) {
-          showPanel(target);
-          currentStep = target;
-          busy = false;
-          if (currentStep === 0) unitNameInput.focus();
-          return;
-        }
-
-        // Fade out → luego fade in (sin traslape); altura del stage fija
-        outgoing.classList.remove("is-active");
-        outgoing.classList.add("is-leave");
-        outgoing.setAttribute("aria-hidden", "true");
-        await wait(240);
-
-        outgoing.classList.remove("is-leave");
-
-        incoming.classList.add("is-enter");
-        incoming.setAttribute("aria-hidden", "false");
-        void incoming.offsetWidth;
-        await wait(320);
-
-        incoming.classList.remove("is-enter");
-        incoming.classList.add("is-active");
-        currentStep = target;
-        busy = false;
-        if (currentStep === 0) unitNameInput.focus();
-      }
-
       function goCreateRoom() {
         if (!unitIsValid()) {
-          setStep(0);
+          unitNameInput.focus();
           return;
         }
 
@@ -282,6 +127,7 @@
         } catch {
           // sin localStorage
         }
+        markEntrySeen();
 
         window.location.href = `/control?${new URLSearchParams({
           create: "1",
@@ -299,44 +145,18 @@
       }
 
       syncTitle();
-      setStep(0);
+      unitNameInput.focus();
 
       unitNameInput.addEventListener("input", () => {
         unitError.hidden = true;
         syncTitle();
       });
 
-      primaryButton.addEventListener("click", () => {
-        if (currentStep >= TOTAL_STEPS - 1) {
-          goCreateRoom();
-          return;
-        }
-        if (currentStep === 0 && !unitIsValid()) {
-          unitNameInput.focus();
-          return;
-        }
-        setStep(currentStep + 1);
-      });
-
-      backButton.addEventListener("click", () => {
-        if (currentStep === 0) return;
-        setStep(currentStep - 1);
-      });
-
-      for (const item of trackItems) {
-        item.addEventListener("click", () => {
-          const target = Number(item.dataset.track);
-          if (!Number.isInteger(target) || target > maxReached || target === currentStep) {
-            return;
-          }
-          setStep(target);
-        });
-      }
+      createButton.addEventListener("click", goCreateRoom);
 
       document.querySelector("#unit-form").addEventListener("submit", (event) => {
         event.preventDefault();
-        if (!unitIsValid()) return;
-        setStep(1);
+        goCreateRoom();
       });
     </script>
   </body>

@@ -1,5 +1,5 @@
 /* Pulpit Timer service worker — shell cache for installable PWA. */
-const CACHE_VERSION = "pulpit-timer-v5";
+const CACHE_VERSION = "pulpit-timer-v6";
 const PRECACHE = [
   "/",
   "/control",
@@ -14,6 +14,7 @@ const PRECACHE = [
   "/js/display.js",
   "/js/pwa.js",
   "/js/icons.js",
+  "/js/qrcode.min.js",
   "/assets/brand/church-logo.png",
   "/assets/brand/church-logo-phosphor.png",
   "/assets/brand/apple-touch-icon.png",

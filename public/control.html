@@ -22,14 +22,15 @@
       href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Libre+Franklin:wght@400;500;600&family=Source+Sans+3:wght@400;600;700&family=Archivo:wght@500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="/css/styles.css?v=35" />
+    <link rel="stylesheet" href="/css/styles.css?v=69" />
   </head>
   <body class="control-page">
     <script>
       try {
-        var t = localStorage.getItem("pulpit-panel-theme");
-        if (["kiosk", "print", "accessible"].indexOf(t) !== -1) {
-          document.body.classList.add("control-theme-" + t);
+        if (localStorage.getItem("pulpit-theme") === "dark") {
+          document.body.classList.add("control-dark");
+          var m = document.querySelector('meta[name="theme-color"]');
+          if (m) m.setAttribute("content", "#171614");
         }
       } catch (e) {}
     </script>
@@ -107,21 +108,74 @@
         </article>
 
         <article class="card matrix-board">
-          <div class="matrix-grid">
-            <button type="button" class="preset-button preset-wide" data-duration-ms="480000">
-              <i data-lucide="mic" data-lucide-class="btn-icon"></i>
-              <span class="preset-label">
-                <strong>Discursos</strong>
-                <span>8 min</span>
-              </span>
-            </button>
-            <button id="start-button" type="button" class="button button-start matrix-tall">
+          <div class="matrix-grid matrix-grid-dial">
+            <div
+              class="matrix-duration-row"
+              id="duration-chips"
+              role="group"
+              aria-label="Duración del discurso"
+              data-minutes="8"
+            >
+              <div class="duration-presets" role="radiogroup" aria-label="Presets de minutos">
+                <button
+                  type="button"
+                  class="duration-chip"
+                  role="radio"
+                  aria-checked="false"
+                  data-min="7"
+                >
+                  <span class="duration-chip-num">7</span>
+                  <span class="duration-chip-unit">min</span>
+                </button>
+                <button
+                  type="button"
+                  class="duration-chip is-on"
+                  role="radio"
+                  aria-checked="true"
+                  data-min="8"
+                >
+                  <span class="duration-chip-num">8</span>
+                  <span class="duration-chip-unit">min</span>
+                </button>
+                <button
+                  type="button"
+                  class="duration-chip"
+                  role="radio"
+                  aria-checked="false"
+                  data-min="10"
+                >
+                  <span class="duration-chip-num">10</span>
+                  <span class="duration-chip-unit">min</span>
+                </button>
+              </div>
+              <div class="duration-stepper" role="group" aria-label="Ajuste fino">
+                <button
+                  type="button"
+                  class="duration-step"
+                  id="duration-minus"
+                  aria-label="Quitar un minuto"
+                >
+                  −
+                </button>
+                <div class="duration-step-value" aria-live="polite">
+                  <span id="duration-live-num">8</span>
+                  <span class="duration-step-unit">min</span>
+                </div>
+                <button
+                  type="button"
+                  class="duration-step"
+                  id="duration-plus"
+                  aria-label="Sumar un minuto"
+                >
+                  ＋
+                </button>
+              </div>
+            </div>
+            <p id="time-error" class="form-error matrix-duration-error" role="alert"></p>
+
+            <button id="start-button" type="button" class="button button-start">
               <i data-lucide="play" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Iniciar</span>
-            </button>
-            <button id="blank-screen-button" type="button" class="button blank-screen-button matrix-tall">
-              <i data-lucide="monitor-off" data-lucide-class="btn-icon"></i>
-              <span id="blank-screen-label" class="btn-label">Ocultar pantalla</span>
             </button>
             <button id="pause-button" type="button" class="button button-secondary button-pause">
               <i data-lucide="pause" data-lucide-class="btn-icon"></i>
@@ -131,23 +185,10 @@
               <i data-lucide="rotate-ccw" data-lucide-class="btn-icon"></i>
               <span class="btn-label">Reiniciar</span>
             </button>
-
-            <form id="time-form" class="matrix-time-form">
-              <label>
-                <span class="visually-hidden">MIN</span>
-                <input id="minutes" type="number" min="0" max="1440" value="8" inputmode="numeric" />
-              </label>
-              <span class="time-separator">:</span>
-              <label>
-                <span class="visually-hidden">SEC</span>
-                <input id="seconds" type="number" min="0" max="59" value="0" inputmode="numeric" />
-              </label>
-              <button type="submit" class="button button-secondary btn-inline">
-                <i data-lucide="check" data-lucide-class="btn-icon"></i>
-                <span class="btn-label">Aplicar</span>
-              </button>
-              <p id="time-error" class="form-error" role="alert"></p>
-            </form>
+            <button id="blank-screen-button" type="button" class="button blank-screen-button">
+              <i data-lucide="monitor-off" data-lucide-class="btn-icon"></i>
+              <span id="blank-screen-label" class="btn-label">Ocultar</span>
+            </button>
 
             <form id="message-form" class="matrix-message-form">
               <label class="visually-hidden" for="screen-message">MSG_SCROLL</label>
@@ -175,6 +216,15 @@
                 <span class="share-kicker">Código</span>
                 <strong id="share-pin">—</strong>
               </span>
+              <button
+                id="share-qr-button"
+                type="button"
+                class="share-action share-action-qr"
+                title="Mostrar código QR"
+              >
+                <i data-lucide="qr-code" data-lucide-class="ui-icon"></i>
+                <span>QR</span>
+              </button>
               <button id="share-sheet-button" type="button" class="share-action" title="Compartir">
                 <i data-lucide="share-2" data-lucide-class="ui-icon"></i>
                 <span>Compartir</span>
@@ -203,46 +253,15 @@
           <div class="brand-config-head">
             <h2>Identidad</h2>
             <div class="brand-config-actions">
-              <div class="panel-theme-menu">
-                <button
-                  id="panel-theme-button"
-                  type="button"
-                  class="button button-secondary theme-toggle"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                >
-                  <span id="panel-theme-label" class="theme-toggle-label">PANEL: Clásico</span>
-                  <i data-lucide="chevron-down" data-lucide-class="ui-icon"></i>
-                </button>
-                <div
-                  id="panel-theme-options"
-                  class="panel-theme-options is-hidden"
-                  role="listbox"
-                  aria-label="Tema del panel"
-                >
-                  <button type="button" role="option" data-control-theme="classic" aria-selected="true" class="panel-theme-option">
-                    Clásico <span class="option-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" role="option" data-control-theme="kiosk" class="panel-theme-option">
-                    Kiosk <span class="option-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" role="option" data-control-theme="print" class="panel-theme-option">
-                    Print <span class="option-check" aria-hidden="true">✓</span>
-                  </button>
-                  <button type="button" role="option" data-control-theme="accessible" class="panel-theme-option">
-                    Accesible <span class="option-check" aria-hidden="true">✓</span>
-                  </button>
-                </div>
-              </div>
               <button
                 id="theme-toggle"
                 type="button"
                 class="button button-secondary theme-toggle"
                 aria-pressed="false"
-                aria-label="Tema display"
-                title="Tema display"
+                aria-label="Tema claro u oscuro"
+                title="Tema"
               >
-                <span class="theme-toggle-label">DISPLAY: Claro</span>
+                <span class="theme-toggle-label">Tema: Claro</span>
                 <i id="theme-icon" data-lucide="sun" data-lucide-class="ui-icon"></i>
               </button>
               <p id="branding-status" class="branding-status" aria-live="polite"></p>
@@ -295,8 +314,14 @@
       aria-labelledby="share-gate-title"
     >
       <div class="share-gate-card">
-        <p class="share-gate-kicker">Último paso</p>
-        <h2 id="share-gate-title">Envía el código<br />al otro celular</h2>
+        <h2 id="share-gate-title">Escanea en el otro celular</h2>
+        <div
+          id="share-gate-qr"
+          class="share-gate-qr"
+          role="img"
+          aria-label="Código QR para abrir el reloj"
+        ></div>
+        <p class="share-gate-pin-label">O escribe el código</p>
         <p class="share-gate-code" id="share-gate-pin">—</p>
         <p id="share-gate-url" class="share-gate-url" hidden></p>
         <div class="share-gate-actions">
@@ -304,7 +329,7 @@
             Compartir
           </button>
           <button id="share-gate-done" type="button" class="share-gate-text">
-            Continuar
+            Listo
           </button>
         </div>
         <p id="share-gate-status" class="share-gate-status" aria-live="polite"></p>
@@ -322,6 +347,9 @@
       <button type="button" class="share-menu-backdrop" id="share-menu-backdrop" aria-label="Cerrar"></button>
       <div class="share-menu-sheet">
         <p class="share-menu-kicker" id="share-menu-title">Compartir con</p>
+        <button id="share-menu-qr" type="button" class="share-menu-item">
+          Código QR
+        </button>
         <a
           id="share-menu-whatsapp"
           class="share-menu-item"
@@ -344,9 +372,10 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/icons.js?v=23"></script>
-    <script src="/js/shared.js?v=19"></script>
-    <script src="/js/control.js?v=24"></script>
+    <script src="/js/icons.js?v=24"></script>
+    <script src="/js/shared.js?v=22"></script>
+    <script src="/js/qrcode.min.js?v=1"></script>
+    <script src="/js/control.js?v=40"></script>
     <script>
       window.PulpitIcons?.createIcons();
     </script>

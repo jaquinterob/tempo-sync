@@ -47,7 +47,7 @@ function generatePin() {
   return pin;
 }
 
-function createRoom(controlToken) {
+function createRoom(controlToken, theme = "light") {
   return {
     controlToken,
     durationMs: DEFAULT_DURATION_MS,
@@ -56,7 +56,7 @@ function createRoom(controlToken) {
     endsAt: null,
     message: "",
     isBlank: false,
-    theme: "light",
+    theme: theme === "dark" ? "dark" : "light",
     branding: { ...DEFAULT_BRANDING },
     revision: 0,
     createdAt: Date.now(),
@@ -469,12 +469,19 @@ function createTimerServer() {
   io.on("connection", (socket) => {
     socket.data.connectedAt = Date.now();
 
-    socket.on("room:create", (acknowledge = () => {}) => {
+    socket.on("room:create", (payload, acknowledge) => {
+      if (typeof payload === "function") {
+        acknowledge = payload;
+        payload = {};
+      }
+      if (typeof acknowledge !== "function") acknowledge = () => {};
+      const theme = payload?.theme === "dark" ? "dark" : "light";
+
       try {
         leaveCurrentRoom(socket);
         const pin = allocatePin();
         const controlToken = crypto.randomBytes(16).toString("hex");
-        rooms.set(pin, createRoom(controlToken));
+        rooms.set(pin, createRoom(controlToken, theme));
         socket.data.pin = pin;
         socket.data.role = "control";
         socket.data.controlToken = controlToken;

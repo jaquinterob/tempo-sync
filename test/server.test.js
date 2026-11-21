@@ -66,6 +66,31 @@ test("normaliza y valida los PIN", () => {
   assert.equal(normalizePin("sala-7"), null);
 });
 
+test("crea la sala con tema oscuro y lo sincroniza al display", async () => {
+  const control = await connectClient();
+  const display = await connectClient();
+
+  const created = await new Promise((resolve) =>
+    control.emit("room:create", { theme: "dark" }, resolve),
+  );
+  assert.equal(created.ok, true);
+  assert.equal(created.state.theme, "dark");
+
+  const displayJoin = await joinRoom(display, {
+    pin: created.pin,
+    role: "display",
+  });
+  assert.equal(displayJoin.ok, true);
+  assert.equal(displayJoin.state.theme, "dark");
+
+  const lightState = nextState(display, (state) => state.theme === "light");
+  control.emit("theme:update", "light");
+  assert.equal((await lightState).theme, "light");
+
+  control.disconnect();
+  display.disconnect();
+});
+
 test("sincroniza configuración, inicio, pausa, reinicio y reconexión", async () => {
   const control = await connectClient();
   const display = await connectClient();
