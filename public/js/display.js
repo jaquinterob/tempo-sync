@@ -5,8 +5,10 @@ const {
   displayUnitLabel,
   normalizeUnitText,
   pinFromUrl,
+  readStoredDisplayPin,
   readThemePreference,
   renderTimer,
+  storeDisplayPin,
   storeThemePreference,
   updateConnectionBadge,
 } = window.TimerTools;
@@ -346,6 +348,7 @@ async function enterRoom(rawPin) {
 
   pinInput.value = result.pin;
   displayRoomPin.textContent = result.pin;
+  storeDisplayPin(result.pin);
   joinPanel.classList.add("is-hidden");
   displayPanel.classList.remove("is-hidden");
   history.replaceState(null, "", `?pin=${encodeURIComponent(result.pin)}`);
@@ -364,7 +367,7 @@ client.socket.on("room:error", (message) => {
   joinError.textContent = message;
 });
 
-const initialPin = pinFromUrl();
+const initialPin = pinFromUrl() || readStoredDisplayPin();
 if (initialPin) {
   pinInput.value = initialPin;
   enterRoom(initialPin);

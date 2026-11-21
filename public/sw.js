@@ -1,11 +1,12 @@
 /* Pulpit Timer service worker — shell cache for installable PWA. */
-const CACHE_VERSION = "pulpit-timer-v6";
+const CACHE_VERSION = "pulpit-timer-v7";
 const PRECACHE = [
   "/",
   "/control",
   "/display",
   "/offline.html",
   "/manifest.webmanifest",
+  "/display.webmanifest",
   "/favicon.ico",
   "/favicon.svg",
   "/css/styles.css",
@@ -37,7 +38,8 @@ function isStaticAsset(url) {
     url.pathname.startsWith("/assets/") ||
     url.pathname === "/favicon.ico" ||
     url.pathname === "/favicon.svg" ||
-    url.pathname === "/manifest.webmanifest"
+    url.pathname === "/manifest.webmanifest" ||
+    url.pathname === "/display.webmanifest"
   );
 }
 

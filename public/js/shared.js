@@ -329,6 +329,7 @@
   }
 
   const THEME_PREFERENCE_KEY = "pulpit-theme";
+  const DISPLAY_PIN_KEY = "pulpit-display-pin";
 
   function readThemePreference() {
     try {
@@ -344,6 +345,24 @@
         THEME_PREFERENCE_KEY,
         theme === "dark" ? "dark" : "light",
       );
+    } catch {
+      // sin localStorage
+    }
+  }
+
+  function readStoredDisplayPin() {
+    try {
+      return cleanPin(localStorage.getItem(DISPLAY_PIN_KEY));
+    } catch {
+      return "";
+    }
+  }
+
+  function storeDisplayPin(pin) {
+    const clean = cleanPin(pin);
+    try {
+      if (clean) localStorage.setItem(DISPLAY_PIN_KEY, clean);
+      else localStorage.removeItem(DISPLAY_PIN_KEY);
     } catch {
       // sin localStorage
     }
@@ -375,10 +394,12 @@
     pinFromUrl,
     prepareShareOrigin,
     readStoredControlToken,
+    readStoredDisplayPin,
     readThemePreference,
     shouldCreateFromUrl,
     startWarmupKeepAlive,
     storeControlToken,
+    storeDisplayPin,
     storeThemePreference,
     wardFromUrl,
     renderTimer,
